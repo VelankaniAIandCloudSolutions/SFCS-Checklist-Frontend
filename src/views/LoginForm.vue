@@ -2,18 +2,24 @@
   <body class="text-center">
     <main class="form-signin">
       <section>
-        <img class="mb-4" src="" alt="" width="72" height="57" />
+        <img
+          class="mb-4"
+          src="/img/admin_logo.png"
+          alt=""
+          width="72"
+          height="57"
+        />
         <h1 class="h3 mb-3 fw-normal">Please Log in</h1>
 
         <div class="form-floating">
           <input
-            v-model="email"
+            v-model="username"
             type="email"
             class="form-control"
             id="floatingInput"
             placeholder="name@example.com"
           />
-          <label for="floatingInput">Email address</label>
+          <label for="floatingInput">Username</label>
         </div>
         <div class="form-floating">
           <input
@@ -41,24 +47,76 @@
 </template>
 
 <script>
+const csrfToken = "{{ csrf_token }}";
+import axios from "axios";
 export default {
   data() {
     return {
-      email: "",
+      username: "",
       password: "",
-      rememberMe: false,
+      errors: [],
+      csrfToken: "",
     };
   },
   methods: {
     handleSubmit() {
-      // Handle form-like section submission logic here
-      console.log("Section submitted with data:", {
-        email: this.email,
-        password: this.password,
-        rememberMe: this.rememberMe,
-      });
-      this.$emit("loginSuccess");
-      // Add your logic here for handling the "form" submission
+      this.$store.commit("setIsLoading", true);
+      this.errors = [];
+
+      if (this.username === "") {
+        this.errors.push("The email is missing!");
+      }
+
+      if (this.password === "") {
+        this.errors.push("The password is missing!");
+      }
+
+      if (!this.errors.length) {
+        const formData = {
+          username: this.username,
+          password: this.password,
+        };
+        axios.defaults.xsrfCookieName = "csrftoken";
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
+        axios.defaults.headers.common["X-CSRFTOKEN"] = this.csrfToken;
+
+        axios
+          .post("token/login/", formData, {
+            headers: {
+              "X-CSRFTOKEN": csrfToken,
+            },
+          })
+          .then((response) => {
+            const token = response.data.auth_token;
+
+            // Set token in store and Axios headers
+            this.$store.commit("setToken", token);
+            axios.defaults.headers.common["Authorization"] = "Token " + token;
+
+            // Save token in localStorage
+            localStorage.setItem("token", token);
+
+            // Log the token
+            console.log("Received Token:", token);
+
+            // Continue with your logic (e.g., redirect to another page)
+            // ...
+
+            // Always set loading state to false
+            this.$store.commit("setIsLoading", false);
+          })
+          .catch((error) => {
+            // Handle login error (e.g., display an error message)
+            console.error("Login failed:", error.response.data);
+            this.errors.push("Login failed. Please check your credentials.");
+
+            // Always set loading state to false
+            this.$store.commit("setIsLoading", false);
+          });
+      } else {
+        // Handle form validation errors
+        this.$store.commit("setIsLoading", false);
+      }
     },
   },
 };

@@ -1,12 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import TestPage from '../views/TestPage.vue'
+import LoginForm from '../views/LoginForm.vue'
+import UploadBom from '../views/UploadBom.vue'
+
 const routes = [
   {
-    path: '/',
-    name: 'TestPage',
-    component: TestPage
+    path: '/login',
+    name: 'LoginForm',
+    component: LoginForm
   },
-]
+  {
+    path: '/bom',
+    name: 'UploadBom',
+    component:UploadBom
+  },
+
+];
+
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),

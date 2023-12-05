@@ -15,12 +15,11 @@ const store = createStore({
     initializeStore(state) {
       if (localStorage.getItem('token')) {
         state.user.token = localStorage.getItem('token');
-        const storedProfile = localStorage.getItem('profile');
-        state.user.profile = storedProfile ? JSON.parse(storedProfile) : {};
+  
         state.user.isAuthenticated = true;
       } else {
         state.user.token = '';
-        state.user.profile = {};
+    
         state.user.isAuthenticated = false;
       }
 
@@ -31,13 +30,15 @@ const store = createStore({
     },   setIsLoading(state, status) {
       state.isLoading = status
     },
-    setProfile(state, profile) {
-      state.user.profile = profile
-    },
+ 
     removeToken(state) {
       state.user.token = ''
       state.user.profile = {}
       state.user.isAuthenticated = false
+      localStorage.removeItem('token');
+    },
+    setAuthentication(state, isAuthenticated) {
+      state.user.isAuthenticated = isAuthenticated;
     },
   },
   actions: {
@@ -45,6 +46,5 @@ const store = createStore({
   modules: {
   }
 })
-
+store.commit('initializeStore');
 export default store;
-store.dispatch('initStore');

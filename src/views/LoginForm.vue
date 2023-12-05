@@ -13,13 +13,13 @@
 
         <div class="form-floating">
           <input
-            v-model="username"
+            v-model="email"
             type="email"
             class="form-control"
             id="floatingInput"
             placeholder="name@example.com"
           />
-          <label for="floatingInput">Username</label>
+          <label for="floatingInput">email</label>
         </div>
         <div class="form-floating">
           <input
@@ -32,12 +32,6 @@
           <label for="floatingPassword">Password</label>
         </div>
 
-        <div class="checkbox mb-3">
-          <label>
-            <input v-model="rememberMe" type="checkbox" value="remember-me" />
-            Remember me
-          </label>
-        </div>
         <button class="w-100 btn btn-lg btn-primary" @click="handleSubmit">
           Sign in
         </button>
@@ -47,15 +41,13 @@
 </template>
 
 <script>
-const csrfToken = "{{ csrf_token }}";
 import axios from "axios";
 export default {
   data() {
     return {
-      username: "",
+      email: "",
       password: "",
       errors: [],
-      csrfToken: "",
     };
   },
   methods: {
@@ -63,7 +55,7 @@ export default {
       this.$store.commit("setIsLoading", true);
       this.errors = [];
 
-      if (this.username === "") {
+      if (this.email === "") {
         this.errors.push("The email is missing!");
       }
 
@@ -73,23 +65,21 @@ export default {
 
       if (!this.errors.length) {
         const formData = {
-          username: this.username,
+          email: this.email,
           password: this.password,
         };
-        axios.defaults.xsrfCookieName = "csrftoken";
-        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
-        axios.defaults.headers.common["X-CSRFTOKEN"] = this.csrfToken;
 
         axios
-          .post("token/login/", formData, {
-            headers: {
-              "X-CSRFTOKEN": csrfToken,
-            },
-          })
+          .post("token/login/", formData)
           .then((response) => {
             const token = response.data.auth_token;
 
             // Set token in store and Axios headers
+            this.$notify({
+              title: "Login successful",
+              type: "alert-success", // Bootstrap class for success
+              duration: 5000,
+            });
             this.$store.commit("setToken", token);
             axios.defaults.headers.common["Authorization"] = "Token " + token;
 
@@ -101,12 +91,18 @@ export default {
 
             // Continue with your logic (e.g., redirect to another page)
             // ...
-
+            // this.$router.push({ path: "/" });
+            window.location.href = "/";
             // Always set loading state to false
             this.$store.commit("setIsLoading", false);
           })
           .catch((error) => {
             // Handle login error (e.g., display an error message)
+            this.$notify({
+              title: "Login failed. Please check your credentials.",
+              type: "alert-danger", // Bootstrap class for danger/error
+              duration: 5000,
+            });
             console.error("Login failed:", error.response.data);
             this.errors.push("Login failed. Please check your credentials.");
 

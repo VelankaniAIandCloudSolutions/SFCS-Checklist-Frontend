@@ -1,14 +1,15 @@
 <template>
   <div id="app">
-    <div v-if="activeRoute.startsWith('/login')">
+    <div v-if="!$store.state.user.isAuthenticated">
+      <!-- Show login form if the user is not authenticated -->
       <LoginForm />
-      <!-- <router-view style="margin-top: 70px;" /> -->
     </div>
     <div v-else>
+      <!-- Show home page or admin page if the user is authenticated -->
       <AdminLte />
     </div>
+    <notifications position="bottom right" classes="alert" />
   </div>
-  <!-- <notifications position="bottom right" classes="alert" /> -->
 </template>
 
 <script>

@@ -100,7 +100,11 @@
 export default {
   methods: {
     logout() {
-      // Implement your logout logic here
+      // Your logout logic goes here
+      // Your logout logic goes here
+      this.$store.commit("removeToken"); // Assuming you have a mutation named 'setAuthentication' in your store
+      // Reload the entire application to navigate to the login page as a fresh page
+      window.location.href = "/login";
     },
   },
 };

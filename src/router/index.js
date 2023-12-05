@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginForm from '../views/LoginForm.vue'
 import UploadBom from '../views/UploadBom.vue'
+import BomLanding from '../views/BomLanding.vue'
 
 const routes = [
   {
@@ -10,6 +11,11 @@ const routes = [
   },
   {
     path: '/bom',
+    name: 'BomLanding',
+    component:BomLanding
+  },
+  {
+    path: '/bom/upload',
     name: 'UploadBom',
     component:UploadBom
   },

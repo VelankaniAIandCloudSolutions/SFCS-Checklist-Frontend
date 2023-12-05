@@ -1,16 +1,16 @@
 <template>
-  <div class="container mt-5">
+  <div class="container">
     <h1 class="text-center mb-4">
       <i class="fas fa-file-upload mr-2"></i>
       Upload the Bom
     </h1>
 
     <div class="card p-3">
-      <!-- File input -->
+      <!-- File input for multiple files -->
       <div class="mb-3">
         <label for="fileInput" class="form-label">
           <i class="fas fa-cloud-upload-alt mr-2"></i>
-          Choose an Excel file
+          Choose Excel files
         </label>
         <div class="custom-file">
           <input
@@ -18,32 +18,10 @@
             class="custom-file-input"
             id="fileInput"
             @change="handleFileUpload"
+            multiple
           />
-          <label class="custom-file-label" for="fileInput">Select file</label>
+          <label class="custom-file-label" for="fileInput">Select files</label>
         </div>
-      </div>
-
-      <!-- Display uploaded data -->
-      <div v-if="uploadedData.length > 0">
-        <h5 class="mt-3">Uploaded Data:</h5>
-        <table class="table">
-          <thead>
-            <tr>
-              <th
-                scope="col"
-                v-for="(value, key) in uploadedData[0]"
-                :key="key"
-              >
-                {{ key }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, index) in uploadedData" :key="index">
-              <td v-for="(value, key) in row" :key="key">{{ value }}</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
@@ -58,22 +36,46 @@ export default {
   },
   methods: {
     handleFileUpload(event) {
-      const file = event.target.files[0];
+      const files = event.target.files;
 
-      if (file) {
-        this.readExcelFile(file);
+      if (files.length > 0) {
+        this.readExcelFiles(files);
       }
     },
+    readExcelFiles(files) {
+      const promises = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        promises.push(this.readExcelFile(file));
+      }
+
+      Promise.all(promises)
+        .then((results) => {
+          // Combine results from all files
+          this.uploadedData = results.flat();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
     readExcelFile(file) {
-      const reader = new FileReader();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
 
-      reader.onload = (e) => {
-        const data = e.target.result;
-        // Assuming you have a function to parse Excel data
-        this.uploadedData = this.parseExcelData(data);
-      };
+        reader.onload = (e) => {
+          const data = e.target.result;
+          // Assuming you have a function to parse Excel data
+          const parsedData = this.parseExcelData(data);
+          resolve(parsedData);
+        };
 
-      reader.readAsBinaryString(file);
+        reader.onerror = (error) => {
+          reject(error);
+        };
+
+        reader.readAsBinaryString(file);
+      });
     },
     parseExcelData(data) {
       // Implement your logic to parse Excel data here
@@ -86,7 +88,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 /* Custom styles */
 body {
   font-family: "Quicksand", sans-serif;

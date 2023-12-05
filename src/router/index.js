@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginForm from '../views/LoginForm.vue'
 import UploadBom from '../views/UploadBom.vue'
 import BomLanding from '../views/BomLanding.vue'
+import CheckList from '../views/CheckList.vue'
+import BeginCheckList from '../views/BeginCheckList.vue'
 
 const routes = [
   {
@@ -18,6 +20,16 @@ const routes = [
     path: '/bom/upload',
     name: 'UploadBom',
     component:UploadBom
+  },
+  {
+    path: '/CheckList',
+    name: 'CheckList',
+    component:CheckList
+  },
+  {
+    path: '/begin-checklist',
+    name: 'BeginCheckList',
+    component:BeginCheckList
   },
 
 ];

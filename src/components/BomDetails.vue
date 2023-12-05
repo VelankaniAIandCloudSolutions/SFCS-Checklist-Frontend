@@ -4,69 +4,90 @@
       style="height: 500px"
       class="ag-theme-quartz"
       :rowData="rowData"
+      :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
+      :pagination="true"
+      @rowClicked="onRowClicked"
+      @rowSelected="onRowSelected"
     >
     </ag-grid-vue>
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
-import "ag-grid-community/styles/ag-grid.css"; // Core CSS
-import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
-import { AgGridVue } from "ag-grid-vue3"; // Vue Grid Logic
+import "ag-grid-community/styles/ag-grid.css";
+import "ag-grid-community/styles/ag-theme-quartz.css";
+import { AgGridVue } from "ag-grid-vue3";
 
 export default {
   name: "App",
   components: {
-    AgGridVue, // Add AG Grid Vue3 component
+    AgGridVue,
   },
-  setup() {
-    // Row Data: The data to be displayed.
-    const rowData = ref([
-      {
-        mission: "Voyager",
-        company: "NASA",
-        location: "Cape Canaveral",
-        date: "1977-09-05",
-        rocket: "Titan-Centaur ",
-        price: 86580000,
-        successful: true,
-      },
-      {
-        mission: "Apollo 13",
-        company: "NASA",
-        location: "Kennedy Space Center",
-        date: "1970-04-11",
-        rocket: "Saturn V",
-        price: 3750000,
-        successful: false,
-      },
-      {
-        mission: "Falcon 9",
-        company: "SpaceX",
-        location: "Cape Canaveral",
-        date: "2015-12-22",
-        rocket: "Falcon 9",
-        price: 9750000,
-        successful: true,
-      },
-    ]);
-
-    // Column Definitions: Defines & controls grid columns.
-    const colDefs = ref([
-      { field: "mission" },
-      { field: "company" },
-      { field: "location" },
-      { field: "date" },
-      { field: "price" },
-      { field: "successful" },
-      { field: "rocket" },
-    ]);
+  data() {
     return {
-      rowData,
-      colDefs,
+      rowData: [
+        {
+          "VEPL Part Number": "VEPL33433256",
+          "Priority Level": "1",
+          Value: "LCMXO2-1200UHC-4FTG256C",
+          Description: "IC OTHER(256P)LCMXO2-1200UHC-4FTG2(FTBGA",
+          Type: "IC",
+        },
+        {
+          "VEPL Part Number": "VEPL33434250",
+          "Priority Level": "1",
+          Value: "AST2500A2-GP",
+          Description: "IC CTRL(456P)AST2500A2-GP(TFBGA)",
+          Type: "IC",
+        },
+        // Add more rows as needed
+      ],
+      colDefs: [
+        {
+          field: "VEPL Part Number",
+          headerCheckboxSelection: true,
+          checkboxSelection: true,
+        },
+
+        { field: "Priority Level" },
+        { field: "Value" },
+        { field: "Description" },
+        { field: "Type" },
+
+        //     { field: "price", valueFormatter: this.formatPriceEuro },
+        //     { field: "successful" },
+        //     { field: "rocket" },
+      ],
+
+      defaultColDef: {
+        filter: true, // Enable filtering by default for all columns
+        sortable: true,
+        resizable: true,
+        autoSize: true,
+      },
     };
+  },
+  mounted() {
+    // this.fetchData();
+  },
+  methods: {
+    // async fetchData() {
+    //   const response = await fetch(
+    //     "https://www.ag-grid.com/example-assets/space-mission-data.json"
+    //   );
+    //   this.rowData = await response.json();
+    // },
+    onRowClicked(params) {
+      // Emit an event with the clicked row data
+      this.$emit("rowClicked", params.data);
+    },
+    onRowSelected(params) {
+      // Emit an event with the selected row data
+      if (params.node.isSelected()) {
+        this.$emit("rowSelected", params.node.data);
+      }
+    },
   },
 };
 </script>

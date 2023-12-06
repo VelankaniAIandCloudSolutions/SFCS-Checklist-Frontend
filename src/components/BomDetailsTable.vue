@@ -28,32 +28,44 @@ export default {
     return {
       rowData: [
         {
-          "VEPL Part Number": "VEPL33433256",
-          "Priority Level": "1",
-          Value: "LCMXO2-1200UHC-4FTG256C",
-          Description: "IC OTHER(256P)LCMXO2-1200UHC-4FTG2(FTBGA",
-          Type: "IC",
+          id: 1,
+          "Product Name": "PRYSM-Zen-2",
+          "Product Code": "DAYTONA",
+          "BOM Type": "Type-A",
+          "BOM Rev No": "Rev-001",
+          "Issue Date": "2023-12-01",
+          "Product Rev No": "Rev-1",
         },
         {
-          "VEPL Part Number": "VEPL33434250",
-          "Priority Level": "1",
-          Value: "AST2500A2-GP",
-          Description: "IC CTRL(456P)AST2500A2-GP(TFBGA)",
-          Type: "IC",
+          id: 2,
+          "Product Name": "Some Product",
+          "Product Code": "ABC123",
+          "BOM Type": "Type-B",
+          "BOM Rev No": "Rev-002",
+          "Issue Date": "2023-12-05",
+          "Product Rev No": "Rev-2",
         },
         // Add more rows as needed
       ],
       colDefs: [
         {
-          field: "VEPL Part Number",
+          field: "id", // Added "id" field
+          hide: true,
+        },
+        {
+          field: "Product Name",
           headerCheckboxSelection: true,
           checkboxSelection: true,
         },
-
-        { field: "Priority Level" },
-        { field: "Value" },
-        { field: "Description" },
-        { field: "Type" },
+        { field: "Product Code" },
+        { field: "BOM Type" },
+        { field: "BOM Rev No" },
+        { field: "Issue Date" },
+        { field: "Product Rev No" },
+        {
+          headerName: "Actions",
+          cellRenderer: this.editButtonRenderer,
+        },
 
         //     { field: "price", valueFormatter: this.formatPriceEuro },
         //     { field: "successful" },
@@ -66,6 +78,7 @@ export default {
         resizable: true,
         autoSize: true,
       },
+      selectedRows: [],
     };
   },
   mounted() {
@@ -78,6 +91,7 @@ export default {
     //   );
     //   this.rowData = await response.json();
     // },
+
     onRowClicked(params) {
       // Emit an event with the clicked row data
       this.$emit("rowClicked", params.data);
@@ -88,6 +102,24 @@ export default {
         this.$emit("rowSelected", params.node.data);
       }
     },
+    onSelectionChanged() {
+      this.selectedRows = this.$refs.agGrid.api.getSelectedRows();
+    },
+
+    editButtonRenderer(params) {
+      const button = document.createElement("button");
+      button.innerHTML = `<i class="fas fa-edit"></i>`;
+      button.classList.add("btn", "btn-primary");
+
+      // Disable the button if no rows are selected or if more than one row is selected
+
+      button.addEventListener("click", () => this.onEditClick(params.data.id));
+      return button;
+    },
+    onEditClick(id) {
+      this.$router.push(`/bom/edit/${id}`);
+    },
   },
 };
 </script>
+<style scoped></style>

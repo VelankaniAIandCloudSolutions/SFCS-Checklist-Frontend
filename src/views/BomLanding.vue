@@ -24,14 +24,33 @@
         </router-link>
       </div>
     </div>
-    <BomDetails />
+    <BomDetailsTable
+      @rowClicked="handleRowClicked"
+      @rowSelected="handleRowSelected"
+    />
   </div>
 </template>
 
 <script>
-import BomDetails from "../components/BomDetails.vue";
+import BomDetailsTable from "../components/BomDetailsTable.vue";
 export default {
-  components: { BomDetails },
+  components: { BomDetailsTable },
+  data() {
+    return {
+      selectedRow: null,
+    };
+  },
+  methods: {
+    handleRowClicked(clickedRow) {
+      // Handle the clicked row data in the parent component
+      console.log("Clicked Row:", clickedRow);
+      // Now you have access to the specific row data, and you can use it as needed.
+    },
+    handleRowSelected(rowData) {
+      console.log("Row Selected:", rowData);
+      this.selectedRow = rowData;
+    },
+  },
 };
 </script>
 

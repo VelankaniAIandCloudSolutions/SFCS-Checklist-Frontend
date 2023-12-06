@@ -24,7 +24,7 @@
         </router-link>
       </div> -->
     </div>
-    <BomDetails
+    <BomDetailsTable
       @rowClicked="handleRowClicked"
       @rowSelected="handleRowSelected"
     />
@@ -38,11 +38,11 @@
 </template>
 
 <script>
-import BomDetails from "../components/BomDetails.vue";
+import BomDetailsTable from "../components/BomDetailsTable.vue";
 
 export default {
   components: {
-    BomDetails,
+    BomDetailsTable,
   },
   data() {
     return {

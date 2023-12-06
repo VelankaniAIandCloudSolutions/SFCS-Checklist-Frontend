@@ -1,29 +1,124 @@
 <template>
-  <div class="container">
+  <div class="container mt-4">
     <h1 class="text-center mb-4">
       <i class="fas fa-file-upload mr-2"></i>
-      Upload the Bom
+      Upload the BOM
     </h1>
 
-    <div class="card p-3">
-      <!-- File input for multiple files -->
-      <div class="mb-3">
-        <label for="fileInput" class="form-label">
-          <i class="fas fa-cloud-upload-alt mr-2"></i>
-          Choose Excel files
-        </label>
-        <div class="custom-file">
+    <!-- Form Section -->
+    <section class="card p-3 mb-4">
+      <!-- Row 1: Product Name & Product Code -->
+      <div class="row mb-3">
+        <!-- Product Name -->
+        <div class="col-md-6">
+          <label for="productName" class="form-label">Product Name</label>
           <input
-            type="file"
-            class="custom-file-input"
-            id="fileInput"
-            @change="handleFileUpload"
-            multiple
+            type="text"
+            class="form-control"
+            id="productName"
+            v-model="productName"
+            required
           />
-          <label class="custom-file-label" for="fileInput">Select files</label>
+        </div>
+        <!-- Product Code -->
+        <div class="col-md-6">
+          <label for="productCode" class="form-label">Product Code</label>
+          <input
+            type="text"
+            class="form-control"
+            id="productCode"
+            v-model="productCode"
+            required
+          />
         </div>
       </div>
+
+      <!-- Row 2: BOM Type & BOM REV No -->
+      <div class="row mb-3">
+        <!-- BOM Type -->
+        <div class="col-md-6">
+          <label for="bomType" class="form-label">BOM Type</label>
+          <input
+            type="text"
+            class="form-control"
+            id="bomType"
+            v-model="bomType"
+            required
+          />
+        </div>
+        <!-- BOM REV No -->
+        <div class="col-md-6">
+          <label for="bomRevNo" class="form-label">BOM REV No</label>
+          <input
+            type="text"
+            class="form-control"
+            id="bomRevNo"
+            v-model="bomRevNo"
+            required
+          />
+        </div>
+      </div>
+
+      <!-- Row 3: Issue Date & Product Rev No -->
+      <div class="row mb-3">
+        <!-- Issue Date -->
+        <div class="col-md-6">
+          <label for="issueDate" class="form-label">Issue Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="issueDate"
+            v-model="issueDate"
+            required
+          />
+        </div>
+        <!-- Product Rev No -->
+        <div class="col-md-6">
+          <label for="productRevNo" class="form-label">Product Rev No</label>
+          <input
+            type="text"
+            class="form-control"
+            id="productRevNo"
+            v-model="productRevNo"
+            required
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- File Input for Excel -->
+    <div class="card p-3 mb-4">
+      <label for="fileInput" class="form-label">
+        <i class="fas fa-cloud-upload-alt mr-2"></i>
+        Choose BOM Excel file
+      </label>
+      <div class="custom-file">
+        <input
+          type="file"
+          class="custom-file-input"
+          id="fileInput"
+          @change="handleFileUpload"
+          accept=".xls, .xlsx"
+          required
+        />
+        <label class="custom-file-label" for="fileInput">{{
+          uploadedFileName || "Select file"
+        }}</label>
+      </div>
     </div>
+
+    <!-- Upload Button -->
+    <div class="card p-3">
+      <button type="button" class="btn btn-primary" @click="submitForm">
+        Upload BOM
+      </button>
+    </div>
+
+    <!-- Uploaded Data Section (Same as before) -->
+    <!-- <div class="card p-3"> -->
+    <!-- File input for multiple files -->
+    <!-- ... (same as before) ... -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -31,59 +126,70 @@
 export default {
   data() {
     return {
-      uploadedData: [],
+      productName: "",
+      productCode: "",
+      bomType: "",
+      bomRevNo: "",
+      issueDate: "",
+      productRevNo: "",
+      uploadedFileName: null,
+      uploadedFile: null,
     };
   },
   methods: {
-    handleFileUpload(event) {
-      const files = event.target.files;
-
-      if (files.length > 0) {
-        this.readExcelFiles(files);
-      }
-    },
-    readExcelFiles(files) {
-      const promises = [];
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        promises.push(this.readExcelFile(file));
-      }
-
-      Promise.all(promises)
-        .then((results) => {
-          // Combine results from all files
-          this.uploadedData = results.flat();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    readExcelFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          const data = e.target.result;
-          // Assuming you have a function to parse Excel data
-          const parsedData = this.parseExcelData(data);
-          resolve(parsedData);
-        };
-
-        reader.onerror = (error) => {
-          reject(error);
-        };
-
-        reader.readAsBinaryString(file);
+    submitForm() {
+      // Handle form submission
+      console.log("Form submitted:", {
+        productName: this.productName,
+        productCode: this.productCode,
+        bomType: this.bomType,
+        bomRevNo: this.bomRevNo,
+        issueDate: this.issueDate,
+        uploadedFileName: this.uploadedFileName,
+        uploadedFile: this.uploadedFile,
       });
+      // Reset form fields after submission if needed
+      this.productName = "";
+      this.productCode = "";
+      this.bomType = "";
+      this.bomRevNo = "";
+      this.issueDate = "";
+      this.productRevNo = "";
+      this.uploadedFileName = null;
+      this.uploadedFile = null;
     },
-    parseExcelData(data) {
-      // Implement your logic to parse Excel data here
-      // This is a simple example, you might need a library like XLSX or exceljs
-      // to handle Excel parsing in a real-world scenario
-      console.log("Parsing Excel data:", data);
-      return [];
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        console.log("Uploaded file:", file);
+        this.uploadedFileName = file.name;
+        this.uploadedFile = file; // Store the file directly, no need to read content
+      }
     },
+    // readExcelFile(file) {
+    //   const reader = new FileReader();
+
+    //   reader.onload = (e) => {
+    //     const data = e.target.result;
+    //     // Assuming you have a function to parse Excel data
+    //     const parsedData = this.parseExcelData(data);
+    //     this.uploadedData = parsedData;
+    //   };
+
+    //   reader.onerror = (error) => {
+    //     console.error(error);
+    //   };
+
+    //   reader.readAsBinaryString(file);
+    // },
+    // parseExcelData(data) {
+    //   // Implement your logic to parse Excel data here
+    //   // This is a simple example, you might need a library like XLSX or exceljs
+    //   // to handle Excel parsing in a real-world scenario
+    //   console.log("Parsing Excel data:", data);
+    //   return [];
+    // },
   },
 };
 </script>

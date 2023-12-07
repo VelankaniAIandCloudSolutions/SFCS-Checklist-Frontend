@@ -123,6 +123,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -137,26 +139,44 @@ export default {
     };
   },
   methods: {
-    submitForm() {
-      // Handle form submission
-      console.log("Form submitted:", {
-        productName: this.productName,
-        productCode: this.productCode,
-        bomType: this.bomType,
-        bomRevNo: this.bomRevNo,
-        issueDate: this.issueDate,
-        uploadedFileName: this.uploadedFileName,
-        uploadedFile: this.uploadedFile,
-      });
-      // Reset form fields after submission if needed
-      this.productName = "";
-      this.productCode = "";
-      this.bomType = "";
-      this.bomRevNo = "";
-      this.issueDate = "";
-      this.productRevNo = "";
-      this.uploadedFileName = null;
-      this.uploadedFile = null;
+    async submitForm() {
+      this.$store.commit("setIsLoading", true);
+
+      const formData = new FormData();
+
+      formData.append("product_name", this.productName);
+      formData.append("product_code", this.productCode);
+      formData.append("product_rev_no", this.productRevNo);
+      formData.append("bom_type", this.bomType);
+      formData.append("bom_rev_no", this.bomRevNo);
+      formData.append("issue_date", this.issueDate);
+      formData.append("bom_file", this.uploadedFile);
+
+      await axios
+        .post("store/upload-bom/", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          this.$notify({
+            title: "BOM Uploaded Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$router.push("/bom");
+          this.$store.commit("setIsLoading", false);
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.$notify({
+            title: "An error occured, please try again later",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        });
     },
     handleFileUpload(event) {
       const file = event.target.files[0];

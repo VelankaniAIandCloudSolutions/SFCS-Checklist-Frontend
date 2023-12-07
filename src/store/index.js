@@ -27,7 +27,8 @@ const store = createStore({
     setToken(state, token) {
       state.user.token = token
       state.user.isAuthenticated = true
-    },   setIsLoading(state, status) {
+    },   
+    setIsLoading(state, status) {
       state.isLoading = status
     },
  

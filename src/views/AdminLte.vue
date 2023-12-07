@@ -90,7 +90,20 @@
     <!-- Content Wrapper -->
     <div class="content-wrapper">
       <!-- Your Vue component content goes here -->
-      <router-view></router-view>
+      <div v-if="$store.state.isLoading">
+        <div class="text-center mt-6">
+          <div
+            class="spinner-border"
+            style="width: 5rem; height: 5rem"
+            role="status"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <router-view></router-view>
+      </div>
     </div>
     <!-- /.content-wrapper -->
   </div>

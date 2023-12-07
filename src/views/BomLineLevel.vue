@@ -1,9 +1,26 @@
 <template>
   <div>
-    <div class="container mt-4">
-      <div class="card">
+    <div class="container mt-1">
+      <div class="row align-items-center">
+        <!-- Heading and Breadcrumb Column -->
+        <div class="col-md-6">
+          <div class="d-flex align-items-center">
+            <h2 class="mb-0">BOM Details</h2>
+            <span class="ms-3 fs-4 text-muted">|</span>
+            <nav aria-label="breadcrumb" class="d-inline-block ms-3">
+              <ol class="breadcrumb bg-transparent m-0 p-0">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Category</a></li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  Current Page
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top: 20px">
         <div class="card-body">
-          <h2 class="card-title fw-bold mb-4">BOM Details</h2>
           <div class="row">
             <div class="col-md-6">
               <div class="mb-3">

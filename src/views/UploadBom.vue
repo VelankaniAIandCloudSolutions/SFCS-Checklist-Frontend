@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4">
+  <div class="container">
     <h1 class="text-center mb-4">
       <i class="fas fa-file-upload mr-2"></i>
       Upload the BOM

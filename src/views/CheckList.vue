@@ -1,53 +1,57 @@
 <template>
   <div class="container">
     <div class="row align-items-center">
-      <!-- Breadcrumbs on the left -->
-      <div class="col-md-6">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Category</a></li>
-            <li class="breadcrumb-item active" aria-current="page">
-              Current Page
-            </li>
-          </ol>
-        </nav>
+      <!-- Heading and Breadcrumb Column -->
+      <div class="col-md-6 mt-4">
+        <div class="d-flex align-items-center">
+          <h2 class="mb-0">Bill Of Materials</h2>
+          <span class="ms-3 fs-4 text-muted">|</span>
+          <nav aria-label="breadcrumb" class="d-inline-block ms-3">
+            <ol class="breadcrumb bg-transparent m-0 p-0">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Bill Of Materials
+              </li>
+            </ol>
+          </nav>
+        </div>
       </div>
 
       <!-- Buttons on the right -->
-      <!-- <div class="col-md-6 text-end">
-        <router-link to="/create-bom">
-          <button class="btn btn-primary me-2">Create BOM</button>
-        </router-link>
-        <router-link to="/bom/upload">
-          <button class="btn btn-secondary">Upload BOM</button>
-        </router-link>
-      </div> -->
+      <div class="col-md-6 text-end">
+        <div class="container has-text-centered">
+          <button
+            @click="generateChecklist"
+            :disabled="!isButtonEnabled"
+            class="btn btn-primary"
+          >
+            Generate Checklist
+          </button>
+        </div>
+      </div>
     </div>
-    <BomDetailsTable
+    <BomDetailsTableWithoutEdit
+      style="margin-top: 20px"
       @rowClicked="handleRowClicked"
       @rowSelected="handleRowSelected"
+      @rowDeselected="handleRowDeselected"
     />
-    <div style="margin-bottom: 20px"></div>
-    <div class="container has-text-centered">
-      <router-link to="/begin-checklist">
-        <button class="btn btn-primary">Generate Checklist</button>
-      </router-link>
-    </div>
   </div>
 </template>
 
 <script>
-import BomDetailsTable from "../components/BomDetailsTable.vue";
+import BomDetailsTableWithoutEdit from "../components/BomDetailsTableWithoutEdit.vue";
 
 export default {
   components: {
-    BomDetailsTable,
+    BomDetailsTableWithoutEdit,
   },
   data() {
     return {
       rowData: [],
       selectedRow: null,
+      clickedRowId: null,
+      isButtonEnabled: false,
     };
   },
   methods: {
@@ -58,7 +62,23 @@ export default {
     },
     handleRowSelected(rowData) {
       console.log("Row Selected:", rowData);
-      this.selectedRow = rowData;
+      if (rowData && rowData.id) {
+        this.selectedRow = rowData;
+
+        this.clickedRowId = rowData.id;
+        this.isButtonEnabled = true;
+      }
+    },
+    handleRowDeselected() {
+      this.isButtonEnabled = false;
+    },
+    generateChecklist() {
+      if (this.clickedRowId) {
+        this.$router.push(`/begin-checklist/${this.clickedRowId}`);
+        // Optionally, you can reset the selectedRow and clickedRowId here
+        // this.selectedRow = null;
+        // this.clickedRowId = null;
+      }
     },
   },
 };

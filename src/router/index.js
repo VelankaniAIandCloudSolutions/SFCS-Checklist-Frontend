@@ -6,6 +6,7 @@ import BomLineLevel from '../views/BomLineLevel.vue'
 import CheckList from '../views/CheckList.vue'
 import BeginCheckList from '../views/BeginCheckList.vue'
 
+
 const routes = [
   {
     path: '/login',
@@ -27,19 +28,19 @@ const routes = [
     name: 'CheckList',
     component:CheckList
   },
-  {
-    path: '/begin-checklist',
-    name: 'BeginCheckList',
-    component:BeginCheckList
-  },
+
   {
     path: '/bom/edit/:id',
     name: 'BomLineLevel',
     component: BomLineLevel,
     props: true, // Pass route params as props to the component
+  },  
+  {
+    path: '/begin-checklist/:id',
+    name: 'begin-checklist',
+    component: BeginCheckList,
+    props: true, // This allows the route params to be passed as props to the component
   },
-
-
 ];
 
 

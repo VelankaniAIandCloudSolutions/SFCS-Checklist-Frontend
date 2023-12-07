@@ -11,7 +11,6 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'admin-lte/dist/css/adminlte.min.css';
 import 'admin-lte/plugins/jquery/jquery.min.js';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'admin-lte/dist/js/adminlte.min.js';
 // if (process.env.NODE_ENV === 'development') {
     axios.defaults.baseURL = 'http://localhost:8000/api/v1/';

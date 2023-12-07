@@ -1,30 +1,34 @@
 <template>
   <div class="container">
     <div class="row align-items-center">
-      <!-- Breadcrumbs on the left -->
-      <div class="col-md-6">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Category</a></li>
-            <li class="breadcrumb-item active" aria-current="page">
-              Current Page
-            </li>
-          </ol>
-        </nav>
+      <!-- Heading and Breadcrumb Column -->
+      <div class="col-md-6 mt-4">
+        <div class="d-flex align-items-center">
+          <h2 class="mb-0">Bill Of Materials</h2>
+          <span class="ms-3 fs-4 text-muted">|</span>
+          <nav aria-label="breadcrumb" class="d-inline-block ms-3">
+            <ol class="breadcrumb bg-transparent m-0 p-0">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Bill Of Materials
+              </li>
+            </ol>
+          </nav>
+        </div>
       </div>
-
-      <!-- Buttons on the right -->
-      <div class="col-md-6 text-end">
-        <router-link to="/create-bom">
-          <button class="btn btn-primary me-2">Create BOM</button>
+      <!-- Buttons Column -->
+      <div class="col-md-6 d-flex justify-content-end">
+        <router-link to="/create-bom" class="btn btn-primary ms-2">
+          Create BOM
         </router-link>
-        <router-link to="/bom/upload">
-          <button class="btn btn-secondary">Upload BOM</button>
+        <router-link to="/bom/upload" class="btn btn-secondary ms-2">
+          Upload BOM
         </router-link>
       </div>
     </div>
+    <!-- Rest of your component -->
     <BomDetailsTable
+      style="margin-top: 20px"
       @rowClicked="handleRowClicked"
       @rowSelected="handleRowSelected"
     />

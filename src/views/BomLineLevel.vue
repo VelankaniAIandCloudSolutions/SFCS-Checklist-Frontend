@@ -25,29 +25,31 @@
             <div class="col-md-6">
               <div class="mb-3">
                 <label class="fw-bold">Product Name:</label>
-                <div>PRYSM-Zen-2</div>
+                <div v-if="bom.product">{{ bom.product.name }}</div>
               </div>
               <div class="mb-3">
                 <label class="fw-bold">BOM Type:</label>
-                <div>Type-A</div>
+                <div v-if="bom.bom_type">{{ bom.bom_type.name }}</div>
               </div>
               <div class="mb-3">
                 <label class="fw-bold">Issue Date:</label>
-                <div>2023-12-01</div>
+                <div v-if="bom.issue_date">{{ bom.issue_date }}</div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="mb-3">
                 <label class="fw-bold">Product Code:</label>
-                <div>DAYTONA</div>
+                <div v-if="bom.product">{{ bom.product.product_code }}</div>
               </div>
               <div class="mb-3">
                 <label class="fw-bold">BOM Rev No:</label>
-                <div>Rev-001</div>
+                <div v-if="bom.bom_rev_number">{{ bom.bom_rev_number }}</div>
               </div>
               <div class="mb-3">
                 <label class="fw-bold">Product Rev No:</label>
-                <div>Rev-1</div>
+                <div v-if="bom.product">
+                  {{ bom.product.product_rev_number }}
+                </div>
               </div>
             </div>
           </div>
@@ -59,6 +61,7 @@
 
       <!-- Include BomItemsTable component -->
       <BomItemsTable
+        :bom="bom.bom_line_items"
         @rowClicked="handleRowClicked"
         @rowSelected="handleRowSelected"
       />
@@ -68,10 +71,15 @@
 
 <script>
 import BomItemsTable from "@/components/BomItemsTable"; // Adjust the path based on your project structure
-
+import axios from "axios";
 export default {
   components: {
     BomItemsTable,
+  },
+  data() {
+    return {
+      bom: "",
+    };
   },
   methods: {
     handleRowClicked(data) {
@@ -82,6 +90,23 @@ export default {
       // Handle row selection
       console.log("Row selected:", data);
     },
+    async fetchData() {
+      // Make an API request to get the BOM data by ID (similar to how you're fetching it in the original code)
+      // For example:
+      await axios
+        .get(`store/get-boms/${this.$route.params.id}/`)
+        .then((response) => {
+          console.log(response.data);
+          this.bom = response.data.bom;
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    },
+  },
+  mounted() {
+    // Fetch data when the component is created
+    this.fetchData();
   },
 };
 </script>

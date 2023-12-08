@@ -2,9 +2,9 @@
   <div>
     <ag-grid-vue
       ref="agGrid"
-      style="height: 500px"
+      style="height: 550px"
       class="ag-theme-quartz"
-      :rowData="rowData"
+      :rowData="checklistItems"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -24,7 +24,12 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
 
 export default {
-  name: "App",
+  props: {
+    checklistItems: {
+      type: Array,
+      required: true,
+    },
+  },
   components: {
     AgGridVue,
   },
@@ -32,66 +37,57 @@ export default {
     return {
       gridApi: null,
       isGridReady: false, // Flag to track grid readiness
-
-      rowData: [
-        {
-          id: 1,
-          "VEPL Part No": "VEPL33433256",
-          Quantity: 10,
-          Required_Quantity: 5,
-          Status: true, // true for tick, false for cross
-        },
-        // Add more rows as needed
-      ],
       colDefs: [
         {
-          field: "id",
-          hide: true,
+          headerName: "VEPL Part No",
+          field: "bom_line_item.part_number",
         },
-
         {
-          field: "VEPL Part No",
+          headerName: "Present Quantity",
+          field: "present_quantity",
         },
-        { field: "Quantity" },
-        { field: "Required_Quantity" },
         {
-          field: "Status",
-          cellRenderer: "statusCellRenderer", // Reference to the statusCellRenderer function
+          headerName: "Required Quantity",
+          field: "required_quantity",
+        },
+        {
+          headerName: "Is Present",
+          field: "is_present",
+        },
+        {
+          headerName: "Is Quantity Sufficient",
+          field: "is_quantity_sufficient",
+        },
+        {
+          headerName: "Updated At",
+          field: "updated_at",
         },
       ],
       defaultColDef: {
         filter: true,
         sortable: true,
         resizable: true,
-
-        autoSize: true, // Disable autoSize
-        domLayout: "autoHeight", // Use autoHeight for dynamic height
+        autoSize: true,
+        domLayout: "autoHeight",
       },
       selectedRows: [],
     };
   },
-  mounted() {
-    // Set interval after the grid is ready
-    setInterval(() => {
-      if (this.isGridReady) {
-        this.fetchData();
-      }
-    }, 5000);
-  },
+  mounted() {},
   methods: {
-    fetchData() {
-      // Simulate API response
-      const newStatus = Math.random() < 0.5; // Randomly set true or false
-      this.rowData[0].Status = newStatus;
-      this.rowData[0].Quantity = Math.floor(Math.random() * 20) + 1; // Random Quantity
-      this.rowData[0].Required_Quantity = Math.floor(Math.random() * 10) + 1; // Random Required Quantity
-      if (this.rowData[0].Quantity >= 5) {
-        this.rowData[0].Status = true;
-      }
+    // fetchData() {
+    //   // Simulate API response
+    //   const newStatus = Math.random() < 0.5; // Randomly set true or false
+    //   this.rowData[0].Status = newStatus;
+    //   this.rowData[0].Quantity = Math.floor(Math.random() * 20) + 1; // Random Quantity
+    //   this.rowData[0].Required_Quantity = Math.floor(Math.random() * 10) + 1; // Random Required Quantity
+    //   if (this.rowData[0].Quantity >= 5) {
+    //     this.rowData[0].Status = true;
+    //   }
 
-      // Refresh the grid
-      this.gridApi.setRowData(this.rowData);
-    },
+    //   // Refresh the grid
+    //   // this.gridApi.setRowData(this.rowData);
+    // },
     statusCellRenderer(params) {
       return params.value ? "✔" : "✘"; // Replace with your logic
     },

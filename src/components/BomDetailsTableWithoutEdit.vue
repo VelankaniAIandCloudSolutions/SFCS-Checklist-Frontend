@@ -28,7 +28,7 @@ export default {
     return {
       rowData: [
         {
-          id: 1,
+          id: 10,
           "Product Name": "PRYSM-Zen-2",
           "Product Code": "DAYTONA",
           "BOM Type": "Type-A",

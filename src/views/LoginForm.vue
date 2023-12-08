@@ -82,7 +82,7 @@ export default {
             });
             this.$store.commit("setToken", token);
             axios.defaults.headers.common["Authorization"] = "Token " + token;
-
+            console.log(axios.defaults.headers);
             // Save token in localStorage
             localStorage.setItem("token", token);
 
@@ -92,7 +92,7 @@ export default {
             // Continue with your logic (e.g., redirect to another page)
             // ...
             // this.$router.push({ path: "/" });
-            window.location.href = "/";
+            // window.location.href = "/";
             // Always set loading state to false
             this.$store.commit("setIsLoading", false);
           })

@@ -18,7 +18,7 @@
       </div>
 
       <!-- Buttons on the right -->
-      <div class="col-md-6 text-end">
+      <div class="col-md-6 mt-4 text-end">
         <div class="container has-text-centered">
           <button
             @click="generateChecklist"
@@ -41,6 +41,7 @@
 
 <script>
 import BomDetailsTableWithoutEdit from "../components/BomDetailsTableWithoutEdit.vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -72,13 +73,32 @@ export default {
     handleRowDeselected() {
       this.isButtonEnabled = false;
     },
-    generateChecklist() {
-      if (this.clickedRowId) {
-        this.$router.push(`/begin-checklist/${this.clickedRowId}`);
-        // Optionally, you can reset the selectedRow and clickedRowId here
-        // this.selectedRow = null;
-        // this.clickedRowId = null;
-      }
+    async generateChecklist() {
+      this.$store.commit("setIsLoading", true);
+      await axios
+        .post(`store/generate-new-checklist/${this.clickedRowId}/`)
+        .then((response) => {
+          console.log(response.data);
+          this.$router.push(`/begin-checklist/${this.clickedRowId}`);
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.$notify({
+            title: "An error occured, please try again later",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        })
+        .finally(() => {
+          this.$store.commit("setIsLoading", false);
+        });
+
+      // if (this.clickedRowId) {
+      //   this.$router.push(`/begin-checklist/${this.clickedRowId}`);
+      //   // Optionally, you can reset the selectedRow and clickedRowId here
+      //   // this.selectedRow = null;
+      //   // this.clickedRowId = null;
+      // }
     },
   },
 };

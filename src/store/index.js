@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createStore } from 'vuex'
 
 const store = createStore({
@@ -15,7 +16,7 @@ const store = createStore({
     initializeStore(state) {
       if (localStorage.getItem('token')) {
         state.user.token = localStorage.getItem('token');
-  
+        axios.defaults.headers.common['Authorization'] = 'Token ' + state.user.token;
         state.user.isAuthenticated = true;
       } else {
         state.user.token = '';
@@ -26,6 +27,7 @@ const store = createStore({
     },
     setToken(state, token) {
       state.user.token = token
+      axios.defaults.headers.common['Authorization'] = 'Token ' + state.user.token;
       state.user.isAuthenticated = true
     },   
     setIsLoading(state, status) {
@@ -37,6 +39,8 @@ const store = createStore({
       state.user.profile = {}
       state.user.isAuthenticated = false
       localStorage.removeItem('token');
+      axios.defaults.headers.common['Authorization'] = '';
+      
     },
     setAuthentication(state, isAuthenticated) {
       state.user.isAuthenticated = isAuthenticated;

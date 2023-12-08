@@ -57,7 +57,7 @@
           aria-labelledby="panelsStayOpen-headingOne"
         >
           <div class="accordion-body">
-            <CheckListTable />
+            <CheckListTable :checklistItems="checklistItems" />
           </div>
         </div>
       </div>
@@ -97,7 +97,7 @@
 
 <script>
 import CheckListTable from "../components/CheckListTable"; // Adjust the path based on your actual file structure
-
+import axios from "axios";
 export default {
   components: {
     CheckListTable,
@@ -110,7 +110,42 @@ export default {
         bomRevNo: "2121",
         // Add more properties as needed
       },
+      checklist: "",
+      checklistItems: [],
     };
+  },
+  mounted() {
+    this.getChecklist();
+    // this.pollingInterval = setInterval(() => {
+    //   this.getChecklist();
+    // }, 5000);
+  },
+  beforeUnmount() {
+    clearInterval(this.pollingInterval);
+  },
+  methods: {
+    async getChecklist() {
+      this.$store.commit("setIsLoading", true);
+      console.log("work");
+      this.$store.commit("setIsLoading", false);
+      await axios
+        .get(`store/get-active-checklist/${this.$route.params.id}/`)
+        .then((response) => {
+          console.log(response.data);
+          this.checklist = response.data.checklist;
+          this.checklistItems = this.checklist.checklist_items;
+          this.$store.commit("setIsLoading", false);
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.$notify({
+            title: "An error occured, please try again later",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        });
+    },
   },
 };
 </script>

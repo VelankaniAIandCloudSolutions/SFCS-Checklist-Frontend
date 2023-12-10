@@ -58,7 +58,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" @click="endChecklist">End</button>
+        <button type="button" class="btn btn-danger" @click="endChecklist" data-bs-dismiss="modal">End</button>
       </div>
     </div>
   </div>
@@ -237,6 +237,7 @@ export default {
             this.isChecklistEnded = true
           }
           clearInterval(this.pollingInterval);
+          this.$router.push(`/generated-checklists/${this.$route.params.id}`)
           this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {

@@ -26,10 +26,10 @@
               :disabled="!isButtonEnabled"
               class="btn btn-primary btn-sm"
             >
-              Generate Checklist
+              Generate New Checklist
             </button>
             <button
-              @click="viewOngoingChecklists"
+              @click="checkExistingChecklist"
               class="btn btn-warning btn-sm ms-2"
             >
               View Ongoing Checklists
@@ -107,13 +107,26 @@ export default {
         .finally(() => {
           this.$store.commit("setIsLoading", false);
         });
-
-      // if (this.clickedRowId) {
-      //   this.$router.push(`/begin-checklist/${this.clickedRowId}`);
-      //   // Optionally, you can reset the selectedRow and clickedRowId here
-      //   // this.selectedRow = null;
-      //   // this.clickedRowId = null;
-      // }
+    },
+    async checkExistingChecklist() {
+      this.$store.commit("setIsLoading", true);
+      await axios
+        .post(`store/check-existing-checklist/${this.clickedRowId}/`)
+        .then((response) => {
+          console.log(response.data);
+          // this.$router.push(`/begin-checklist/${this.clickedRowId}`);
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.$notify({
+            title: "An error occured, please try again later",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        })
+        .finally(() => {
+          this.$store.commit("setIsLoading", false);
+        });
     },
   },
 };

@@ -1,37 +1,87 @@
 <template>
   <div class="container">
-    <div class="row align-items-center mb-4">
-      <div class="col-md-6 d-flex align-items-center">
-        <h2 class="mb-0">Checklist</h2>
-        <span class="ms-3 fs-4 text-muted">|</span>
-        <nav aria-label="breadcrumb" class="ms-3">
-          <ol class="breadcrumb bg-transparent mb-0 p-0">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-
-            <li class="breadcrumb-item"><a href="#">Category</a></li>
-
-            <li class="breadcrumb-item active" aria-current="page">
-              Current Page
-            </li>
-          </ol>
-        </nav>
+    <div class="row align-items-center">
+  <!-- Heading and Breadcrumb Column -->
+  <div class="col-md-6 mt-4">
+    <div class="d-flex align-items-center">
+      <h2 class="mb-0">Checklist</h2>
+      <span class="ms-3 fs-4 text-muted me-3">|</span>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent m-0 p-0 justify-content-end">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Checklist</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  <div class="col-md-6 mt-4 d-flex justify-content-end">
+    <div class="container">
+      <div class="d-flex justify-content-end">
+        <button type="button" data-bs-toggle="modal" data-bs-target="#generateLabelModal" class="btn btn-success me-2">
+          Generate Label
+        </button>
+        <button type="button"  data-bs-toggle="modal" data-bs-target="#endChecklistModal" class="btn btn-danger">
+          End Checklist
+        </button>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="card border-primary mb-4">
+<div class="modal fade" id="generateLabelModal" tabindex="-1" aria-labelledby="generateLabelModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="generateLabelModalLabel">Generate Label</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       You can only generate a label if all checks are passed
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+        <button v-if="isChecklistPassed" type="button" class="btn btn-success" data-bs-dismiss="modal">Generate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="endChecklistModal" tabindex="-1" aria-labelledby="endChecklistModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="endChecklistModalLabel">End Checklist</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to end this checklist?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" @click="endChecklist">End</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <div class="card border-primary mb-4 mt-4">
       <div class="card-header bg-primary text-white">
         <h4 class="mb-0">Active Bom Details</h4>
       </div>
       <div class="card-body">
         <div class="row">
-          <div class="col">
-            <strong>Part Name:</strong> {{ activeBom.partName }}
+          <div v-if="activeBom.product" class="col">
+            <strong>Product Name:</strong> {{ activeBom.product.name }}
+          </div>
+          <div v-if="activeBom.product" class="col">
+            <strong>Product Code:</strong> {{ activeBom.product.product_code}}
           </div>
           <div class="col">
-            <strong>Product Code:</strong> {{ activeBom.productCode }}
+            <strong>BOM Rev No:</strong> {{ activeBom.bom_rev_number }}
           </div>
           <div class="col">
-            <strong>BOM Rev No:</strong> {{ activeBom.bomRevNo }}
+            <strong>Issue Date:</strong> {{ activeBom.issue_date }}
           </div>
         </div>
       </div>
@@ -114,22 +164,28 @@ export default {
   },
   data() {
     return {
-      activeBom: {
-        partName: "PRYSM-Zen-2",
-        productCode: "12121",
-        bomRevNo: "2121",
-        // Add more properties as needed
-      },
+      activeBom: '',
       checklist: "",
       checklistItems: [],
-      isChecklistPassed: false
+      isChecklistPassed: false,
+      isChecklistEnded: false,
+      pollingInterval: ''
     };
   },
   mounted() {
     this.getChecklist();
-    // this.pollingInterval = setInterval(() => {
-    //   this.getChecklist();
-    // }, 5000);
+    this.pollingInterval = setInterval(() => {
+      if (!this.isChecklistPassed) {
+        this.getChecklist();
+      } else {
+        clearInterval(this.pollingInterval);
+            this.$notify({
+                    title: "BOM Check Passed",
+                    type: "bg-success-subtle text-danger",
+                    duration: "5000",
+                  });
+      }
+    }, 5000);
   },
   beforeUnmount() {
     clearInterval(this.pollingInterval);
@@ -137,7 +193,6 @@ export default {
   methods: {
     async getChecklist() {
       this.$store.commit("setIsLoading", true);
-      console.log("work");
       this.$store.commit("setIsLoading", false);
       await axios
         .get(`store/get-active-checklist/${this.$route.params.id}/`)
@@ -146,7 +201,10 @@ export default {
           this.checklist = response.data.checklist;
           this.checklistItems = this.checklist.checklist_items;
           this.isChecklistPassed = this.checklist.is_passed
-
+          this.activeBom = this.checklist.bom
+          if(this.checklist.status == 'Completed' || this.checklist.status == 'Failed'){
+            this.isChecklistEnded = true
+          }
           this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
@@ -156,6 +214,39 @@ export default {
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
+          this.$store.commit("setIsLoading", false);
+        });
+    },
+    async endChecklist() {
+      this.$store.commit("setIsLoading", true);
+      this.$store.commit("setIsLoading", false);
+      await axios
+        .get(`store/end-checklist/${this.checklist.id}/`)
+        .then((response) => {
+          console.log(response.data);
+          this.$notify({
+            title: "Checklist ended",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.checklist = response.data.checklist;
+          this.checklistItems = this.checklist.checklist_items;
+          this.isChecklistPassed = this.checklist.is_passed
+          this.activeBom = this.checklist.bom
+          if(this.checklist.status == 'Completed' || this.checklist.status == 'Failed'){
+            this.isChecklistEnded = true
+          }
+          clearInterval(this.pollingInterval);
+          this.$store.commit("setIsLoading", false);
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.$notify({
+            title: "An error occured, please try again later",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          clearInterval(this.pollingInterval);
           this.$store.commit("setIsLoading", false);
         });
     },

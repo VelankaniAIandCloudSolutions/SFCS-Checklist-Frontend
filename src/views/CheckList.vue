@@ -95,6 +95,22 @@ export default {
         // this.clickedRowId = null;
       }
     },
+    viewOngoingChecklists() {
+      if (this.clickedRowId) {
+        this.$router.push(`/begin-checklist/${this.clickedRowId}`);
+        // Optionally, you can reset the selectedRow and clickedRowId here
+        // this.selectedRow = null;
+        // this.clickedRowId = null;
+      }
+    },
+    viewGeneratedChecklists() {
+      if (this.clickedRowId) {
+        this.$router.push(`/generated-checklist/${this.clickedRowId}`);
+        // Optionally, you can reset the selectedRow and clickedRowId here
+        // this.selectedRow = null;
+        // this.clickedRowId = null;
+      }
+    },
   },
 };
 </script>

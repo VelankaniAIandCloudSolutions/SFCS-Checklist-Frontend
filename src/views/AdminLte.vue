@@ -69,7 +69,7 @@
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
-              <ul class="nav nav-treeview">
+              <ul class="nav nav-treeview ml-5">
                 <li class="nav-item">
                   <router-link to="/bom" class="nav-link">BOM</router-link>
                 </li>

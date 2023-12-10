@@ -43,7 +43,7 @@ const routes = [
   },
 
   {
-    path: "/generated-checklist/:id",
+    path: "/generated-checklists/:id",
     name: "generated-checklist",
     component: GeneratedCheckList,
     props: true, // This allows the route params to be passed as props to the component

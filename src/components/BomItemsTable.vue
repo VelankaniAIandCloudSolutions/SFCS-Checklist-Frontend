@@ -3,7 +3,7 @@
     <ag-grid-vue
       style="height: 500px"
       class="ag-theme-quartz"
-      :rowData="rowData"
+      :rowData="bom"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -36,7 +36,7 @@ export default {
   },
   data() {
     return {
-      rowData: this.bom || [],
+      // rowData: this.bom || [],
       colDefs: [
         //   {
         //     field: "id", // Added "id" field

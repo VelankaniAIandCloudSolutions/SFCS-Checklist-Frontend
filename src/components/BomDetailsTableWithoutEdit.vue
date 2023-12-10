@@ -18,6 +18,7 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
+import axios from "axios";
 
 export default {
   name: "App",
@@ -26,46 +27,24 @@ export default {
   },
   data() {
     return {
-      rowData: [
-        {
-          id: 1,
-          "Product Name": "PRYSM-Zen-2",
-          "Product Code": "DAYTONA",
-          "BOM Type": "Type-A",
-          "BOM Rev No": "Rev-001",
-          "Issue Date": "2023-12-01",
-          "Product Rev No": "Rev-1",
-        },
-        {
-          id: 2,
-          "Product Name": "Some Product",
-          "Product Code": "ABC123",
-          "BOM Type": "Type-B",
-          "BOM Rev No": "Rev-002",
-          "Issue Date": "2023-12-05",
-          "Product Rev No": "Rev-2",
-        },
-        // Add more rows as needed
-      ],
+      rowData: [], // Add more rows as needed
+
       colDefs: [
         {
           field: "id", // Added "id" field
           hide: true,
         },
         {
-          field: "Product Name",
+          field: "product.name",
           headerCheckboxSelection: true,
           checkboxSelection: true,
+          headerName: "Product Name",
         },
-        { field: "Product Code" },
-        { field: "BOM Type" },
-        { field: "BOM Rev No" },
-        { field: "Issue Date" },
-        { field: "Product Rev No" },
-
-        //     { field: "price", valueFormatter: this.formatPriceEuro },
-        //     { field: "successful" },
-        //     { field: "rocket" },
+        { field: "product.product_code", headerName: "Product Code" },
+        { field: "bom_type.name", headerName: "BOM Type" },
+        { field: "bom_rev_number", headerName: "BOM Rev No" },
+        { field: "issue_date", headerName: "Issue Date" },
+        { field: "product.product_rev_number", headerName: "Product Rev No" },
       ],
 
       defaultColDef: {
@@ -77,17 +56,21 @@ export default {
       selectedRows: [],
     };
   },
-  mounted() {
+  async mounted() {
     // this.fetchData();
+    await this.fetchData();
   },
   methods: {
-    // async fetchData() {
-    //   const response = await fetch(
-    //     "https://www.ag-grid.com/example-assets/space-mission-data.json"
-    //   );
-    //   this.rowData = await response.json();
-    // },
-
+    async fetchData() {
+      try {
+        // Fetch BOM data from your API endpoint
+        const response = await axios.get("store/get-boms/");
+        this.rowData = response.data.boms;
+        console.log(response.data.boms);
+      } catch (error) {
+        console.error("Error fetching BOM data:", error);
+      }
+    },
     onRowClicked(params) {
       // Emit an event with the clicked row data
       this.$emit("rowClicked", params.data);
@@ -101,7 +84,12 @@ export default {
       }
     },
     onSelectionChanged() {
-      this.selectedRows = this.$refs.agGrid.api.getSelectedRows();
+      if (this.$refs.agGrid && this.$refs.agGrid.api) {
+        this.selectedRows = this.$refs.agGrid.api.getSelectedRows();
+      }
+    },
+    onEditClick(id) {
+      this.$router.push(`/bom/edit/${id}`);
     },
   },
 };

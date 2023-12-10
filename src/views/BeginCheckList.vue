@@ -48,7 +48,17 @@
             aria-expanded="true"
             aria-controls="panelsStayOpen-collapseOne"
           >
-            BOM Check
+            BOM Check 
+            <div
+            class="spinner-border ms-2"
+            role="status"
+            v-if="isChecklistPassed == false"
+            >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div v-else>
+            <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
           </button>
         </h2>
         <div
@@ -112,6 +122,7 @@ export default {
       },
       checklist: "",
       checklistItems: [],
+      isChecklistPassed: false
     };
   },
   mounted() {
@@ -134,6 +145,8 @@ export default {
           console.log(response.data);
           this.checklist = response.data.checklist;
           this.checklistItems = this.checklist.checklist_items;
+          this.isChecklistPassed = this.checklist.is_passed
+
           this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {

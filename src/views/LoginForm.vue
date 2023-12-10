@@ -92,7 +92,7 @@ export default {
             // Continue with your logic (e.g., redirect to another page)
             // ...
             // this.$router.push({ path: "/" });
-            // window.location.href = "/";
+            window.location.href = "/";
             // Always set loading state to false
             this.$store.commit("setIsLoading", false);
           })

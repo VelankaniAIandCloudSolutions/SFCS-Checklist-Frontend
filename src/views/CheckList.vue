@@ -195,7 +195,7 @@ export default {
     },
     viewGeneratedChecklists() {
       if (this.clickedRowId) {
-        this.$router.push(`/generated-checklist/${this.clickedRowId}`);
+        this.$router.push(`/generated-checklists/${this.clickedRowId}`);
         // Optionally, you can reset the selectedRow and clickedRowId here
         // this.selectedRow = null;
         // this.clickedRowId = null;

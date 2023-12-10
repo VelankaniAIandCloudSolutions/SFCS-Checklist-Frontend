@@ -192,9 +192,7 @@ export default {
     async fetchData() {
       try {
         // Fetch BOM data from your API endpoint
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/v1/store/get-boms/"
-        );
+        const response = await axios.get("store/get-boms/");
         this.rowData = response.data.boms;
         console.log(response.data.boms);
       } catch (error) {

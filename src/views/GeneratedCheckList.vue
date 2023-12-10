@@ -16,33 +16,6 @@
           </nav>
         </div>
       </div>
-
-      <!-- Buttons on the right -->
-      <div class="col-md-6 mt-4 text-end">
-        <div class="container has-text-centered">
-          <div class="d-flex">
-            <button
-              @click="generateChecklist"
-              :disabled="!isButtonEnabled"
-              class="btn btn-primary btn-sm"
-            >
-              Generate New Checklist
-            </button>
-            <button
-              @click="checkExistingChecklist"
-              class="btn btn-warning btn-sm ms-2"
-            >
-              View Ongoing Checklists
-            </button>
-            <button
-              @click="viewGeneratedChecklists"
-              class="btn btn-success btn-sm ms-2"
-            >
-              View Generated Checklists
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
     <CheckListsTable style="margin-top: 20px" />
   </div>

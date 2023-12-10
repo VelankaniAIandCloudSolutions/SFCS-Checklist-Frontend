@@ -21,7 +21,6 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
 import axios from "axios";
 export default {
-  name: "YourComponentName", // Replace with your component name
   components: {
     AgGridVue,
   },
@@ -96,18 +95,17 @@ export default {
       button.classList.add("btn", "btn-success");
 
       button.addEventListener("click", () =>
-        this.onViewClick(params.data.id, params.data.status)
+        this.onViewClick(params.data)
       );
       return button;
     },
-    onViewClick(id, status) {
-      if (status === "In Progress") {
-        this.$router.push(`/begin-checklist/${id}`);
+    onViewClick(data) {
+      if (data.status === "In Progress") {
+        this.$router.push(`/begin-checklist/${data.bom.id}`);
       }
-      //  else {
-      //   // Add more conditions as needed
-      //   this.$router.push(`//${id}`);
-      // }
+       else {
+        this.$router.push(`/checklist-details/${data.id}`);
+      }
     },
   },
 };

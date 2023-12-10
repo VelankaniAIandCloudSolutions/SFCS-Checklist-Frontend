@@ -3,7 +3,7 @@
     <ag-grid-vue
       style="height: 500px"
       class="ag-theme-quartz"
-      :rowData="rowData"
+      :rowData="bom"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -25,65 +25,89 @@ export default {
     AgGridVue,
   },
   props: {
-    id: {
-      type: Number,
+    // id: {
+    //   type: Number,
+    //   required: true,
+    // },
+    bom: {
+      type: Array,
       required: true,
     },
   },
   data() {
     return {
-      rowData: [
-        {
-          id: 1,
-          level: "A",
-          "VEPL Part No": "VEPL-123",
-          "Priority Level": "High",
-          Value: "100",
-          "PCB Footprint": "Footprint-1",
-          Type: "Type-X",
-          Description: "Sample Description 1",
-          Mfr: "Manufacturer-1",
-          "Mfr. Part No": "MFR123",
-          Till: "2023-12-15",
-        },
-        {
-          id: 2,
-          level: "B",
-          "VEPL Part No": "VEPL-456",
-          "Priority Level": "Medium",
-          Value: "200",
-          "PCB Footprint": "Footprint-2",
-          Type: "Type-Y",
-          Description: "Sample Description 2",
-          Mfr: "Manufacturer-2",
-          "Mfr. Part No": "MFR456",
-          Till: "2023-12-20",
-        },
-        // Add more rows as needed
-      ],
+      // rowData: this.bom || [],
       colDefs: [
+        //   {
+        //     field: "id", // Added "id" field
+        //     hide: true,
+        //   },
+        //   {
+        //     field: "level",
+        //     headerCheckboxSelection: true,
+        //     checkboxSelection: true,
+        //   },
+        //   { field: "VEPL Part No" },
+        //   { field: "Priority Level" },
+        //   { field: "Value" },
+        //   { field: "PCB Footprint" },
+        //   { field: "Type" },
+        //   { field: "Description" },
+        //   { field: "Mfr" },
+        //   { field: "Mfr. Part No" },
+        //   { field: "Till" },
+        //   {
+        //     headerName: "Actions",
+        //     cellRenderer: this.editButtonRenderer,
+        //   },
+        // ],
+        { headerName: "ID", field: "id", hide: true },
+        { headerName: " Level", field: "level" },
+        { headerName: "VEPL Part Number", field: "part_number" },
+        { headerName: "Priority Level", field: "priority_level" },
+
+        { headerName: "Value", field: "value" },
+        { headerName: "PCB Footprint", field: "pcb_footprint" },
+        { headerName: "Type", field: "line_item_type.name" },
+
+        { headerName: "Description", field: "description" },
         {
-          field: "id", // Added "id" field
-          hide: true,
+          headerName: "Manufacturer",
+          valueGetter: function (params) {
+            const manufacturerParts = params.data.manufacturer_parts;
+            if (manufacturerParts && manufacturerParts.length > 0) {
+              const manufacturer = manufacturerParts[0].manufacturer;
+              if (manufacturer) {
+                // Concatenate name and part_number with a hyphen in between
+                return `${manufacturer.name} - ${manufacturerParts[0].part_number}`;
+              }
+            }
+            return ""; // Return an empty string if data is missing
+          },
         },
-        {
-          field: "level",
-          headerCheckboxSelection: true,
-          checkboxSelection: true,
-        },
-        { field: "VEPL Part No" },
-        { field: "Priority Level" },
-        { field: "Value" },
-        { field: "PCB Footprint" },
-        { field: "Type" },
-        { field: "Description" },
-        { field: "Mfr" },
-        { field: "Mfr. Part No" },
-        { field: "Till" },
-        {
-          headerName: "Actions",
-          cellRenderer: this.editButtonRenderer,
-        },
+        { headerName: "Customer Part Number", field: "customer_part_number" },
+        { headerName: "Quantity", field: "quantity" },
+        { headerName: "UOM", field: "uom" },
+        { headerName: "Assembly Stage", field: "assembly_stage.name" },
+
+        { headerName: "ECN", field: "ecn" },
+        { headerName: "MSL", field: "msl" },
+        { headerName: "Remarks", field: "remarks" },
+
+        // { headerName: "Updated At", field: "updated_at" },
+        // { headerName: "BOM ID", field: "bom" },
+        // { headerName: "Product ID", field: "product.id" },
+        // { headerName: "Product Name", field: "product.name" },
+        // { headerName: "Product Code", field: "product.product_code" },
+        // {
+        //   headerName: "Product Rev Number",
+        //   field: "product.product_rev_number",
+        // },
+        // { headerName: "Issue Date", field: "issue_date" },
+        // { headerName: "Total Line Items", field: "total_line_items" },
+        // { headerName: "Total SMT Locations", field: "total_smt_locations" },
+        // { headerName: "Total PTH Locations", field: "total_pth_locations" },
+        // { headerName: "BOM Rev Number", field: "bom_rev_number" },
       ],
 
       defaultColDef: {

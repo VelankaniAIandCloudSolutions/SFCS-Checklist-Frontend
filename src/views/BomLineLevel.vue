@@ -10,9 +10,11 @@
             <nav aria-label="breadcrumb" class="d-inline-block ms-3">
               <ol class="breadcrumb bg-transparent m-0 p-0">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Category</a></li>
+                <li class="breadcrumb-item">
+                  <router-link to="/bom">Bill of Materials</router-link>
+                </li>
                 <li class="breadcrumb-item active" aria-current="page">
-                  Current Page
+                  Bom Details
                 </li>
               </ol>
             </nav>

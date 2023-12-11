@@ -8,7 +8,7 @@
       :columnDefs="colDefs"
       :pagination="true"
       @rowClicked="onRowClicked"
-      @rowSelected="onRowSelected"
+      @selectionChanged="onSelectionChanged"
     >
     </ag-grid-vue>
   </div>
@@ -75,19 +75,39 @@ export default {
       // Emit an event with the clicked row data
       this.$emit("rowClicked", params.data);
     },
-    onRowSelected(params) {
-      // Emit an event with the selected row data
-      if (params.node.isSelected()) {
-        this.$emit("rowSelected", params.node.data);
+    // onRowSelected(params) {
+    //   // Emit an event with the selected row data
+    //   if (params.node.isSelected()) {
+    //     this.$emit("rowSelected", params.node.data);
+    //   } else {
+    //     this.$emit("rowDeselected");
+    //   }
+    // },
+    onSelectionChanged(params) {
+      // const selectedData = params.api.getSelectedRows();
+      // // Emit deselected events in the order they were deselected
+      // this.rowData
+      //   .filter(
+      //     (row) =>
+      //       !selectedData.find((selectedRow) => row.id === selectedRow.id)
+      //   )
+      //   .forEach((deselectedRow) => {
+      //     this.$emit("rowDeselected", deselectedRow);
+      //   });
+      // // Emit selected events
+      // selectedData.forEach((selectedRow) => {
+      //   this.$emit("rowSelected", selectedRow);
+      // });
+      const selectedData = params.api.getSelectedRows();
+      const selectedRow = selectedData.length > 0 ? selectedData[0] : null;
+      if (selectedRow) {
+        this.$emit("rowSelected", selectedRow);
       } else {
+        // Emit a generic "rowDeselected" event when no row is selected
         this.$emit("rowDeselected");
       }
     },
-    onSelectionChanged() {
-      if (this.$refs.agGrid && this.$refs.agGrid.api) {
-        this.selectedRows = this.$refs.agGrid.api.getSelectedRows();
-      }
-    },
+
     onEditClick(id) {
       this.$router.push(`/bom/edit/${id}`);
     },

@@ -85,7 +85,7 @@ export default {
       }
     },
     handleRowDeselected() {
-      console.log("Row Selected:");
+      console.log("Row Deselected:");
       this.isButtonEnabled = false;
     },
     async generateChecklist() {

@@ -9,8 +9,11 @@
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
               <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active">
+                <router-link to="/checklist">Checklist</router-link>
+              </li>
               <li class="breadcrumb-item active" aria-current="page">
-                Checklist
+                Generated Checklists
               </li>
             </ol>
           </nav>

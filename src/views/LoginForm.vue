@@ -1,7 +1,10 @@
 <template>
-  <body class="text-center">
+
+<div class="jumbotron" style="background-color: white;">
+  <h1 class="display-4">Velankani SFCS</h1>
+  <div  class="text-center">
     <main class="form-signin">
-      <section>
+      <section class="container">
         <img
           class="mb-4"
           src="/img/admin_logo.png"
@@ -19,7 +22,7 @@
             id="floatingInput"
             placeholder="name@example.com"
           />
-          <label for="floatingInput">email</label>
+          <label for="floatingInput">E-mail</label>
         </div>
         <div class="form-floating">
           <input
@@ -37,7 +40,9 @@
         </button>
       </section>
     </main>
-  </body>
+  </div>
+</div>
+
 </template>
 
 <script>
@@ -120,18 +125,6 @@ export default {
 
 <style scoped>
 /* Add any custom styles if needed */
-body {
-  height: 100%;
-}
-
-body {
-  display: flex;
-  align-items: center;
-  padding-top: 40px;
-  padding-bottom: 40px;
-  background-color: #f5f5f5;
-}
-
 .form-signin {
   width: 100%;
   max-width: 330px;

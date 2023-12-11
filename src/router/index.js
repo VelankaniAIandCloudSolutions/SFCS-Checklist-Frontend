@@ -6,6 +6,7 @@ import BomLineLevel from "../views/BomLineLevel.vue";
 import CheckList from "../views/CheckList.vue";
 import BeginCheckList from "../views/BeginCheckList.vue";
 import GeneratedCheckList from "../views/GeneratedCheckList.vue";
+import ChecklistDetails from "../views/ChecklistDetails.vue";
 
 const routes = [
   {
@@ -46,6 +47,12 @@ const routes = [
     path: "/generated-checklists/:id",
     name: "generated-checklist",
     component: GeneratedCheckList,
+    props: true, // This allows the route params to be passed as props to the component
+  },
+  {
+    path: "/checklist-details/:id",
+    name: "checklist-details",
+    component: ChecklistDetails,
     props: true, // This allows the route params to be passed as props to the component
   },
 ];

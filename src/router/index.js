@@ -7,6 +7,9 @@ import CheckList from "../views/CheckList.vue";
 import BeginCheckList from "../views/BeginCheckList.vue";
 import GeneratedCheckList from "../views/GeneratedCheckList.vue";
 import ChecklistDetails from "../views/ChecklistDetails.vue";
+import ReportsList from "../views/ReportsList.vue";
+import ChecklistReport from "../views/ChecklistReport.vue";
+
 
 const routes = [
   {
@@ -28,6 +31,16 @@ const routes = [
     path: "/CheckList",
     name: "CheckList",
     component: CheckList,
+  },
+  {
+    path: "/reports",
+    name: "ReportsList",
+    component: ReportsList,
+  },
+  {
+    path: "/checklist-report",
+    name: "ChecklistReport",
+    component: ChecklistReport,
   },
 
   {

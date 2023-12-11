@@ -30,7 +30,7 @@
     <!-- Sidebar -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
-      <a href="#" class="brand-link">
+      <a href="/" class="brand-link">
         <span class="brand-text font-weight-light">VELANKANI SFCS</span>
       </a>
 
@@ -71,12 +71,19 @@
               </a>
               <ul class="nav nav-treeview ml-5">
                 <li class="nav-item">
-                  <router-link to="/bom" class="nav-link">BOM</router-link>
+                  <router-link to="/bom" class="nav-link"
+                    >Bill Of Materials</router-link
+                  >
                 </li>
                 <li class="nav-item">
                   <router-link to="/checklist" class="nav-link"
-                    >Checklist</router-link
-                  >
+                    >Checklist
+                  </router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link to="/reports" class="nav-link"
+                    >Reports
+                  </router-link>
                 </li>
               </ul>
             </li>

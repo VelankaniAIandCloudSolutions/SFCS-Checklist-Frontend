@@ -41,7 +41,6 @@ export default {
         { headerName: "Updated At", field: "updated_at" },
         {
           headerName: "Updated By",
-          field: "updated_by.first_name",
           valueGetter: function (params) {
             const firstName = params.data.updated_by.first_name || "";
             const lastName = params.data.updated_by.last_name || "";
@@ -51,7 +50,6 @@ export default {
         { headerName: "Created At", field: "created_at" },
         {
           headerName: "Created By",
-          field: "created_by",
           valueGetter: function (params) {
             const firstName = params.data.created_by.first_name || "";
             const lastName = params.data.created_by.last_name || "";

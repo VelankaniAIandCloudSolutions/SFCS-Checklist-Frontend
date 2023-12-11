@@ -72,17 +72,26 @@ export default {
 
         { headerName: "Description", field: "description" },
         {
-          headerName: "Manufacturer",
+          headerName: "Manufacturer Parts",
           valueGetter: function (params) {
             const manufacturerParts = params.data.manufacturer_parts;
+
             if (manufacturerParts && manufacturerParts.length > 0) {
-              const manufacturer = manufacturerParts[0].manufacturer;
-              if (manufacturer) {
-                // Concatenate name and part_number with a hyphen in between
-                return `${manufacturer.name} - ${manufacturerParts[0].part_number}`;
-              }
+              // Use map to create an array of strings for each manufacturer part
+              const partStrings = manufacturerParts.map((manufacturerPart) => {
+                const manufacturer = manufacturerPart.manufacturer;
+                if (manufacturer) {
+                  // Concatenate name and part_number with a hyphen in between
+                  return `${manufacturerPart.part_number} - ${manufacturer.name}`;
+                }
+                return ""; // Return an empty string if data is missing
+              });
+
+              // Join the array of strings into a single string separated by commas
+              return partStrings.join(", ");
             }
-            return ""; // Return an empty string if data is missing
+
+            return ""; // Return an empty string if no manufacturer parts are available
           },
         },
         { headerName: "Customer Part Number", field: "customer_part_number" },

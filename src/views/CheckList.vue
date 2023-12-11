@@ -70,7 +70,7 @@ export default {
       clickedRowId: null,
       isButtonEnabled: false,
       isExisting: false,
-      isActive: false
+      isActive: false,
     };
   },
   methods: {
@@ -98,17 +98,17 @@ export default {
         .post(`store/check-existing-checklist/${this.clickedRowId}/`)
         .then((response) => {
           console.log(response.data);
-          this.isActive = response.data.is_active
-          this.isExisting = response.data.is_existing
-          if(this.isExisting){
+          this.isActive = response.data.is_active;
+          this.isExisting = response.data.is_existing;
+          if (this.isExisting) {
             this.$notify({
-              title: "There is already an active ongoing checklist for this bom, please end that checklist by viewing the ongoing checklist to generate a new one.",
+              title:
+                "There is already an active ongoing checklist for this bom, please end that checklist by viewing the ongoing checklist to generate a new one.",
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });
-          }
-          else{
-            this.generateChecklist()
+          } else {
+            this.generateChecklist();
           }
         })
         .catch((error) => {
@@ -122,7 +122,6 @@ export default {
         .finally(() => {
           this.$store.commit("setIsLoading", false);
         });
-      
     },
     async generateChecklist() {
       this.$store.commit("setIsLoading", true);
@@ -150,26 +149,26 @@ export default {
         .post(`store/check-existing-checklist/${this.clickedRowId}/`)
         .then((response) => {
           console.log(response.data);
-          this.isActive = response.data.is_active
-          this.isExisting = response.data.is_existing
-          if(this.isExisting){
-            if(this.isActive){
+          this.isActive = response.data.is_active;
+          this.isExisting = response.data.is_existing;
+          if (this.isExisting) {
+            if (this.isActive) {
               this.$router.push(`/begin-checklist/${this.clickedRowId}`);
-            }
-            else{
+            } else {
               this.$notify({
-                title: "No active checklist found for this bom, please generate a new checklist",
+                title:
+                  "No active checklist found for this bom, please generate a new checklist",
                 type: "bg-danger-subtle text-danger",
                 duration: "5000",
               });
             }
-          }
-          else{
+          } else {
             this.$notify({
-            title: "No ongoing checklist found for this bom, please generate a new checklist",
-            type: "bg-danger-subtle text-danger",
-            duration: "5000",
-          });
+              title:
+                "No ongoing checklist found for this bom, please generate a new checklist",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
           }
           // this.$router.push(`/begin-checklist/${this.clickedRowId}`);
         })

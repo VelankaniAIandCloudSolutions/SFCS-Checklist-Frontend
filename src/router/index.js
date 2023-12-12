@@ -8,7 +8,9 @@ import BeginCheckList from "../views/BeginCheckList.vue";
 import GeneratedCheckList from "../views/GeneratedCheckList.vue";
 import ChecklistDetails from "../views/ChecklistDetails.vue";
 import ReportsList from "../views/ReportsList.vue";
+import CheckListsDashboard from "../views/CheckListsDashboard.vue";
 import ChecklistReport from "../views/ChecklistReport.vue";
+import TestDashBoard from "../views/TestDashBoard.vue";
 
 
 const routes = [
@@ -36,6 +38,10 @@ const routes = [
     path: "/reports",
     name: "ReportsList",
     component: ReportsList,
+  },  {
+    path: "/dashboard",
+    name: "CheckListsDashboard",
+    component:CheckListsDashboard,
   },
   {
     path: "/checklist-report",
@@ -66,6 +72,11 @@ const routes = [
     path: "/checklist-details/:id",
     name: "checklist-details",
     component: ChecklistDetails,
+    props: true, // This allows the route params to be passed as props to the component
+  },{
+    path: "/test",
+    name: "test-dashboard",
+    component: TestDashBoard,
     props: true, // This allows the route params to be passed as props to the component
   },
 ];

@@ -85,6 +85,11 @@
                     >Reports
                   </router-link>
                 </li>
+                <li class="nav-item">
+                  <router-link to="/dashboard" class="nav-link"
+                    >Dashboard
+                  </router-link>
+                </li>
               </ul>
             </li>
           </ul>

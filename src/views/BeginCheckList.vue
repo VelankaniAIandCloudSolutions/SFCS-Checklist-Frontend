@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 <template>
   <div class="container">
     <div class="row align-items-center">
@@ -27,6 +28,16 @@
               data-bs-toggle="modal"
               data-bs-target="#generateLabelModal"
               class="btn btn-success me-2"
+              v-if="generatedQRCode"
+            >
+              View Generated Label
+            </button>
+            <button
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#generateLabelModal"
+              class="btn btn-success me-2"
+              v-else
             >
               Generate Label
             </button>
@@ -64,20 +75,42 @@
             ></button>
           </div>
           <div class="modal-body">
-            You can only generate a label if all checks are passed
+            <!-- Display the generated QR code here -->
+            <div v-if="isChecklistPassed">
+              <div id="printable-content" v-if="generatedQRCode">
+                <img :src="generatedQRCode" alt="QR Code" />
+              </div>
+              <p v-else>
+                All Checks passed successfully, generate a label by pressing the
+                generate button.
+              </p>
+            </div>
+            <div v-else>
+              You can only generate a label if all checks are passed
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
               Cancel
             </button>
-            <button
-              v-if="isChecklistPassed"
-              type="button"
-              class="btn btn-success"
-              data-bs-dismiss="modal"
-            >
-              Generate
-            </button>
+            <div v-if="isChecklistPassed">
+              <button
+                v-if="generatedQRCode"
+                type="button"
+                class="btn btn-success"
+                @click="printQRCode"
+              >
+                Print
+              </button>
+              <button
+                v-else
+                type="button"
+                class="btn btn-success"
+                @click="generateQRCode"
+              >
+                Generate
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -216,6 +249,8 @@
 <script>
 import CheckListTable from "../components/CheckListTable"; // Adjust the path based on your actual file structure
 import axios from "axios";
+import QRCode from "qrcode";
+
 export default {
   components: {
     CheckListTable,
@@ -228,6 +263,7 @@ export default {
       isChecklistPassed: false,
       isChecklistEnded: false,
       pollingInterval: "",
+      generatedQRCode: "",
     };
   },
   mounted() {
@@ -248,6 +284,7 @@ export default {
   beforeUnmount() {
     clearInterval(this.pollingInterval);
   },
+
   methods: {
     async getChecklist() {
       this.$store.commit("setIsLoading", true);
@@ -265,6 +302,9 @@ export default {
             this.checklist.status == "Failed"
           ) {
             this.isChecklistEnded = true;
+          }
+          if (this.checklist.qr_code_link) {
+            this.generatedQRCode = this.checklist.qr_code_link;
           }
           this.$store.commit("setIsLoading", false);
         })
@@ -315,6 +355,51 @@ export default {
           clearInterval(this.pollingInterval);
           this.$store.commit("setIsLoading", false);
         });
+    },
+    async generateQRCode() {
+      const uniqueCode = this.generateUniqueCode();
+      console.log(uniqueCode);
+      const qrCodeDataURL = await QRCode.toDataURL(uniqueCode);
+      const postData = {
+        uniqueCode: uniqueCode,
+        qrCodeDataURL: qrCodeDataURL,
+      };
+      this.saveQRCode(postData);
+    },
+    generateUniqueCode() {
+      const timestamp = Date.now().toString();
+      const randomString = Math.random().toString(36).substring(7);
+      return `${timestamp}-${randomString}`;
+    },
+    async saveQRCode(postData) {
+      await axios
+        .post(`store/save-qr-code/${this.checklist.id}/`, postData)
+        .then((response) => {
+          console.log(response.data);
+          this.generateQRCode = postData.qrCodeDataURL;
+          this.$notify({
+            title: "QR Code generated and saved successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.$notify({
+            title: "An error occured, please try again later",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        });
+    },
+    printQRCode() {
+      if (this.generatedQRCode) {
+        // Open a new window or tab with the QR code image
+        const printableContent = document.getElementById("printable-content");
+        const printWindow = window.open("", "", "height=1000,width=1000");
+        printWindow.document.write(printableContent.innerHTML);
+        printWindow.print();
+      }
     },
   },
 };

@@ -20,10 +20,6 @@
         </div>
       </div>
     </div>
-    <div class="card mt-2">
-      <div class="card-header">Featured</div>
-      <div class="card-body">This is some text within a card body.</div>
-    </div>
     <ChecklistReportTable :checklists="checklists" style="margin-top: 20px" />
   </div>
 </template>

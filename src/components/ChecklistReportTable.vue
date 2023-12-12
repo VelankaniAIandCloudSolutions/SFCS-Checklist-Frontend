@@ -1,4 +1,26 @@
 <template>
+  <div class="card card-outline card-primary mt-2">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3 text-center">
+          <h6 class="lead">Total Completed</h6>
+          <p class="display-6">{{ total_completed }}</p>
+        </div>
+        <div class="col-md-3 text-center">
+          <h6 class="lead">Total In Progress</h6>
+          <p class="display-6">{{ total_in_progress }}</p>
+        </div>
+        <div class="col-md-3 text-center">
+          <h6 class="lead">Total Failed</h6>
+          <p class="display-6">{{ total_failed }}</p>
+        </div>
+        <div class="col-md-3 text-center">
+          <h6 class="lead">Total Checklists</h6>
+          <p class="display-6">{{ total_checklists }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
   <div>
     <ag-grid-vue
       style="height: 500px"
@@ -7,8 +29,8 @@
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
-      @rowClicked="onRowClicked"
-      @rowSelected="onRowSelected"
+      @first-data-rendered="onFirstDataRendered"
+      @grid-ready="onGridReady"
     >
     </ag-grid-vue>
   </div>
@@ -68,26 +90,39 @@ export default {
         resizable: true,
         autoSize: true,
       },
-      selectedRows: [],
+      gridApi: null,
+      total_completed: 0,
+      total_in_progress: 0,
+      total_failed: 0,
+      total_checklists: 0,
     };
   },
-  mounted() {
-    // Fetch data when the component is mounted
-    // await this.fetchData();
-  },
+  mounted() {},
   methods: {
-    onRowClicked(params) {
-      this.$emit("rowClicked", params.data);
+    onFirstDataRendered() {
+      this.calculateTotalSum();
+      this.gridApi.addEventListener("filterChanged", this.calculateTotalSum);
     },
-    onRowSelected(params) {
-      if (params.node.isSelected()) {
-        this.$emit("rowSelected", params.node.data);
-      }
+    onGridReady(params) {
+      this.gridApi = params.api;
     },
-    onSelectionChanged() {
-      if (this.$refs.agGrid && this.$refs.agGrid.api) {
-        this.selectedRows = this.$refs.agGrid.api.getSelectedRows();
-      }
+    calculateTotalSum() {
+      let sum_completed_checklists = 0;
+      let sum_in_progress_checklists = 0;
+      let sum_failed_checklists = 0;
+      this.gridApi.forEachNodeAfterFilter((node) => {
+        if (node.data.status == "Completed") {
+          sum_completed_checklists += 1;
+        } else if (node.data.status == "In Progress") {
+          sum_in_progress_checklists += 1;
+        } else {
+          sum_failed_checklists += 1;
+        }
+      });
+      this.total_completed = sum_completed_checklists;
+      this.total_failed = sum_failed_checklists;
+      this.total_in_progress = sum_in_progress_checklists;
+      this.total_checklists = this.gridApi.getDisplayedRowCount();
     },
     viewButtonRenderer(params) {
       const button = document.createElement("button");

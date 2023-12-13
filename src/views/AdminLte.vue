@@ -103,8 +103,9 @@
                   </router-link>
                 </li>
                 <li class="nav-item">
-                  <router-link to="/dashboard" class="nav-link"
-                    >Dashboard
+                  <router-link to="/dashboard" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard</p>
                   </router-link>
                 </li>
               </ul>

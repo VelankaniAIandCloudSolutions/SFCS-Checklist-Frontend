@@ -55,39 +55,6 @@
               >
                 <a class="dropdown-item" href="#">Previous Month</a>
               </li>
-              <!-- <li
-                @click="selectOption('Custom')"
-                :class="{ active: selectedOption === 'Custom' }"
-              >
-                <a class="dropdown-item" href="#">Custom Date range</a>
-                <div v-if="selectedOption === 'Custom'" class="mb-3">
-                  <label for="startDate" class="form-label">Start Date:</label>
-                  <input
-                    id="startDate"
-                    type="date"
-                    v-model="selectedStartDate"
-                    class="form-control"
-                    placeholder="Select start date"
-                  />
-                </div>
-                <div class="mb-3" v-if="selectedOption === 'Custom'">
-                  <label for="endDate" class="form-label">End Date:</label>
-                  <input
-                    id="endDate"
-                    type="date"
-                    v-model="selectedEndDate"
-                    class="form-control"
-                    placeholder="Select end date"
-                  />
-                </div>
-                <button
-                  v-if="selectedOption === 'Custom'"
-                  class="btn btn-primary"
-                  @click="fetchData()"
-                >
-                  Fetch Data
-                </button>
-              </li> -->
               <li>
                 <!-- Button trigger modal -->
                 <button
@@ -96,7 +63,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModal"
                 >
-                  Custom Date ange
+                  Custom Date Range
                 </button>
               </li>
 
@@ -451,6 +418,7 @@
               class="btn btn-success"
               @click="setSelectedOptionAndFetchData"
               :disabled="isFetchButtonDisabled"
+              data-bs-dismiss="modal"
             >
               Fetch Checklists
             </button>

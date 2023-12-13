@@ -221,32 +221,8 @@
               <div v-else>None</div>
             </div>
           </div>
-          <!-- /.card-body -->
-          <!-- /.card-footer -->
         </div>
       </div>
-
-      <!-- Card 2 (Completed) -->
-      <!-- <div class="col-6">
-        <div class="col-6">
-          <div class="card" style="width: 30rem">
-            <div class="card-header">
-              <h4><strong>Completed Checklists:</strong></h4>
-            </div>
-            <div class="card-body">
-              <ul class="list-group list-group-flush">
-                <li
-                  v-for="(checklist, index) in result.completed_checklists"
-                  :key="index"
-                  class="list-group-item"
-                >
-                  {{ checklist.bom.product.name }} - {{ checklist.updated_at }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </div>
     <div class="row mt-4 d-flex">
       <!-- Card 1 -->
@@ -298,38 +274,7 @@
           <!-- /.card-footer -->
         </div>
       </div>
-      <div class="col-6">
-        <div class="card card-light">
-          <div class="card-header">
-            <h3 class="card-title">Sample Cloning In Progress Checklists</h3>
-            <div class="card-tools">
-              <!-- Buttons, labels, and many other things can be placed here! -->
-              <!-- Here is a label for example -->
-              <span class="badge badge-primary">View All</span>
-            </div>
-            <!-- /.card-tools -->
-          </div>
-          <!-- /.card-header -->
-          <div class="card-body">
-            <div class="row">
-              <ul class="">
-                <li
-                  v-for="(checklist, index) in result.in_progress"
-                  :key="index"
-                  class="d-flex justify-content-between align-items-center"
-                >
-                  {{ checklist.bom.product.name }} -
-                  {{ checklist.updated_at }}
-                  <!-- Right Column for Eye Icon Button -->
-                  <i class="fas fa-eye"> </i>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <!-- /.card-body -->
-          <!-- /.card-footer -->
-        </div>
-      </div>
+      <div class="col-6"></div>
 
       <!-- Card 2 (Completed) -->
       <!-- <div class="col-6">

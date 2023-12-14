@@ -85,6 +85,12 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
+                  <router-link to="/dashboard" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Dashboard</p>
+                  </router-link>
+                </li>
+                <li class="nav-item">
                   <router-link to="/bom" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Bill Of Materials</p>
@@ -100,12 +106,6 @@
                   <router-link to="/reports" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Reports</p>
-                  </router-link>
-                </li>
-                <li class="nav-item">
-                  <router-link to="/dashboard" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Dashboard</p>
                   </router-link>
                 </li>
               </ul>

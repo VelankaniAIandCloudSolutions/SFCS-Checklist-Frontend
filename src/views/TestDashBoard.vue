@@ -55,39 +55,6 @@
               >
                 <a class="dropdown-item" href="#">Previous Month</a>
               </li>
-              <!-- <li
-                @click="selectOption('Custom')"
-                :class="{ active: selectedOption === 'Custom' }"
-              >
-                <a class="dropdown-item" href="#">Custom Date range</a>
-                <div v-if="selectedOption === 'Custom'" class="mb-3">
-                  <label for="startDate" class="form-label">Start Date:</label>
-                  <input
-                    id="startDate"
-                    type="date"
-                    v-model="selectedStartDate"
-                    class="form-control"
-                    placeholder="Select start date"
-                  />
-                </div>
-                <div class="mb-3" v-if="selectedOption === 'Custom'">
-                  <label for="endDate" class="form-label">End Date:</label>
-                  <input
-                    id="endDate"
-                    type="date"
-                    v-model="selectedEndDate"
-                    class="form-control"
-                    placeholder="Select end date"
-                  />
-                </div>
-                <button
-                  v-if="selectedOption === 'Custom'"
-                  class="btn btn-primary"
-                  @click="fetchData()"
-                >
-                  Fetch Data
-                </button>
-              </li> -->
               <li>
                 <!-- Button trigger modal -->
                 <button
@@ -96,7 +63,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModal"
                 >
-                  Custom Date ange
+                  Custom Date Range
                 </button>
               </li>
 
@@ -254,32 +221,8 @@
               <div v-else>None</div>
             </div>
           </div>
-          <!-- /.card-body -->
-          <!-- /.card-footer -->
         </div>
       </div>
-
-      <!-- Card 2 (Completed) -->
-      <!-- <div class="col-6">
-        <div class="col-6">
-          <div class="card" style="width: 30rem">
-            <div class="card-header">
-              <h4><strong>Completed Checklists:</strong></h4>
-            </div>
-            <div class="card-body">
-              <ul class="list-group list-group-flush">
-                <li
-                  v-for="(checklist, index) in result.completed_checklists"
-                  :key="index"
-                  class="list-group-item"
-                >
-                  {{ checklist.bom.product.name }} - {{ checklist.updated_at }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </div>
     <div class="row mt-4 d-flex">
       <!-- Card 1 -->
@@ -331,38 +274,7 @@
           <!-- /.card-footer -->
         </div>
       </div>
-      <div class="col-6">
-        <div class="card card-light">
-          <div class="card-header">
-            <h3 class="card-title">Sample Cloning In Progress Checklists</h3>
-            <div class="card-tools">
-              <!-- Buttons, labels, and many other things can be placed here! -->
-              <!-- Here is a label for example -->
-              <span class="badge badge-primary">View All</span>
-            </div>
-            <!-- /.card-tools -->
-          </div>
-          <!-- /.card-header -->
-          <div class="card-body">
-            <div class="row">
-              <ul class="">
-                <li
-                  v-for="(checklist, index) in result.in_progress"
-                  :key="index"
-                  class="d-flex justify-content-between align-items-center"
-                >
-                  {{ checklist.bom.product.name }} -
-                  {{ checklist.updated_at }}
-                  <!-- Right Column for Eye Icon Button -->
-                  <i class="fas fa-eye"> </i>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <!-- /.card-body -->
-          <!-- /.card-footer -->
-        </div>
-      </div>
+      <div class="col-6"></div>
 
       <!-- Card 2 (Completed) -->
       <!-- <div class="col-6">
@@ -451,6 +363,7 @@
               class="btn btn-success"
               @click="setSelectedOptionAndFetchData"
               :disabled="isFetchButtonDisabled"
+              data-bs-dismiss="modal"
             >
               Fetch Checklists
             </button>

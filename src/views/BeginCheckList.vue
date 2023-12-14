@@ -189,11 +189,11 @@
             aria-expanded="true"
             aria-controls="panelsStayOpen-collapseOne"
           >
-            BOM Check
+            Raw Material Check
             <div
               class="spinner-border ms-2"
               role="status"
-              v-if="isChecklistPassed == false"
+              v-if="isRawMaterialSufficient === false"
             >
               <span class="visually-hidden">Loading...</span>
             </div>
@@ -208,7 +208,9 @@
           aria-labelledby="panelsStayOpen-headingOne"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="checklistItems" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['Raw Material']"
+            />
           </div>
         </div>
       </div>
@@ -222,7 +224,17 @@
             aria-expanded="false"
             aria-controls="panelsStayOpen-collapseTwo"
           >
-            Solder Paste Check
+            PCB Check
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isPcbSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
           </button>
         </h2>
         <div
@@ -231,14 +243,281 @@
           aria-labelledby="panelsStayOpen-headingTwo"
         >
           <div class="accordion-body">
-            <strong>This is the second item's accordion body.</strong> It is
-            hidden by default, until the collapse plugin adds the appropriate
-            classes that we use to style each element. These classes control the
-            overall appearance, as well as the showing and hiding via CSS
-            transitions. You can modify any of this with custom CSS or
-            overriding our default variables. It's also worth noting that just
-            about any HTML can go within the <code>.accordion-body</code>,
-            though the transition does limit overflow.
+            <CheckListTable :checklistItems="filteredChecklistItems['PCB']" />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseThree"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseThree"
+          >
+            Solder Paste
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isPcbSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseThree"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingThree"
+        >
+          <div class="accordion-body">
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['Solder Paste']"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseFour"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseFour"
+          >
+            Solder Bar
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isSolderBarSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseFour"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingFour"
+        >
+          <div class="accordion-body">
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['Solder Bar']"
+            />>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingFive">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseFive"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseFive"
+          >
+            Flex
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isFlexSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseFive"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingFive"
+        >
+          <div class="accordion-body">
+            <CheckListTable :checklistItems="filteredChecklistItems['Flex']" />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingSix">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseSix"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseSix"
+          >
+            IP
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isIpSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseSix"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingSix"
+        >
+          <div class="accordion-body">
+            <CheckListTable :checklistItems="filteredChecklistItems['IP']" />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingSeven">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseSeven"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseSeven"
+          >
+            Stencils
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isStencilsSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseSeven"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingSeven"
+        >
+          <div class="accordion-body">
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['Stencils']"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingEight">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseEight"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseEight"
+          >
+            Reflow Pallet
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isReflowPalletSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseEight"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingEight"
+        >
+          <div class="accordion-body">
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['Reflow Pallet']"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingNine">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseNine"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseNine"
+          >
+            Wave Pallet
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isWavePalletSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseNine"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingNine"
+        >
+          <div class="accordion-body">
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['Wave Pallet']"
+            />
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="panelsStayOpen-headingTen">
+          <button
+            class="accordion-button collapsed"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#panelsStayOpen-collapseTen"
+            aria-expanded="false"
+            aria-controls="panelsStayOpen-collapseTen"
+          >
+            Label
+            <div
+              class="spinner-border ms-2"
+              role="status"
+              v-if="isLabelSufficient === false"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div v-else>
+              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+            </div>
+          </button>
+        </h2>
+        <div
+          id="panelsStayOpen-collapseTen"
+          class="accordion-collapse collapse"
+          aria-labelledby="panelsStayOpen-headingTen"
+        >
+          <div class="accordion-body">
+            <CheckListTable :checklistItems="filteredChecklistItems['Label']" />
           </div>
         </div>
       </div>
@@ -260,10 +539,35 @@ export default {
       activeBom: "",
       checklist: "",
       checklistItems: [],
+
       isChecklistPassed: false,
       isChecklistEnded: false,
+      isRawMaterialSufficient: false,
+      isPcbSufficient: false,
+      isSolderPasteSufficient: false,
+      isSolderBarSufficient: false,
+      isFlexSufficient: false,
+      isIpSufficient: false,
+      isStencilsSufficient: false,
+      isReflowPalletSufficient: false,
+      isWavePalletSufficient: false,
+      isLabelSufficient: false,
+
       pollingInterval: "",
       generatedQRCode: "",
+      filteredChecklistItems: {
+        "Raw Material": [],
+        PCB: [],
+        "Solder Paste": [],
+        "Solder Bar": [],
+        Flex: [],
+        Ip: [],
+        Stencils: [],
+        "Reflow Pallet": [],
+        "Wave Pallet": [],
+        Label: [],
+        // Initialize other types as needed
+      },
     };
   },
   mounted() {
@@ -295,8 +599,84 @@ export default {
           console.log(response.data);
           this.checklist = response.data.checklist;
           this.checklistItems = this.checklist.checklist_items;
+          console.log("chehcklist items hereeeeee", this.checklistItems);
+          const rawMaterialItems =
+            this.filterChecklistItemsByType("Raw Material");
+
+          console.log(rawMaterialItems);
+
+          const pcbItems = this.filterChecklistItemsByType("PCB");
+          const solderPasteItems =
+            this.filterChecklistItemsByType("Solder Paste");
+          const solderBarItems = this.filterChecklistItemsByType("Solder Bar");
+          const flexItems = this.filterChecklistItemsByType("Flex");
+          const IpItems = this.filterChecklistItemsByType("IP");
+          const stencilItems = this.filterChecklistItemsByType("Stencils");
+          const reflowPalletItems =
+            this.filterChecklistItemsByType("Reflow Pallet");
+          const wavePalletItems =
+            this.filterChecklistItemsByType("Wave Pallet");
+          const labelItems = this.filterChecklistItemsByType("Label");
+
           this.isChecklistPassed = this.checklist.is_passed;
           this.activeBom = this.checklist.bom;
+          this.filteredChecklistItems = {
+            "Raw Material": rawMaterialItems,
+            PCB: pcbItems,
+            "Solder Paste": solderPasteItems,
+            "Solder Bar": solderBarItems,
+            Flex: flexItems,
+            IP: IpItems,
+            Stencils: stencilItems,
+            "Reflow Pallet": reflowPalletItems,
+            "Wave Pallet": wavePalletItems,
+            Label: labelItems,
+            // Add more types                                                                                                                    as needed
+          };
+          console.log("filered checklsit items", this.filteredChecklistItems);
+          this.isRawMaterialSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Raw Material"
+          );
+
+          this.isPcbSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "PCB"
+          );
+          this.isSolderPasteSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Solder Paste"
+          );
+          this.isSolderBarSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Solder Bar"
+          );
+          console.log("checking solder bar", this.isSolderBarSufficient);
+          this.isFlexSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Flex"
+          );
+          this.isIpSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "IP"
+          );
+          this.isStencilsSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Stencils"
+          );
+          this.isReflowPalletSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Reflow Pallet"
+          );
+          this.isWavePalletSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Wave Pallet"
+          );
+          this.isLabelSufficient = this.isItemsSufficient(
+            this.filteredChecklistItems,
+            "Label"
+          );
+
           if (
             this.checklist.status == "Completed" ||
             this.checklist.status == "Failed"
@@ -400,6 +780,34 @@ export default {
         printWindow.document.write(printableContent.innerHTML);
         printWindow.print();
       }
+    },
+    filterChecklistItemsByType(type) {
+      return this.checklistItems.filter((item) => {
+        const itemType = item.checklist_item_type;
+
+        // Check if checklist_item_type is not null and has a name property
+        if (itemType && itemType.name) {
+          return itemType.name.toLowerCase() === type.toLowerCase();
+        }
+
+        // Return false if checklist_item_type is null or has no name property
+        return false;
+      });
+    },
+    isItemsSufficient(checklistItems, type) {
+      const typeItems = this.filteredChecklistItems[type];
+      // Check if there are no items of the specified type
+      if (typeItems.length === 0) {
+        return false;
+      }
+
+      // Check if all items have sufficient quantity
+      const sufficientItems = typeItems.filter((item) => {
+        // Assuming 'is_quantity_sufficient' is a property indicating if the quantity is sufficient
+        return item.is_quantity_sufficient === true;
+      });
+
+      return sufficientItems.length === typeItems.length;
     },
   },
 };

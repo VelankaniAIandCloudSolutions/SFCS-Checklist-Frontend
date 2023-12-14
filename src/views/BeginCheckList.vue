@@ -178,6 +178,10 @@
       </div>
     </div>
 
+    <!-- <div>
+      <textarea @input="handleScannerInput" rows="10" cols="30"></textarea>
+    </div> -->
+
     <div class="accordion" id="accordionPanelsStayOpenExample">
       <div class="accordion-item">
         <h2 class="accordion-header" id="panelsStayOpen-headingOne">
@@ -568,10 +572,15 @@ export default {
         Label: [],
         // Initialize other types as needed
       },
+      scannedEntries: [],
     };
   },
   mounted() {
     this.getChecklist();
+    document.addEventListener("scannerInput", (event) => {
+      const scannedCode = event.detail; // Assuming the scanned code is passed in the event
+      this.handleScannerInput(scannedCode);
+    });
     this.pollingInterval = setInterval(() => {
       if (!this.isChecklistPassed) {
         this.getChecklist();
@@ -809,6 +818,19 @@ export default {
 
       return sufficientItems.length === typeItems.length;
     },
+    // handleScannerInput(event) {
+    //   const inputValue = event.target.value;
+    //   console.log(inputValue);
+    //   // Check if the input value ends with "Q3000"
+    //   if (inputValue.endsWith("Q3000")) {
+    //     ue1UUID000130103 - VEPL144380151D < Facts > Q3000;
+
+    //     // Add the scanned entry to the list
+    //     this.scannedEntries.push(inputValue);
+    //     // Clear the textarea
+    //     this.scannedEntries = [];
+    //   }
+    // },
   },
 };
 </script>

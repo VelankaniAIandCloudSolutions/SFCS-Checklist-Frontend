@@ -11,6 +11,9 @@ import ReportsList from "../views/ReportsList.vue";
 import CheckListsDashboard from "../views/CheckListsDashboard.vue";
 import ChecklistReport from "../views/ChecklistReport.vue";
 import TestDashBoard from "../views/TestDashBoard.vue";
+import UserManagement from "../views/UserManagement.vue";
+import EditUser from "../components/EditUser.vue";
+import CreateUser from "../components/CreateUser.vue";
 
 
 const routes = [
@@ -73,12 +76,27 @@ const routes = [
     name: "checklist-details",
     component: ChecklistDetails,
     props: true, // This allows the route params to be passed as props to the component
-  },{
+  },
+  {
     path: "/test",
     name: "test-dashboard",
     component: TestDashBoard,
     props: true, // This allows the route params to be passed as props to the component
   },
+  {
+    path: "/users",
+    name: "users",
+    component: UserManagement,
+  } ,
+   {
+    path: "/users/edit-user/:id",
+    name: 'EditUser', component: EditUser 
+  } ,
+   {
+    path: "/users/create-user",
+    name: 'CreateUser', component: CreateUser 
+  }
+
 ];
 
 const router = createRouter({

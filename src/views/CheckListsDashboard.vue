@@ -470,7 +470,7 @@ export default {
       console.log(formattedData.start_date);
       console.log(formattedData.end_date);
 
-      axios
+      await axios
         .post("store/get-checklist-count/", formattedData)
         .then((response) => {
           this.result = response.data;

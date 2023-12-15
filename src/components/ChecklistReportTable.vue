@@ -64,9 +64,14 @@ export default {
         {
           headerName: "Updated By",
           valueGetter: function (params) {
-            const firstName = params.data.updated_by.first_name || "";
-            const lastName = params.data.updated_by.last_name || "";
-            return firstName || lastName ? `${firstName} ${lastName}` : "";
+            console.log(params.data.updated_by);
+            if (params.data.updated_by != null) {
+              const firstName = params.data.updated_by.first_name || "";
+              const lastName = params.data.updated_by.last_name || "";
+              return firstName || lastName ? `${firstName} ${lastName}` : "";
+            } else {
+              return "";
+            }
           },
         },
         { headerName: "Created At", field: "created_at" },

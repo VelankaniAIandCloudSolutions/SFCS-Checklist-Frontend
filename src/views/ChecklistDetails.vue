@@ -226,8 +226,8 @@
             aria-expanded="false"
             aria-controls="panelsStayOpen-collapseFive"
           >
-            Flex
-            <div v-if="isFlexSufficient == false">
+            Solder Flux
+            <div v-if="isSolderFluxSufficient == false">
               <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
             </div>
             <div v-else>
@@ -241,7 +241,9 @@
           aria-labelledby="panelsStayOpen-headingFive"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['Flex']" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['Solder Flux']"
+            />
           </div>
         </div>
       </div>
@@ -255,8 +257,8 @@
             aria-expanded="false"
             aria-controls="panelsStayOpen-collapseSix"
           >
-            IP
-            <div v-if="isIpSufficient == false">
+            IPA
+            <div v-if="isIpaSufficient == false">
               <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
             </div>
             <div v-else>
@@ -270,7 +272,7 @@
           aria-labelledby="panelsStayOpen-headingSix"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['IP']" />
+            <CheckListTable :checklistItems="filteredChecklistItems['IPA']" />
           </div>
         </div>
       </div>
@@ -284,8 +286,8 @@
             aria-expanded="false"
             aria-controls="panelsStayOpen-collapseSeven"
           >
-            Stencils
-            <div v-if="isStencilsSufficient == false">
+            Solder Wire
+            <div v-if="isSolderWireSufficient == false">
               <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
             </div>
             <div v-else>
@@ -300,7 +302,7 @@
         >
           <div class="accordion-body">
             <CheckListTable
-              :checklistItems="filteredChecklistItems['Stencils']"
+              :checklistItems="filteredChecklistItems['Solder Wire']"
             />
           </div>
         </div>
@@ -315,8 +317,8 @@
             aria-expanded="false"
             aria-controls="panelsStayOpen-collapseEight"
           >
-            Reflow Pallet
-            <div v-if="isReflowPalletSufficient == false">
+            SMT Pallet
+            <div v-if="isSMTPalletSufficient == false">
               <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
             </div>
             <div v-else>
@@ -331,7 +333,7 @@
         >
           <div class="accordion-body">
             <CheckListTable
-              :checklistItems="filteredChecklistItems['Reflow Pallet']"
+              :checklistItems="filteredChecklistItems['SMT Pallet']"
             />
           </div>
         </div>
@@ -377,7 +379,7 @@
             aria-expanded="false"
             aria-controls="panelsStayOpen-collapseTen"
           >
-            Label
+            PCB Serial Number Label
             <div v-if="isLabelSufficient == false">
               <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
             </div>
@@ -392,7 +394,11 @@
           aria-labelledby="panelsStayOpen-headingTen"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['Label']" />
+            <CheckListTable
+              :checklistItems="
+                filteredChecklistItems['PCB Serial Number Label']
+              "
+            />
           </div>
         </div>
       </div>
@@ -416,10 +422,10 @@ export default {
       isPcbSufficient: false,
       isSolderPasteSufficient: false,
       isSolderBarSufficient: false,
-      isFlexSufficient: false,
-      isIpSufficient: false,
-      isStencilsSufficient: false,
-      isReflowPalletSufficient: false,
+      isSolderFluxSufficient: false,
+      isIpaSufficient: false,
+      isSolderWireSufficient: false,
+      isSMTPalletSufficient: false,
       isWavePalletSufficient: false,
       isLabelSufficient: false,
       isChecklistPassed: false,
@@ -430,12 +436,12 @@ export default {
         PCB: [],
         "Solder Paste": [],
         "Solder Bar": [],
-        Flex: [],
-        Ip: [],
-        Stencils: [],
-        "Reflow Pallet": [],
+        "Solder Flux": [],
+        IPA: [],
+        "Solder Wire": [],
+        "SMT Pallet": [],
         "Wave Pallet": [],
-        Label: [],
+        "PCB Serial Number Label": [],
         // Initialize other types as needed
       },
     };
@@ -464,14 +470,16 @@ export default {
           const solderPasteItems =
             this.filterChecklistItemsByType("Solder Paste");
           const solderBarItems = this.filterChecklistItemsByType("Solder Bar");
-          const flexItems = this.filterChecklistItemsByType("Flex");
-          const IpItems = this.filterChecklistItemsByType("IP");
-          const stencilItems = this.filterChecklistItemsByType("Stencils");
-          const reflowPalletItems =
-            this.filterChecklistItemsByType("Reflow Pallet");
+          const solderFluxItems =
+            this.filterChecklistItemsByType("Solder Flux");
+          const IpaItems = this.filterChecklistItemsByType("IPA");
+          const stencilItems = this.filterChecklistItemsByType("Solder Wire");
+          const SMTPalletItems = this.filterChecklistItemsByType("SMT Pallet");
           const wavePalletItems =
             this.filterChecklistItemsByType("Wave Pallet");
-          const labelItems = this.filterChecklistItemsByType("Label");
+          const labelItems = this.filterChecklistItemsByType(
+            "PCB Serial Number Label"
+          );
 
           this.isChecklistPassed = this.checklist.is_passed;
           this.activeBom = this.checklist.bom;
@@ -480,12 +488,12 @@ export default {
             PCB: pcbItems,
             "Solder Paste": solderPasteItems,
             "Solder Bar": solderBarItems,
-            Flex: flexItems,
-            IP: IpItems,
-            Stencils: stencilItems,
-            "Reflow Pallet": reflowPalletItems,
+            "Solder Flux": solderFluxItems,
+            IPA: IpaItems,
+            "Solder Wire": stencilItems,
+            "SMT Pallet": SMTPalletItems,
             "Wave Pallet": wavePalletItems,
-            Label: labelItems,
+            "PCB Serial Number Label": labelItems,
             // Add more types                                                                                                                    as needed
           };
           console.log("filered checklsit items", this.filteredChecklistItems);
@@ -507,21 +515,21 @@ export default {
             "Solder Bar"
           );
           console.log("checking solder bar", this.isSolderBarSufficient);
-          this.isFlexSufficient = this.isItemsSufficient(
+          this.isSolderFluxSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
-            "Flex"
+            "Solder Flux"
           );
-          this.isIpSufficient = this.isItemsSufficient(
+          this.isIpaSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
-            "IP"
+            "IPA"
           );
-          this.isStencilsSufficient = this.isItemsSufficient(
+          this.isSolderWireSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
-            "Stencils"
+            "Solder Wire"
           );
-          this.isReflowPalletSufficient = this.isItemsSufficient(
+          this.isSMTPalletSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
-            "Reflow Pallet"
+            "SMT Pallet"
           );
           this.isWavePalletSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
@@ -529,7 +537,7 @@ export default {
           );
           this.isLabelSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
-            "Label"
+            "PCB Serial Number Label"
           );
 
           this.isChecklistPassed = this.checklist.is_passed;

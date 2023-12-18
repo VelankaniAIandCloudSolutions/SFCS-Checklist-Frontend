@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginForm from "../views/LoginForm.vue";
-import LoginFormTest from "../views/LoginFormTest.vue";
-import LoginThree from "../views/LoginThree.vue";
 import UploadBom from "../views/UploadBom.vue";
 import BomLanding from "../views/BomLanding.vue";
 import BomLineLevel from "../views/BomLineLevel.vue";
@@ -12,12 +10,16 @@ import ChecklistDetails from "../views/ChecklistDetails.vue";
 import ReportsList from "../views/ReportsList.vue";
 import CheckListsDashboard from "../views/CheckListsDashboard.vue";
 import ChecklistReport from "../views/ChecklistReport.vue";
-import TestDashBoard from "../views/TestDashBoard.vue";
 import UserManagement from "../views/UserManagement.vue";
 import EditUser from "../components/EditUser.vue";
 import CreateUser from "../components/CreateUser.vue";
 
 const routes = [
+  {
+    path: "/",
+    name: "Home",
+    component: CheckListsDashboard,
+  },
   {
     path: "/login",
     name: "LoginForm",
@@ -79,12 +81,7 @@ const routes = [
     component: ChecklistDetails,
     props: true, // This allows the route params to be passed as props to the component
   },
-  {
-    path: "/test",
-    name: "test-dashboard",
-    component: TestDashBoard,
-    props: true, // This allows the route params to be passed as props to the component
-  },
+
   {
     path: "/users",
     name: "users",
@@ -100,16 +97,7 @@ const routes = [
     name: "CreateUser",
     component: CreateUser,
   },
-  {
-    path: "/test2",
-    name: "LoginFormTest",
-    component: LoginFormTest,
-  },
-  {
-    path: "/test3",
-    name: "LoginThree",
-    component: LoginThree,
-  },
+
 ];
 
 const router = createRouter({

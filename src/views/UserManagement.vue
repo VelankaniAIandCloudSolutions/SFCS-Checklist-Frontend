@@ -20,16 +20,12 @@
       </div>
       <!-- Buttons Column -->
       <div class="col-md-6 d-flex justify-content-end">
-        <router-link to="/" class="btn btn-secondary ms-2">
-          <i class="fas fa-random me-1"></i> Random Button 1
-        </router-link>
         <router-link to="/users/create-user" class="btn btn-primary ms-2">
           <i class="fas fa-user-plus me-1"></i> Create New User
         </router-link>
       </div>
     </div>
     <div class="container mt-4">
-      <h2 class="mb-4"><i class="fas fa-list-ul me-2"></i> User List</h2>
       <table class="table table-hover">
         <thead>
           <tr>

@@ -57,27 +57,19 @@ export default {
         await axios
           .post("token/login/", formData)
           .then((response) => {
-            const token = response.data.auth_token;
-
-            // Set token in store and Axios headers
             this.$notify({
               title: "Login successful",
-              type: "alert-success", // Bootstrap class for success
+              type: "alert-success",
               duration: 5000,
             });
-            this.$store.commit("setToken", token);
-            axios.defaults.headers.common["Authorization"] = "Token " + token;
-
-            // Save token in localStorage
-            localStorage.setItem("token", token);
-
-            // Log the token
-            console.log("Received Token:", token);
-
-            // Continue with your logic (e.g., redirect to another page)
-            // ...
-            this.$router.push("/");
-            window.location.href = "/";
+            setTimeout(() => {
+              const token = response.data.auth_token;
+              this.$store.commit("setToken", token);
+              axios.defaults.headers.common["Authorization"] = "Token " + token;
+              localStorage.setItem("token", token);
+              console.log("Received Token:", token);
+              window.location.href = "/dashboard";
+            }, 1000);
           })
           .catch((error) => {
             // Handle login error (e.g., display an error message)

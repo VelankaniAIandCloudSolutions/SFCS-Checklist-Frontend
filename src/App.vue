@@ -32,7 +32,6 @@ export default {
   methods: {},
 };
 </script>
-import
 
 <style>
 #app {

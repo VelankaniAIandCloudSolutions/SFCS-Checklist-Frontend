@@ -18,15 +18,6 @@
           </nav>
         </div>
       </div>
-      <!-- Buttons Column -->
-      <div class="col-md-6 d-flex justify-content-end">
-        <router-link to="/" class="btn btn-primary ms-2">
-          Random Button 1
-        </router-link>
-        <router-link to="/" class="btn btn-success ms-2">
-          Random Button 2
-        </router-link>
-      </div>
     </div>
 
     <h6 class="mb-6 animate__animated animate__fadeInUp text-center display-5">

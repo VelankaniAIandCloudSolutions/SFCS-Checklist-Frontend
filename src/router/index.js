@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginForm from "../views/LoginForm.vue";
+import LoginFormTest from "../views/LoginFormTest.vue";
+import LoginThree from "../views/LoginThree.vue";
 import UploadBom from "../views/UploadBom.vue";
 import BomLanding from "../views/BomLanding.vue";
 import BomLineLevel from "../views/BomLineLevel.vue";
@@ -11,7 +13,9 @@ import ReportsList from "../views/ReportsList.vue";
 import CheckListsDashboard from "../views/CheckListsDashboard.vue";
 import ChecklistReport from "../views/ChecklistReport.vue";
 import TestDashBoard from "../views/TestDashBoard.vue";
-
+import UserManagement from "../views/UserManagement.vue";
+import EditUser from "../components/EditUser.vue";
+import CreateUser from "../components/CreateUser.vue";
 
 const routes = [
   {
@@ -38,10 +42,11 @@ const routes = [
     path: "/reports",
     name: "ReportsList",
     component: ReportsList,
-  },  {
+  },
+  {
     path: "/dashboard",
     name: "CheckListsDashboard",
-    component:CheckListsDashboard,
+    component: CheckListsDashboard,
   },
   {
     path: "/checklist-report",
@@ -73,11 +78,37 @@ const routes = [
     name: "checklist-details",
     component: ChecklistDetails,
     props: true, // This allows the route params to be passed as props to the component
-  },{
+  },
+  {
     path: "/test",
     name: "test-dashboard",
     component: TestDashBoard,
     props: true, // This allows the route params to be passed as props to the component
+  },
+  {
+    path: "/users",
+    name: "users",
+    component: UserManagement,
+  },
+  {
+    path: "/users/edit-user/:id",
+    name: "EditUser",
+    component: EditUser,
+  },
+  {
+    path: "/users/create-user",
+    name: "CreateUser",
+    component: CreateUser,
+  },
+  {
+    path: "/test2",
+    name: "LoginFormTest",
+    component: LoginFormTest,
+  },
+  {
+    path: "/test3",
+    name: "LoginThree",
+    component: LoginThree,
   },
 ];
 

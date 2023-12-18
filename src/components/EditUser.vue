@@ -4,12 +4,14 @@
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
         <div class="d-flex align-items-center">
-          <h2 class="mb-0">Users</h2>
+          <h2 class="mb-0"><i class="fas fa-users me-2"></i> Users</h2>
           <span class="ms-3 fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
               <li class="breadcrumb-item">
-                <router-link to="/">Home</router-link>
+                <router-link to="/"
+                  ><i class="fas fa-home me-1"></i> Home</router-link
+                >
               </li>
               <li class="breadcrumb-item active" aria-current="page">
                 Edit User
@@ -21,20 +23,22 @@
       <!-- Buttons Column -->
       <div class="col-md-6 d-flex justify-content-end">
         <router-link to="/" class="btn btn-primary ms-2">
-          Random Button 1
+          <i class="fas fa-random me-1"></i> Random Button 1
         </router-link>
         <router-link to="/create-user" class="btn btn-secondary ms-2">
-          Create a new user
+          <i class="fas fa-user-plus me-1"></i> Create a new user
         </router-link>
       </div>
     </div>
 
     <h6 class="mb-6 animate__animated animate__fadeInUp text-center display-5">
-      Edit User
+      <i class="fas fa-edit me-2"></i> Edit User
     </h6>
     <div class="card animate__animated animate__fadeIn">
       <div class="card-header bg-primary text-white">
-        <h4 class="card-title"><i class="fas fa-user"></i> User Information</h4>
+        <h4 class="card-title">
+          <i class="fas fa-user me-1"></i> User Information
+        </h4>
       </div>
       <div class="card-body">
         <!-- Email -->
@@ -118,7 +122,7 @@
                 id="is_superuser"
               />
               <label class="form-check-label" for="is_superuser"
-                >Is Admin</label
+                ><i class="fas fa-user-shield me-1"></i> Is Admin</label
               >
             </div>
           </div>
@@ -131,7 +135,9 @@
                 class="form-check-input"
                 id="is_staff"
               />
-              <label class="form-check-label" for="is_staff">Is Staff</label>
+              <label class="form-check-label" for="is_staff"
+                ><i class="fas fa-user-cog me-1"></i> Is Staff</label
+              >
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <div class="container" v-if="!$store.state.user.isAuthenticated">
+  <div>
+    <div id="app" v-if="!$store.state.user.isAuthenticated">
       <LoginForm />
     </div>
     <div v-else>

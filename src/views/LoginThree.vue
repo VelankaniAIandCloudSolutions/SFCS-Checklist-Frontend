@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="login">
-      <h1>Velankani SFCS</h1>
-      <form @submit.prevent="handleSubmit">
+      <h1>Login Form</h1>
+      <form action="">
         <div class="input-box">
           <input v-model="email" type="email" placeholder="Email" />
           <i class="fa fa-envelope"></i>
@@ -13,12 +13,17 @@
           <i class="fa fa-lock"></i>
         </div>
 
+        <div class="rembar">
+          <input id="rembar" type="checkbox" />
+          <label for="rembar">remember me</label>
+        </div>
+
         <button type="submit">LOGIN</button>
 
-        <!-- <div class="links">
+        <div class="links">
           <a href="#">Forgot password</a>
           <a href="#">You don't have an account</a>
-        </div> -->
+        </div>
       </form>
     </div>
   </div>
@@ -26,7 +31,6 @@
 
 <script>
 import axios from "axios";
-
 export default {
   data() {
     return {
@@ -36,7 +40,7 @@ export default {
     };
   },
   methods: {
-    async handleSubmit() {
+    handleSubmit() {
       this.$store.commit("setIsLoading", true);
       this.errors = [];
 
@@ -54,7 +58,7 @@ export default {
           password: this.password,
         };
 
-        await axios
+        axios
           .post("token/login/", formData)
           .then((response) => {
             const token = response.data.auth_token;
@@ -67,7 +71,7 @@ export default {
             });
             this.$store.commit("setToken", token);
             axios.defaults.headers.common["Authorization"] = "Token " + token;
-
+            console.log(axios.defaults.headers);
             // Save token in localStorage
             localStorage.setItem("token", token);
 
@@ -76,8 +80,10 @@ export default {
 
             // Continue with your logic (e.g., redirect to another page)
             // ...
-            this.$router.push("/");
+            // this.$router.push({ path: "/" });
             window.location.href = "/";
+            // Always set loading state to false
+            this.$store.commit("setIsLoading", false);
           })
           .catch((error) => {
             // Handle login error (e.g., display an error message)
@@ -88,8 +94,7 @@ export default {
             });
             console.error("Login failed:", error.response.data);
             this.errors.push("Login failed. Please check your credentials.");
-          })
-          .finally(() => {
+
             // Always set loading state to false
             this.$store.commit("setIsLoading", false);
           });
@@ -128,6 +133,10 @@ body {
   height: 400px;
   border-radius: 50%;
   background: #7b66ff;
+  /* transform: scale(0.5) translate(-100%, -100%); */
+  /* transform: translateX(4em); */
+  /* transform: scale(2, 0.5); */
+
   animation: move-up6 2s ease-in infinite alternate-reverse;
 }
 
@@ -139,9 +148,9 @@ body {
   height: 250px;
   border-radius: 50%;
   background: #5fbdff;
+
   animation: move-up6 2s ease-in infinite alternate-reverse;
 }
-
 @keyframes move-up6 {
   to {
     transform: translateY(-50px);

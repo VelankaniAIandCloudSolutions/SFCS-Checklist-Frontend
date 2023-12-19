@@ -9,21 +9,36 @@
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
               <li class="breadcrumb-item">
-                <router-link to="/">Home</router-link>
+                <router-link to="/"
+                  ><i class="fas fa-home me-1"></i>Home</router-link
+                >
+              </li>
+              <li class="breadcrumb-item">
+                <router-link to="/users"
+                  ><i class="fas fa-users me-1"></i>Users</router-link
+                >
               </li>
               <li class="breadcrumb-item active" aria-current="page">
+                <i class="fa fa-user-plus"></i>
                 Create User
               </li>
             </ol>
           </nav>
         </div>
       </div>
+      <!-- Buttons Column -->
+      <div class="col-md-6 mt-4 text-end">
+        <button
+          type="submit"
+          class="btn btn-success btn-sm"
+          @click="createUser"
+        >
+          <i class="fas fa-save me-1"></i> Create User
+        </button>
+      </div>
     </div>
 
-    <h6 class="mb-6 animate__animated animate__fadeInUp text-center display-5">
-      Create User
-    </h6>
-    <div class="card animate__animated animate__fadeIn">
+    <div class="card animate__animated animate__fadeIn mt-5">
       <div class="card-header bg-primary text-white">
         <h4 class="card-title"><i class="fas fa-user"></i> User Information</h4>
       </div>
@@ -60,11 +75,19 @@
               class="form-control"
               id="password"
               required
+              @focus="clearPasswordError"
             />
           </div>
           <small v-if="!newUser.password && formSubmitted" class="text-danger">
             Password is required.
           </small>
+          <!-- Display error message here -->
+          <div v-if="passwordAuthenticationError" class="text-danger">
+            <strong
+              ><i class="fas fa-exclamation-triangle"></i>
+              {{ passwordAuthenticationError }}</strong
+            >
+          </div>
         </div>
         <!-- First Name and Last Name -->
         <div class="mb-3 row">
@@ -149,17 +172,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Create User button -->
-    <div class="mt-4">
-      <button
-        type="submit"
-        class="btn btn-success animate__animated animate__fadeInUp"
-        @click="createUser"
-      >
-        <i class="fas fa-save me-1"></i> Create User
-      </button>
-    </div>
   </div>
 </template>
 
@@ -181,12 +193,15 @@ export default {
         // Add more fields as needed
       },
       formSubmitted: false,
+      passwordAuthenticationError: null,
     };
   },
   methods: {
     createUser() {
       // Set formSubmitted to true before creating a new user
       this.formSubmitted = true;
+      // Reset passwordAuthenticationError
+      this.passwordAuthenticationError = null;
 
       // Check if the form is valid before creating a new user
       if (
@@ -206,9 +221,20 @@ export default {
             this.$router.push("/users");
           })
           .catch((error) => {
-            console.error("Error creating user:", error);
+            // Check if the error is related to password authentication
+            if (error.response && error.response.data.password) {
+              // Set the passwordAuthenticationError message
+              this.passwordAuthenticationError =
+                error.response.data.password[0];
+            } else {
+              console.error("Error creating user:", error);
+            }
           });
       }
+    },
+    clearPasswordError() {
+      // Clear the passwordAuthenticationError when the password field gains focus
+      this.passwordAuthenticationError = null;
     },
   },
 };

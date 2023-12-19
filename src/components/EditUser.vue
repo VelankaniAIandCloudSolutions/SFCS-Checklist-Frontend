@@ -4,7 +4,7 @@
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
         <div class="d-flex align-items-center">
-          <h2 class="mb-0"><i class="fas fa-users me-2"></i> Users</h2>
+          <h2 class="mb-0">Users</h2>
           <span class="ms-3 fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
@@ -13,25 +13,39 @@
                   ><i class="fas fa-home me-1"></i> Home</router-link
                 >
               </li>
+              <li class="breadcrumb-item">
+                <router-link to="/users"
+                  ><i class="fas fa-users me-1"></i> Users</router-link
+                >
+              </li>
               <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-edit me-1"></i>
                 Edit User
               </li>
             </ol>
           </nav>
         </div>
       </div>
-      <!-- Buttons Column -->
-      <div class="col-md-6 d-flex justify-content-end">
-        <router-link to="/create-user" class="btn btn-secondary ms-2">
-          <i class="fas fa-user-plus me-1"></i> Create a new user
-        </router-link>
+      <!-- buttons to the right -->
+      <div class="col-md-6 mt-4 text-end">
+        <button
+          type="submit"
+          class="btn btn-success btn-sm"
+          @click="updateUser"
+        >
+          <i class="fas fa-save me-1"></i> Save Changes
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger ms-2 btn-sm"
+          @click="deleteUser"
+        >
+          <i class="fas fa-trash me-1"></i> Delete User
+        </button>
       </div>
     </div>
 
-    <h6 class="mb-6 animate__animated animate__fadeInUp text-center display-5">
-      <i class="fas fa-edit me-2"></i> Edit User
-    </h6>
-    <div class="card animate__animated animate__fadeIn">
+    <div class="card animate__animated animate__fadeIn mt-5">
       <div class="card-header bg-primary text-white">
         <h4 class="card-title">
           <i class="fas fa-user me-1"></i> User Information
@@ -140,28 +154,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Save Changes and Delete User buttons in the same row -->
-    <div class="row mt-4">
-      <div class="col-md-6">
-        <button
-          type="submit"
-          class="btn btn-success animate__animated animate__fadeInUp"
-          @click="updateUser"
-        >
-          <i class="fas fa-save me-1"></i> Save Changes
-        </button>
-      </div>
-      <div class="col-md-6">
-        <button
-          type="button"
-          class="btn btn-danger ms-2 animate__animated animate__fadeInUp"
-          @click="deleteUser"
-        >
-          <i class="fas fa-trash me-1"></i> Delete User
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -215,6 +207,7 @@ export default {
           .then((response) => {
             console.log("User updated successfully:", response.data);
             // Redirect to the user list page or perform other actions as needed
+
             location.reload();
           })
           .catch((error) => {

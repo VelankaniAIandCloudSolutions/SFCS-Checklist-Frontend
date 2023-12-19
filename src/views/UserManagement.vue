@@ -53,10 +53,16 @@
             <td>
               <router-link
                 :to="{ name: 'EditUser', params: { id: user.id } }"
-                class="btn btn-primary"
+                class="btn btn-primary btn-sm"
               >
                 <i class="fas fa-edit me-1"></i> Edit
               </router-link>
+              <button
+                @click="deleteUser(user.id)"
+                class="btn btn-danger btn-sm ml-3"
+              >
+                <i class="fas fa-trash-alt me-1"></i> Delete
+              </button>
             </td>
           </tr>
         </tbody>
@@ -91,6 +97,24 @@ export default {
     },
     redirectToEditPage(userId) {
       this.$router.push({ name: "EditUser", params: { id: userId } });
+    },
+    deleteUser(userId) {
+      // Confirm deletion with the user
+      if (confirm("Are you sure you want to delete this user?")) {
+        // Delete user data using the delete request
+        axios
+          .delete(`/accounts/users/delete/${userId}/`)
+          .then(() => {
+            console.log("User deleted successfully.");
+            alert("User Deleted successfully!");
+            // Redirect to the user list page or perform other actions as needed
+            this.$router.push("/users");
+          })
+          .catch((error) => {
+            alert("error deleting!");
+            console.error("Error deleting user:", error);
+          });
+      }
     },
   },
 };

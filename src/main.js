@@ -13,12 +13,12 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'admin-lte/dist/css/adminlte.min.css';
 import 'admin-lte/plugins/jquery/jquery.min.js';
 import 'admin-lte/dist/js/adminlte.min.js';
-// if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development') {
     axios.defaults.baseURL = 'http://localhost:8000/api/v1/';
-//   } 
-//   else {
-//     axios.defaults.baseURL = 'http://65.0.76.37:8000/api/v1/';
-//   }
+  } 
+  else {
+    axios.defaults.baseURL = 'https://sfcsdev.xtractautomation.com/api/v1/';
+  }
   
 const app = createApp(App);
 

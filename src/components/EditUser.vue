@@ -207,6 +207,7 @@ export default {
           .then((response) => {
             console.log("User updated successfully:", response.data);
             // Redirect to the user list page or perform other actions as needed
+
             location.reload();
           })
           .catch((error) => {

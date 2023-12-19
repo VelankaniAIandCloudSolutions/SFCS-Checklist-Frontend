@@ -75,11 +75,19 @@
               class="form-control"
               id="password"
               required
+              @focus="clearPasswordError"
             />
           </div>
           <small v-if="!newUser.password && formSubmitted" class="text-danger">
             Password is required.
           </small>
+          <!-- Display error message here -->
+          <div v-if="passwordAuthenticationError" class="text-danger">
+            <strong
+              ><i class="fas fa-exclamation-triangle"></i>
+              {{ passwordAuthenticationError }}</strong
+            >
+          </div>
         </div>
         <!-- First Name and Last Name -->
         <div class="mb-3 row">
@@ -185,12 +193,15 @@ export default {
         // Add more fields as needed
       },
       formSubmitted: false,
+      passwordAuthenticationError: null,
     };
   },
   methods: {
     createUser() {
       // Set formSubmitted to true before creating a new user
       this.formSubmitted = true;
+      // Reset passwordAuthenticationError
+      this.passwordAuthenticationError = null;
 
       // Check if the form is valid before creating a new user
       if (
@@ -210,9 +221,20 @@ export default {
             this.$router.push("/users");
           })
           .catch((error) => {
-            console.error("Error creating user:", error);
+            // Check if the error is related to password authentication
+            if (error.response && error.response.data.password) {
+              // Set the passwordAuthenticationError message
+              this.passwordAuthenticationError =
+                error.response.data.password[0];
+            } else {
+              console.error("Error creating user:", error);
+            }
           });
       }
+    },
+    clearPasswordError() {
+      // Clear the passwordAuthenticationError when the password field gains focus
+      this.passwordAuthenticationError = null;
     },
   },
 };

@@ -58,7 +58,7 @@
                 <i class="fas fa-edit me-1"></i> Edit
               </router-link>
               <button
-                @click="deleteUser(user.id)"
+                @click="deleteUser($event, user.id)"
                 class="btn btn-danger btn-sm ml-3"
               >
                 <i class="fas fa-trash-alt me-1"></i> Delete
@@ -98,8 +98,10 @@ export default {
     redirectToEditPage(userId) {
       this.$router.push({ name: "EditUser", params: { id: userId } });
     },
-    deleteUser(userId) {
+    deleteUser(event, userId) {
+      event.stopPropagation();
       // Confirm deletion with the user
+
       if (confirm("Are you sure you want to delete this user?")) {
         // Delete user data using the delete request
         axios
@@ -108,6 +110,7 @@ export default {
             console.log("User deleted successfully.");
             alert("User Deleted successfully!");
             // Redirect to the user list page or perform other actions as needed
+            this.fetchUsers();
             this.$router.push("/users");
           })
           .catch((error) => {

@@ -17,11 +17,11 @@
         </div>
       </div>
       <!-- Buttons Column -->
-      <div class="col-md-6 d-flex justify-content-end">
-        <router-link to="/create-bom" class="btn btn-primary ms-2">
+      <div class="col-md-6 d-flex justify-content-end mt-4">
+        <!-- <router-link to="/create-bom" class="btn btn-primary btn-sm ms-2">
           Create BOM
-        </router-link>
-        <router-link to="/bom/upload" class="btn btn-secondary ms-2">
+        </router-link> -->
+        <router-link to="/bom/upload" class="btn btn-primary btn-sm ms-2">
           Upload BOM
         </router-link>
       </div>

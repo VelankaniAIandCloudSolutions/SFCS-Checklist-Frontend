@@ -60,11 +60,7 @@ export default {
             const token = response.data.auth_token;
 
             // Set token in store and Axios headers
-            this.$notify({
-              title: "Login successful",
-              type: "alert-success", // Bootstrap class for success
-              duration: 5000,
-            });
+
             this.$store.commit("setToken", token);
             axios.defaults.headers.common["Authorization"] = "Token " + token;
 
@@ -77,6 +73,11 @@ export default {
             // Continue with your logic (e.g., redirect to another page)
             // ...
             this.$router.push("/");
+            this.$notify({
+              title: "Login successful",
+              type: "alert-success", // Bootstrap class for success
+              duration: 5000,
+            });
             window.location.href = "/";
           })
           .catch((error) => {

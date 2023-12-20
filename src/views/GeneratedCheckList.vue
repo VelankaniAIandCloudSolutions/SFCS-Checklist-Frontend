@@ -20,14 +20,37 @@
         </div>
       </div>
     </div>
-    <CheckListsTable style="margin-top: 20px" />
+    <CheckListsTable style="margin-top: 20px" :rowData="rowData" />
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import CheckListsTable from "../components/CheckListsTable.vue";
 export default {
   components: { CheckListsTable },
+  data() {
+    return {
+      rowData: [],
+    };
+  },
+  mounted() {
+    this.fetchData();
+  },
+  methods: {
+    async fetchData() {
+      try {
+        // Fetch BOM data from your API endpoint
+        const response = await axios.get(
+          `store/generated-checklists/${this.$route.params.id}`
+        );
+        this.rowData = response.data;
+        console.log("checklists", response.data);
+      } catch (error) {
+        console.error("Error fetching CheckLists data:", error);
+      }
+    },
+  },
 };
 </script>
 

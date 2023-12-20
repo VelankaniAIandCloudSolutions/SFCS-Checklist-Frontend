@@ -50,6 +50,7 @@
     </div>
     <BomDetailsTableWithoutEdit
       style="margin-top: 20px"
+      :rowData="rowData"
       @rowClicked="handleRowClicked"
       @rowSelected="handleRowSelected"
       @rowDeselected="handleRowDeselected"
@@ -127,6 +128,16 @@ export default {
     };
   },
   methods: {
+    async fetchData() {
+      try {
+        // Fetch BOM data from your API endpoint
+        const response = await axios.get("store/get-boms/");
+        this.rowData = response.data.boms;
+        console.log(response.data.boms);
+      } catch (error) {
+        console.error("Error fetching BOM data:", error);
+      }
+    },
     handleRowClicked(clickedRow) {
       // Handle the clicked row data in the parent component
       console.log("Clicked Row:", clickedRow);
@@ -145,6 +156,7 @@ export default {
       console.log("Row Deselected:");
       this.isButtonEnabled = false;
     },
+
     async checkAndGenerateChecklist() {
       this.$store.commit("setIsLoading", true);
       await axios
@@ -256,6 +268,9 @@ export default {
         // this.clickedRowId = null;
       }
     },
+  },
+  mounted() {
+    this.fetchData();
   },
 };
 </script>

@@ -41,6 +41,7 @@
     <!-- Rest of your component -->
     <BomDetailsTable
       style="margin-top: 20px"
+      :boms="boms"
       @rowClicked="handleRowClicked"
       @rowSelected="handleRowSelected"
     />
@@ -48,15 +49,28 @@
 </template>
 
 <script>
+import axios from "axios";
 import BomDetailsTable from "../components/BomDetailsTable.vue";
 export default {
   components: { BomDetailsTable },
   data() {
     return {
-      selectedRow: null,
+      boms: [],
+      // selectedRow: null,
     };
   },
   methods: {
+    async fetchData() {
+      try {
+        // Fetch BOM data from your API endpoint
+        const response = await axios.get("store/get-boms/");
+        console.log("response.data", response.data);
+        this.boms = response.data.boms;
+        console.log("boms", this.boms);
+      } catch (error) {
+        console.error("Error fetching BOM data:", error);
+      }
+    },
     handleRowClicked(clickedRow) {
       // Handle the clicked row data in the parent component
       console.log("Clicked Row:", clickedRow);
@@ -66,6 +80,10 @@ export default {
       console.log("Row Selected:", rowData);
       this.selectedRow = rowData;
     },
+  },
+  mounted() {
+    // Fetch data when the component is created
+    this.fetchData();
   },
 };
 </script>

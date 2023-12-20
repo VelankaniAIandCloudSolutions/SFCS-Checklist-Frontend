@@ -446,7 +446,6 @@ export default {
   methods: {
     async getChecklist() {
       this.$store.commit("setIsLoading", true);
-      this.$store.commit("setIsLoading", false);
       await axios
         .get(`store/get-checklist-details/${this.$route.params.id}/`)
         .then((response) => {

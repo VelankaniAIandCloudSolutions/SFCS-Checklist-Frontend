@@ -13,7 +13,6 @@
   </div>
   <div v-else class="container">
     <div class="row align-items-center">
-      <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
         <div class="d-flex align-items-center">
           <h2 class="mb-0">Checklist</h2>
@@ -86,7 +85,6 @@
             ></button>
           </div>
           <div class="modal-body">
-            <!-- Display the generated QR code here -->
             <div v-if="isChecklistPassed">
               <div id="printable-content" v-if="generatedQRCode">
                 <img :src="generatedQRCode" alt="QR Code" />
@@ -593,7 +591,6 @@ export default {
         // Initialize other types as needed
       },
       scannedEntries: [],
-      showLoading: false,
     };
   },
   mounted() {
@@ -605,7 +602,7 @@ export default {
         clearInterval(this.pollingInterval);
         this.$notify({
           title: "BOM Check Passed",
-          type: "bg-success-subtle text-danger",
+          type: "bg-success-subtle text-success",
           duration: "5000",
         });
       }
@@ -616,14 +613,13 @@ export default {
   },
 
   methods: {
-    async getChecklist() {
+    async getChecklistBeginning() {
       this.$store.commit("setIsLoading", true);
       await axios
         .get(`store/get-active-checklist/${this.$route.params.id}/`)
         .then((response) => {
-          console.log("active_checklist", response.data);
+          console.log(response.data);
           this.checklist = response.data.checklist;
-          console.log("checklist", response.data.checklist);
           this.checklistItems = this.checklist.checklist_items;
           console.log("chehcklist items hereeeeee", this.checklistItems);
           const rawMaterialItems =
@@ -655,7 +651,6 @@ export default {
             "SMT Pallet": smtPalletItems,
             "Wave Pallet": wavePalletItems,
             "PCB Serial Number Label": labelItems,
-            // Add more types                                                                                                                    as needed
           };
           console.log("filered checklsit items", this.filteredChecklistItems);
           this.isRawMaterialSufficient = this.isItemsSufficient(
@@ -710,7 +705,7 @@ export default {
           if (this.checklist.qr_code_link) {
             this.generatedQRCode = this.checklist.qr_code_link;
           }
-          this.showLoading = false;
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
           console.log("error:", error);
@@ -719,7 +714,7 @@ export default {
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
-          this.showLoading = false;
+          this.$store.commit("setIsLoading", false);
         });
     },
     async getChecklist() {
@@ -824,9 +819,9 @@ export default {
           });
         });
     },
-
     async endChecklist() {
-      this.showLoading = true;
+      this.$store.commit("setIsLoading", true);
+
       await axios
         .get(`store/end-checklist/${this.checklist.id}/`)
         .then((response) => {
@@ -848,7 +843,7 @@ export default {
           }
           clearInterval(this.pollingInterval);
           this.$router.push(`/generated-checklists/${this.$route.params.id}`);
-          this.showLoading = false;
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
           console.log("error:", error);
@@ -858,7 +853,7 @@ export default {
             duration: "5000",
           });
           clearInterval(this.pollingInterval);
-          this.showLoading = false;
+          this.$store.commit("setIsLoading", false);
         });
     },
     async generateQRCode() {
@@ -881,7 +876,7 @@ export default {
         .post(`store/save-qr-code/${this.checklist.id}/`, postData)
         .then((response) => {
           console.log(response.data);
-          this.generateQRCode = postData.qrCodeDataURL;
+          this.generatedQRCode = postData.qrCodeDataURL;
           this.$notify({
             title: "QR Code generated and saved successfully",
             type: "bg-success-subtle text-success",
@@ -920,7 +915,7 @@ export default {
       // Check if there are no items of the specified type
       if (typeItems) {
         if (typeItems.length === 0) {
-          return false;
+          return true;
         }
 
         // Check if all items have sufficient quantity

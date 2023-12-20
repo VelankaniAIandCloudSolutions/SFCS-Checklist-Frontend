@@ -24,6 +24,16 @@
               data-bs-toggle="modal"
               data-bs-target="#generateLabelModal"
               class="btn btn-success me-2"
+              v-if="generatedQRCode"
+            >
+              View Generated Label
+            </button>
+            <button
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#generateLabelModal"
+              class="btn btn-success me-2"
+              v-else
             >
               Generate Label
             </button>
@@ -53,20 +63,41 @@
             ></button>
           </div>
           <div class="modal-body">
-            You can only generate a label if all checks are passed
+            <div v-if="isChecklistPassed">
+              <div id="printable-content" v-if="generatedQRCode">
+                <img :src="generatedQRCode" alt="QR Code" />
+              </div>
+              <p v-else>
+                All Checks passed successfully, generate a label by pressing the
+                generate button.
+              </p>
+            </div>
+            <div v-else>
+              You can only generate a label if all checks are passed
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">
               Cancel
             </button>
-            <button
-              v-if="isChecklistPassed"
-              type="button"
-              class="btn btn-success"
-              data-bs-dismiss="modal"
-            >
-              Generate
-            </button>
+            <div v-if="isChecklistPassed">
+              <button
+                v-if="generatedQRCode"
+                type="button"
+                class="btn btn-success"
+                @click="printQRCode"
+              >
+                Print
+              </button>
+              <button
+                v-else
+                type="button"
+                class="btn btn-success"
+                @click="generateQRCode"
+              >
+                Generate
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -409,6 +440,8 @@
 <script>
 import CheckListTable from "../components/CheckListTable"; // Adjust the path based on your actual file structure
 import axios from "axios";
+import QRCode from "qrcode";
+
 export default {
   components: {
     CheckListTable,
@@ -444,6 +477,7 @@ export default {
         "PCB Serial Number Label": [],
         // Initialize other types as needed
       },
+      generatedQRCode: "",
     };
   },
   mounted() {
@@ -547,6 +581,9 @@ export default {
           ) {
             this.isChecklistEnded = true;
           }
+          if (this.checklist.qr_code_link) {
+            this.generatedQRCode = this.checklist.qr_code_link;
+          }
           this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
@@ -562,30 +599,66 @@ export default {
     filterChecklistItemsByType(type) {
       return this.checklistItems.filter((item) => {
         const itemType = item.checklist_item_type;
-
-        // Check if checklist_item_type is not null and has a name property
         if (itemType && itemType.name) {
           return itemType.name.toLowerCase() === type.toLowerCase();
         }
-
-        // Return false if checklist_item_type is null or has no name property
         return false;
       });
     },
     isItemsSufficient(checklistItems, type) {
       const typeItems = this.filteredChecklistItems[type];
-      // Check if there are no items of the specified type
       if (typeItems.length === 0) {
-        return false;
+        return true;
       }
-
-      // Check if all items have sufficient quantity
       const sufficientItems = typeItems.filter((item) => {
-        // Assuming 'is_quantity_sufficient' is a property indicating if the quantity is sufficient
         return item.is_quantity_sufficient === true;
       });
 
       return sufficientItems.length === typeItems.length;
+    },
+    async generateQRCode() {
+      const uniqueCode = this.generateUniqueCode();
+      console.log(uniqueCode);
+      const qrCodeDataURL = await QRCode.toDataURL(uniqueCode);
+      const postData = {
+        uniqueCode: uniqueCode,
+        qrCodeDataURL: qrCodeDataURL,
+      };
+      this.saveQRCode(postData);
+    },
+    generateUniqueCode() {
+      const timestamp = Date.now().toString();
+      const randomString = Math.random().toString(36).substring(7);
+      return `${timestamp}-${randomString}`;
+    },
+    async saveQRCode(postData) {
+      await axios
+        .post(`store/save-qr-code/${this.checklist.id}/`, postData)
+        .then((response) => {
+          console.log(response.data);
+          this.generatedQRCode = postData.qrCodeDataURL;
+          this.$notify({
+            title: "QR Code generated and saved successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+        })
+        .catch((error) => {
+          console.log("error:", error);
+          this.$notify({
+            title: "An error occured, please try again later",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        });
+    },
+    printQRCode() {
+      if (this.generatedQRCode) {
+        const printableContent = document.getElementById("printable-content");
+        const printWindow = window.open("", "", "height=1000,width=1000");
+        printWindow.document.write(printableContent.innerHTML);
+        printWindow.print();
+      }
     },
   },
 };

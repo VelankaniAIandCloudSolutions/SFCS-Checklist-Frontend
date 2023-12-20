@@ -174,6 +174,9 @@
           <div class="col">
             <strong>Issue Date:</strong> {{ activeBom.issue_date }}
           </div>
+          <div class="col">
+            <strong>Batch Quantity:</strong> {{ checklist.batch_quantity }}
+          </div>
         </div>
       </div>
     </div>
@@ -605,14 +608,13 @@ export default {
       await axios
         .get(`store/get-active-checklist/${this.$route.params.id}/`)
         .then((response) => {
-          console.log(response.data);
+          console.log("active_checklist", response.data);
           this.checklist = response.data.checklist;
+          console.log("checklist", response.data.checklist);
           this.checklistItems = this.checklist.checklist_items;
           console.log("chehcklist items hereeeeee", this.checklistItems);
           const rawMaterialItems =
             this.filterChecklistItemsByType("Raw Material");
-
-          console.log(rawMaterialItems);
 
           const pcbItems = this.filterChecklistItemsByType("PCB");
           const solderPasteItems =

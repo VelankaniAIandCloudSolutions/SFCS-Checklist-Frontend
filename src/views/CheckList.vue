@@ -22,9 +22,11 @@
         <div class="container has-text-centered">
           <div class="d-flex">
             <button
-              @click="checkAndGenerateChecklist"
+              type="button"
               :disabled="!isButtonEnabled"
               class="btn btn-primary btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
             >
               Generate New Checklist
             </button>
@@ -52,6 +54,56 @@
       @rowSelected="handleRowSelected"
       @rowDeselected="handleRowDeselected"
     />
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Fill the Required Batch Quantity
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input
+              type="number"
+              class="form-control"
+              id="requiredBatchQuantity"
+              v-model="batch_quantity"
+              placeholder="Enter Batch Quantity"
+              min="1"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              @click="checkAndGenerateChecklist"
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Generate Checklist
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -71,6 +123,7 @@ export default {
       isButtonEnabled: false,
       isExisting: false,
       isActive: false,
+      batch_quantity: 1,
     };
   },
   methods: {
@@ -125,8 +178,11 @@ export default {
     },
     async generateChecklist() {
       this.$store.commit("setIsLoading", true);
+      const requestData = {
+        batch_quantity: this.batch_quantity, // Use the name you are using for batch_quantity
+      };
       await axios
-        .post(`store/generate-new-checklist/${this.clickedRowId}/`)
+        .post(`store/generate-new-checklist/${this.clickedRowId}/`, requestData)
         .then((response) => {
           console.log(response.data);
           this.$router.push(`/begin-checklist/${this.clickedRowId}`);

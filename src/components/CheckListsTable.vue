@@ -40,6 +40,7 @@ export default {
         },
         { headerName: "Product Name", field: "bom.product.name" },
         { headerName: "Product Code", field: "bom.product.product_code" },
+        { headerName: "Batch Quantity", field: "batch_quantity" },
         { headerName: "Updated At", field: "updated_at" },
         { headerName: "Status", field: "status" },
 
@@ -69,7 +70,7 @@ export default {
           `store/generated-checklists/${this.$route.params.id}`
         );
         this.rowData = response.data;
-        console.log(response.data);
+        console.log("checklists", response.data);
       } catch (error) {
         console.error("Error fetching CheckLists data:", error);
       }
@@ -94,16 +95,13 @@ export default {
       button.innerHTML = `<i class="fas fa-eye"></i>`; // Use an eye icon for view
       button.classList.add("btn", "btn-success");
 
-      button.addEventListener("click", () =>
-        this.onViewClick(params.data)
-      );
+      button.addEventListener("click", () => this.onViewClick(params.data));
       return button;
     },
     onViewClick(data) {
       if (data.status === "In Progress") {
         this.$router.push(`/begin-checklist/${data.bom.id}`);
-      }
-       else {
+      } else {
         this.$router.push(`/checklist-details/${data.id}`);
       }
     },

@@ -1,13 +1,14 @@
 <template>
-  <div class="container" v-if="showLoading">
-    <div class="text-center mt-6">
-      <div
-        class="spinner-border"
-        style="width: 5rem; height: 5rem"
-        role="status"
-      >
-        <span class="visually-hidden">Loading...</span>
-      </div>
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
     </div>
   </div>
   <div v-else class="container">
@@ -183,6 +184,9 @@
           </div>
           <div class="col">
             <strong>Issue Date:</strong> {{ activeBom.issue_date }}
+          </div>
+          <div class="col">
+            <strong>Batch Quantity:</strong> {{ checklist.batch_quantity }}
           </div>
         </div>
       </div>
@@ -612,13 +616,14 @@ export default {
   },
 
   methods: {
-    async getChecklistBeginning() {
-      this.showLoading = true;
+    async getChecklist() {
+      this.$store.commit("setIsLoading", true);
       await axios
         .get(`store/get-active-checklist/${this.$route.params.id}/`)
         .then((response) => {
-          console.log(response.data);
+          console.log("active_checklist", response.data);
           this.checklist = response.data.checklist;
+          console.log("checklist", response.data.checklist);
           this.checklistItems = this.checklist.checklist_items;
           console.log("chehcklist items hereeeeee", this.checklistItems);
           const rawMaterialItems =

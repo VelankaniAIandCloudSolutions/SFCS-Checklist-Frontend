@@ -1,10 +1,22 @@
 <template>
-  <div class="container">
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
+  <div v-else class="container">
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
 
       <div class="d-flex align-items-center mt-4">
-        <h2 class="mb-0">Bill Of Materials</h2>
+        <h2 class="mb-0">Upload Bill Of Materials</h2>
         <span class="ms-3 fs-4 text-muted">|</span>
         <nav aria-label="breadcrumb" class="d-inline-block ms-3">
           <ol class="breadcrumb bg-transparent m-0 p-0">
@@ -25,13 +37,9 @@
         </nav>
       </div>
     </div>
-    <h3 class="text-center mt-4">
-      <i class="fas fa-file-upload mr-2"></i>
-      Upload the BOM
-    </h3>
 
     <!-- Form Section -->
-    <section class="card p-3 mb-4">
+    <section class="card p-3 mb-4 mt-4">
       <!-- Row 1: Product Name & Product Code -->
       <div class="row mb-3">
         <!-- Product Name -->
@@ -185,13 +193,31 @@ export default {
         })
         .then((response) => {
           console.log(response.data);
-          this.$notify({
-            title: "BOM Uploaded Successfully",
-            type: "bg-success-subtle text-success",
-            duration: "5000",
-          });
-          this.$router.push("/bom");
-          this.$store.commit("setIsLoading", false);
+          const task_id = response.data.task_id;
+          if (
+            response.data.task_status === "IN PROGRESS" ||
+            response.data.task_status === "PENDING"
+          ) {
+            setTimeout(() => {
+              this.checkTaskStatus(task_id);
+            }, 10000);
+          } else if (response.data.task_status === "SUCCESS") {
+            this.$store.commit("setIsLoading", false);
+
+            this.$notify({
+              title: "BOM Uploaded Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+            this.$router.push("/bom");
+          } else {
+            this.$notify({
+              title: "BOM Upload Failed",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+            this.$store.commit("setIsLoading", false);
+          }
         })
         .catch((error) => {
           console.log("error:", error);
@@ -202,6 +228,42 @@ export default {
           });
           this.$store.commit("setIsLoading", false);
         });
+    },
+    async checkTaskStatus(taskId) {
+      try {
+        const response = await axios.get(`store/check-task-status/${taskId}/`);
+        if (
+          response.data.task_status === "IN PROGRESS" ||
+          response.data.task_status === "PENDING"
+        ) {
+          setTimeout(() => {
+            this.checkTaskStatus(taskId);
+          }, 10000);
+        } else if (response.data.task_status === "SUCCESS") {
+          this.$notify({
+            title: "BOM Uploaded Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$router.push("/bom");
+          this.$store.commit("setIsLoading", false);
+        } else {
+          this.$notify({
+            title: "BOM Upload Failed",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
+        });
+        this.$store.commit("setIsLoading", false);
+      }
     },
     handleFileUpload(event) {
       const file = event.target.files[0];

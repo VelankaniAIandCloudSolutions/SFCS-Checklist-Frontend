@@ -59,7 +59,7 @@ export default {
           .then((response) => {
             this.$notify({
               title: "Login successful",
-              type: "alert-success",
+              type: "bg-success-subtle text-success",
               duration: 5000,
             });
             setTimeout(() => {
@@ -73,6 +73,7 @@ export default {
           })
           .catch((error) => {
             // Handle login error (e.g., display an error message)
+
             this.$notify({
               title: "Login failed. Please check your credentials.",
               type: "alert-danger", // Bootstrap class for danger/error

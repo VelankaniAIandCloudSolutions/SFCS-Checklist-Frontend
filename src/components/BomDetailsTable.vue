@@ -1,10 +1,10 @@
 <template>
   <div>
     <ag-grid-vue
-      v-if="rowData.length > 0"
+      v-if="boms.length > 0"
       style="height: 500px"
       class="ag-theme-quartz"
-      :rowData="rowData"
+      :rowData="boms"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -19,15 +19,25 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
-import axios from "axios";
+
 export default {
-  name: "YourComponentName", // Replace with your component name
+  name: "BombDetailsTable", // Replace with your component name
   components: {
     AgGridVue,
   },
+  props: {
+    // id: {
+    //   type: Number,
+    //   required: true,
+    // },
+    boms: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
-      rowData: [], // Initialize rowData as an empty array
+      // Initialize rowData as an empty array
       colDefs: [
         {
           field: "id", // Added "id" field
@@ -58,21 +68,7 @@ export default {
       selectedRows: [],
     };
   },
-  async mounted() {
-    // Fetch data when the component is mounted
-    await this.fetchData();
-  },
   methods: {
-    async fetchData() {
-      try {
-        // Fetch BOM data from your API endpoint
-        const response = await axios.get("store/get-boms/");
-        this.rowData = response.data.boms;
-        console.log(response.data.boms);
-      } catch (error) {
-        console.error("Error fetching BOM data:", error);
-      }
-    },
     onRowClicked(params) {
       // Emit an event with the clicked row data
       this.$emit("rowClicked", params.data);

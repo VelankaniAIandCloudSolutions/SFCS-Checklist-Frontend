@@ -18,16 +18,25 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
-import axios from "axios";
 
 export default {
   name: "App",
   components: {
     AgGridVue,
   },
+  props: {
+    // id: {
+    //   type: Number,
+    //   required: true,
+    // },
+    rowData: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
-      rowData: [], // Add more rows as needed
+      // Add more rows as needed
 
       colDefs: [
         {
@@ -56,19 +65,8 @@ export default {
       selectedRows: [],
     };
   },
-  async mounted() {
-    await this.fetchData();
-  },
+
   methods: {
-    async fetchData() {
-      try {
-        const response = await axios.get("store/get-boms/");
-        this.rowData = response.data.boms;
-        console.log(response.data.boms);
-      } catch (error) {
-        console.error("Error fetching BOM data:", error);
-      }
-    },
     onRowClicked(params) {
       this.$emit("rowClicked", params.data);
     },

@@ -19,14 +19,19 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
-import axios from "axios";
+
 export default {
   components: {
     AgGridVue,
   },
+  props: {
+    rowData: {
+      type: Array,
+    },
+  },
   data() {
     return {
-      rowData: [], // Initialize rowData as an empty array
+      // Initialize rowData as an empty array
       colDefs: [
         {
           field: "id", // Added "id" field
@@ -37,6 +42,14 @@ export default {
           field: "id",
           headerCheckboxSelection: true,
           checkboxSelection: true,
+        },
+        {
+          headerName: "Unique Code",
+          field: "unique_code",
+          valueFormatter: function (params) {
+            // Check if unique code is null, and display 'null' if true
+            return params.value === null ? "null" : params.value;
+          },
         },
         { headerName: "Product Name", field: "bom.product.name" },
         { headerName: "Product Code", field: "bom.product.product_code" },
@@ -58,23 +71,11 @@ export default {
       selectedRows: [],
     };
   },
-  async mounted() {
-    // Fetch data when the component is mounted
-    await this.fetchData();
-  },
+  // mounted() {
+  //   // Fetch data when the component is mounted
+  //   this.fetchData();
+  // },
   methods: {
-    async fetchData() {
-      try {
-        // Fetch BOM data from your API endpoint
-        const response = await axios.get(
-          `store/generated-checklists/${this.$route.params.id}`
-        );
-        this.rowData = response.data;
-        console.log("checklists", response.data);
-      } catch (error) {
-        console.error("Error fetching CheckLists data:", error);
-      }
-    },
     onRowClicked(params) {
       // Emit an event with the clicked row data
       this.$emit("rowClicked", params.data);

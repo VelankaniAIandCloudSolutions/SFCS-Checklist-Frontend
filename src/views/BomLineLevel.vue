@@ -1,6 +1,18 @@
 <template>
   <div>
-    <div class="container mt-1">
+    <div v-if="$store.state.isLoading" class="container text-center">
+      <div
+        class="spinner-border mt-5"
+        style="width: 4rem; height: 4rem"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div>
+        <b> Loading... </b>
+      </div>
+    </div>
+    <div v-else class="container mt-1">
       <div class="row align-items-center">
         <!-- Heading and Breadcrumb Column -->
         <div class="col-md-6">
@@ -95,14 +107,17 @@ export default {
     async fetchData() {
       // Make an API request to get the BOM data by ID (similar to how you're fetching it in the original code)
       // For example:
+      this.$store.commit("setIsLoading", true);
       await axios
         .get(`store/get-boms/${this.$route.params.id}/`)
         .then((response) => {
           console.log(response.data);
           this.bom = response.data.bom;
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
+          this.$store.commit("setIsLoading", false);
         });
     },
   },

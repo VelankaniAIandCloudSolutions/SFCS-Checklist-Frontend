@@ -1,5 +1,5 @@
 <template>
-  <div class="card card-outline card-primary mt-2">
+  <div class="card card-outline card-primary mt-3">
     <div class="card-body">
       <div class="row">
         <div class="col-md-3 text-center">
@@ -57,6 +57,14 @@ export default {
         {
           headerName: "Checklist ID",
           field: "id",
+        },
+        {
+          headerName: "Unique Code",
+          field: "unique_code",
+          valueFormatter: function (params) {
+            // Check if unique code is null, and display 'null' if true
+            return params.value === null ? "null" : params.value;
+          },
         },
         { headerName: "Product Name", field: "bom.product.name" },
         { headerName: "Product Code", field: "bom.product.product_code" },

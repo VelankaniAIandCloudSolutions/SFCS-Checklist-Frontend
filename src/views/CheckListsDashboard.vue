@@ -1,5 +1,17 @@
 <template>
-  <div class="container">
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
+  <div v-else class="container">
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
@@ -8,8 +20,11 @@
           <span class="ms-3 fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item">
+                <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+              </li>
               <li class="breadcrumb-item active" aria-current="page">
+                <i class="fa fa-tachometer me-1" aria-hidden="true"></i>
                 Dashboard
               </li>
             </ol>
@@ -469,12 +484,13 @@ export default {
       console.log(formattedData.selected_option);
       console.log(formattedData.start_date);
       console.log(formattedData.end_date);
-
+      this.$store.commit("setIsLoading", true);
       await axios
         .post("store/get-checklist-count/", formattedData)
         .then((response) => {
           this.result = response.data;
           console.log("backend data", this.result);
+          this.$store.commit("setIsLoading", false);
           // const modalElement = document.getElementById("exampleModal");
           // if (modalElement) {
           //   const modal = new bootstrap.Modal(modalElement);
@@ -484,6 +500,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          this.$store.commit("setIsLoading", false);
         });
     },
     setSelectedOptionAndFetchData() {

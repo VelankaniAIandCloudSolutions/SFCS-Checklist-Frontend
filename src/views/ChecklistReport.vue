@@ -1,23 +1,38 @@
 <template>
-  <div class="container">
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
+  <div v-else class="container">
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
-      <div class="col-md-6 mt-4">
-        <div class="d-flex align-items-center">
-          <h2 class="mb-0">Checklist Report</h2>
-          <span class="ms-3 fs-4 text-muted">|</span>
-          <nav aria-label="breadcrumb" class="d-inline-block ms-3">
-            <ol class="breadcrumb bg-transparent m-0 p-0">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item active">
-                <router-link to="/reports">Reports</router-link>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">
-                Checklist Report
-              </li>
-            </ol>
-          </nav>
-        </div>
+
+      <div class="d-flex align-items-center mt-4">
+        <h2 class="mb-0">Checklist Report</h2>
+        <span class="ms-3 fs-4 text-muted">|</span>
+        <nav aria-label="breadcrumb" class="d-inline-block ms-3">
+          <ol class="breadcrumb bg-transparent m-0 p-0">
+            <li class="breadcrumb-item">
+              <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+            </li>
+            <li class="breadcrumb-item active">
+              <router-link to="/reports"
+                ><i class="fas fa-chart-bar me-1"></i>Reports</router-link
+              >
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <i class="fas fa-file-alt me-1"></i> Reports Checklist
+            </li>
+          </ol>
+        </nav>
       </div>
     </div>
     <ChecklistReportTable :checklists="checklists" style="margin-top: 20px" />

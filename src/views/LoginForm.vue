@@ -13,7 +13,7 @@
           <i class="fa fa-lock"></i>
         </div>
 
-        <button type="submit">LOGIN</button>
+        <button type="submit">Login</button>
 
         <!-- <div class="links">
           <a href="#">Forgot password</a>
@@ -271,7 +271,7 @@ a {
 .login form button {
   width: 100%;
   border: none;
-  padding: 1rem 1rem 1rem 2.7rem;
+  padding: 1rem 1rem 1rem 1rem;
   border-radius: 10px;
   color: #fff;
   margin-bottom: 30px;

@@ -20,8 +20,11 @@
           <span class="ms-3 fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item">
+                <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+              </li>
               <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-clipboard-list me-1"></i>
                 Bill Of Materials
               </li>
             </ol>

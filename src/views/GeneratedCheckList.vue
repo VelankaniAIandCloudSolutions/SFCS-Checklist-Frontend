@@ -20,11 +20,17 @@
           <span class="fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
               <li class="breadcrumb-item">
-                <router-link to="/checklist">Checklist</router-link>
+                <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+              </li>
+              <li class="breadcrumb-item">
+                <router-link to="/checklist">
+                  <i class="fas fa-list-alt me-1"></i>
+                  Checklist</router-link
+                >
               </li>
               <li class="breadcrumb-item active" aria-current="page">
+                <i class="fa-solid fa-list-check me-1"></i>
                 Generated Checklists
               </li>
             </ol>

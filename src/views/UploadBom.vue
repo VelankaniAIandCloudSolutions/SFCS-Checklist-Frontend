@@ -1,9 +1,34 @@
 <template>
   <div class="container">
-    <h1 class="text-center mb-4">
+    <div class="row align-items-center">
+      <!-- Heading and Breadcrumb Column -->
+
+      <div class="d-flex align-items-center mt-4">
+        <h2 class="mb-0">Bill Of Materials</h2>
+        <span class="ms-3 fs-4 text-muted">|</span>
+        <nav aria-label="breadcrumb" class="d-inline-block ms-3">
+          <ol class="breadcrumb bg-transparent m-0 p-0">
+            <li class="breadcrumb-item">
+              <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+            </li>
+            <li class="breadcrumb-item">
+              <router-link to="/bom">
+                <i class="fas fa-clipboard-list me-1"></i>
+                Bill Of Materials
+              </router-link>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <i class="fas fa-upload me-1"></i>
+              Upload the bom
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    <h3 class="text-center mt-4">
       <i class="fas fa-file-upload mr-2"></i>
       Upload the BOM
-    </h1>
+    </h3>
 
     <!-- Form Section -->
     <section class="card p-3 mb-4">

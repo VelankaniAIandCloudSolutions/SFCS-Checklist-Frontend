@@ -21,11 +21,17 @@
           <span class="ms-3 fs-4 text-muted me-3">|</span>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent m-0 p-0 justify-content-end">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">
-                <router-link to="/checklist">Checklist</router-link>
+              <li class="breadcrumb-item">
+                <a href="/"> <i class="fas fa-home me-1"></i>Home</a>
               </li>
               <li class="breadcrumb-item active" aria-current="page">
+                <router-link to="/checklist">
+                  <i class="fas fa-list-alt me-1"></i>
+                  Checklist</router-link
+                >
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-spinner me-1"></i>
                 Ongoing Checklist
               </li>
             </ol>

@@ -43,6 +43,14 @@ export default {
           headerCheckboxSelection: true,
           checkboxSelection: true,
         },
+        {
+          headerName: "Unique Code",
+          field: "unique_code",
+          valueFormatter: function (params) {
+            // Check if unique code is null, and display 'null' if true
+            return params.value === null ? "null" : params.value;
+          },
+        },
         { headerName: "Product Name", field: "bom.product.name" },
         { headerName: "Product Code", field: "bom.product.product_code" },
         { headerName: "Batch Quantity", field: "batch_quantity" },

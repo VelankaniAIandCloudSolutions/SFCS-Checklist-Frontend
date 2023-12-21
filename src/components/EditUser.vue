@@ -1,5 +1,17 @@
 <template>
-  <div class="container">
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
+  <div v-else class="container">
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
@@ -183,13 +195,16 @@ export default {
   methods: {
     fetchUserData() {
       // Fetch user data based on the user ID from the backend
+      this.$store.commit("setIsLoading", true);
       axios
         .get(`/accounts/users/${this.userId}/`)
         .then((response) => {
           console.log("edit user response data", response.data);
           this.editedUser = response.data;
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
+          this.$store.commit("setIsLoading", false);
           console.error("Error fetching user data:", error);
         });
     },
@@ -202,28 +217,35 @@ export default {
     updateUser() {
       // Update user data using the put request
       if (confirm("Are you sure you want to update this user?")) {
+        this.$store.commit("setIsLoading", true);
         axios
           .put(`/accounts/users/update/${this.userId}/`, this.editedUser)
           .then((response) => {
             console.log("User updated successfully:", response.data);
             // Redirect to the user list page or perform other actions as needed
-
-            location.reload();
+            this.$store.commit("setIsLoading", false);
+            alert("User Updated successfully!");
+            // location.reload();
           })
           .catch((error) => {
             console.error("Error updating user:", error);
+            this.$store.commit("setIsLoading", false);
           });
       }
     },
     deleteUser() {
       // Confirm deletion with the user
       if (confirm("Are you sure you want to delete this user?")) {
+        this.$store.commit("setIsLoading", true);
         // Delete user data using the delete request
         axios
           .delete(`/accounts/users/delete/${this.userId}/`)
           .then(() => {
             console.log("User deleted successfully.");
+
+            this.$store.commit("setIsLoading", false);
             alert("User Deleted successfully!");
+
             // Redirect to the user list page or perform other actions as needed
             this.$router.push("/users");
           })

@@ -71,6 +71,7 @@ export default {
             console.log("Received Token:", token);
 
             // Continue with your logic (e.g., redirect to another page)
+
             // ...
             this.$router.push("/");
             this.$notify({
@@ -82,6 +83,7 @@ export default {
           })
           .catch((error) => {
             // Handle login error (e.g., display an error message)
+
             this.$notify({
               title: "Login failed. Please check your credentials.",
               type: "alert-danger", // Bootstrap class for danger/error

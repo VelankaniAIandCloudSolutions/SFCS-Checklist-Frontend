@@ -1,5 +1,17 @@
 <template>
-  <div class="container">
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
+  <div v-else class="container">
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
@@ -131,11 +143,14 @@ export default {
     async fetchData() {
       try {
         // Fetch BOM data from your API endpoint
+        this.$store.commit("setIsLoading", true);
         const response = await axios.get("store/get-boms/");
         this.rowData = response.data.boms;
         console.log(response.data.boms);
+        this.$store.commit("setIsLoading", false);
       } catch (error) {
         console.error("Error fetching BOM data:", error);
+        this.$store.commit("setIsLoading", false);
       }
     },
     handleRowClicked(clickedRow) {

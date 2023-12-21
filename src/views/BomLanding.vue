@@ -63,12 +63,15 @@ export default {
     async fetchData() {
       try {
         // Fetch BOM data from your API endpoint
+        this.$store.commit("setIsLoading", true);
         const response = await axios.get("store/get-boms/");
         console.log("response.data", response.data);
         this.boms = response.data.boms;
         console.log("boms", this.boms);
+        this.$store.commit("setIsLoading", false);
       } catch (error) {
         console.error("Error fetching BOM data:", error);
+        this.$store.commit("setIsLoading", false);
       }
     },
     handleRowClicked(clickedRow) {

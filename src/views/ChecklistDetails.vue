@@ -1,5 +1,17 @@
 <template>
-  <div class="container">
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
+  <div v-else class="container">
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">

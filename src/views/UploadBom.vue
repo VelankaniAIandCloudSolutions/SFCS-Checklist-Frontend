@@ -238,7 +238,7 @@ export default {
         ) {
           setTimeout(() => {
             this.checkTaskStatus(taskId);
-          }, 10000);
+          }, 5000);
         } else if (response.data.task_status === "SUCCESS") {
           this.$notify({
             title: "BOM Uploaded Successfully",

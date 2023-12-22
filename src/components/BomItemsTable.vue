@@ -8,9 +8,10 @@
       :columnDefs="colDefs"
       :pagination="true"
       @rowClicked="onRowClicked"
-      @rowSelected="onRowSelected"
+      :frameworkComponents="{ editButtonRenderer: editButtonRenderer }"
     >
     </ag-grid-vue>
+    <!-- Modal -->
   </div>
 </template>
 
@@ -39,28 +40,7 @@ export default {
       // rowData: this.bom || [],
       colDefs: [
         //   {
-        //     field: "id", // Added "id" field
-        //     hide: true,
-        //   },
-        //   {
-        //     field: "level",
-        //     headerCheckboxSelection: true,
-        //     checkboxSelection: true,
-        //   },
-        //   { field: "VEPL Part No" },
-        //   { field: "Priority Level" },
-        //   { field: "Value" },
-        //   { field: "PCB Footprint" },
-        //   { field: "Type" },
-        //   { field: "Description" },
-        //   { field: "Mfr" },
-        //   { field: "Mfr. Part No" },
-        //   { field: "Till" },
-        //   {
-        //     headerName: "Actions",
-        //     cellRenderer: this.editButtonRenderer,
-        //   },
-        // ],
+
         { headerName: "ID", field: "id", hide: true },
         { headerName: " Level", field: "level" },
         { headerName: "VEPL Part Number", field: "part_number" },
@@ -71,6 +51,24 @@ export default {
         { headerName: "Type", field: "line_item_type.name" },
 
         { headerName: "Description", field: "description" },
+        {
+          headerName: "References",
+          valueGetter: function (params) {
+            const references = params.data.references;
+
+            if (references && references.length > 0) {
+              // Use map to get an array of reference names
+              const referenceNames = references.map(
+                (reference) => reference.name
+              );
+
+              // Join the array of reference names into a single string separated by commas
+              return referenceNames.join(", ");
+            }
+
+            return ""; // Return an empty string if no references are available
+          },
+        },
         {
           headerName: "Manufacturer Parts",
           valueGetter: function (params) {
@@ -102,21 +100,10 @@ export default {
         { headerName: "ECN", field: "ecn" },
         { headerName: "MSL", field: "msl" },
         { headerName: "Remarks", field: "remarks" },
-
-        // { headerName: "Updated At", field: "updated_at" },
-        // { headerName: "BOM ID", field: "bom" },
-        // { headerName: "Product ID", field: "product.id" },
-        // { headerName: "Product Name", field: "product.name" },
-        // { headerName: "Product Code", field: "product.product_code" },
-        // {
-        //   headerName: "Product Rev Number",
-        //   field: "product.product_rev_number",
-        // },
-        // { headerName: "Issue Date", field: "issue_date" },
-        // { headerName: "Total Line Items", field: "total_line_items" },
-        // { headerName: "Total SMT Locations", field: "total_smt_locations" },
-        // { headerName: "Total PTH Locations", field: "total_pth_locations" },
-        // { headerName: "BOM Rev Number", field: "bom_rev_number" },
+        {
+          headerName: "Actions",
+          cellRenderer: this.editButtonRenderer,
+        },
       ],
 
       defaultColDef: {
@@ -147,17 +134,17 @@ export default {
         this.$emit("rowSelected", params.node.data);
       }
     },
-    //   editButtonRenderer(params) {
-    //     const button = document.createElement("button");
-    //     button.innerHTML = `<i class="fas fa-edit"></i>`;
-    //     button.classList.add("btn", "btn-primary");
+    editButtonRenderer(params) {
+      const button = document.createElement("button");
+      button.innerHTML = `<i class="fas fa-edit"></i>`;
+      button.classList.add("btn", "btn-primary");
 
-    //     button.addEventListener("click", () => this.onEditClick(params.data.id));
-    //     return button;
-    //   },
-    //   onEditClick(id) {
-    //     this.$router.push(`/bomItemDetails/edit/${id}`);
-    //   },
+      button.addEventListener("click", () => this.onEditClick(params.data.id));
+      return button;
+    },
+    onEditClick(id) {
+      this.$router.push({ name: "BomLineItemEdit", params: { id } });
+    },
   },
 };
 </script>

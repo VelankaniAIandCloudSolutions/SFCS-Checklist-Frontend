@@ -11,6 +11,7 @@ import ReportsList from "../views/ReportsList.vue";
 import CheckListsDashboard from "../views/CheckListsDashboard.vue";
 import ChecklistReport from "../views/ChecklistReport.vue";
 import UserManagement from "../views/UserManagement.vue";
+import BomLineItemEdit from "../views/BomLineItemEdit.vue";
 import EditUser from "../components/EditUser.vue";
 import CreateUser from "../components/CreateUser.vue";
 
@@ -97,7 +98,11 @@ const routes = [
     name: "CreateUser",
     component: CreateUser,
   },
-
+  {
+    path: "/bom-line-item/edit/:id",
+    name: "BomLineItemEdit",
+    component: BomLineItemEdit,
+  },
 ];
 
 const router = createRouter({

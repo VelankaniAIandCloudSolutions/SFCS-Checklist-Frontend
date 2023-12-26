@@ -68,13 +68,13 @@ export default {
       //     }
       //   });
     },
-    isSelectedManufacturerPart(row) {
-      console.log(row);
-      // Check if the row is in selectedManufacturerParts
-      return this.selectedManufacturerParts.some(
-        (selectedPart) => selectedPart.id === row.id
-      );
-    },
+    // isSelectedManufacturerPart(row) {
+    //   console.log(row);
+    //   // Check if the row is in selectedManufacturerParts
+    //   return this.selectedManufacturerParts.some(
+    //     (selectedPart) => selectedPart.id === row.id
+    //   );
+    // },
     onSelectionChanged() {
       // Update selectedManufacturerParts whenever selection changes
       //   this.selectedManufacturerParts = this.$refs.agGrid.api.getSelectedRows();

@@ -1,6 +1,6 @@
 <!-- manufacturer-parts-grid.vue -->
 <template>
-  <div class="ag-theme-quartz" style="height: 400px">
+  <div class="ag-theme-quartz" style="height: 600px">
     <ag-grid-vue
       ref="agGrid"
       :gridOptions="gridOptions"
@@ -36,6 +36,9 @@ export default {
       gridOptions: {
         domLayout: "autoHeight",
         rowSelection: "multiple",
+        pagination: true, // Enable pagination
+        paginationPageSize: 20,
+        // Set the number of rows per page
       },
       columnDefs: [
         {
@@ -51,7 +54,7 @@ export default {
   methods: {
     onFirstDataRendered(params) {
       const gridApi = params.api;
-      console.log("rububub");
+
       gridApi.forEachNode((node) => {
         const manufacturerPart = node.data;
         const isSelected = this.selectedManufacturerParts.some(
@@ -76,9 +79,9 @@ export default {
     //   );
     // },
     onSelectionChanged() {
-      // Update selectedManufacturerParts whenever selection changes
-      //   this.selectedManufacturerParts = this.$refs.agGrid.api.getSelectedRows();
-      //   console.log("Selected Rows:", this.selectedManufacturerParts);
+      // Emit an event to notify the parent component about the selection change
+      const selectedRows = this.$refs.agGrid.api.getSelectedRows();
+      this.$emit("update:selectedManufacturerParts", selectedRows);
     },
   },
 };

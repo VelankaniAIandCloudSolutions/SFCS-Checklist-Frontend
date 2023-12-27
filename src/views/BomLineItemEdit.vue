@@ -180,13 +180,26 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <!-- <div class="form-group">
             <label for="assemblyStage">Assembly Stage</label>
             <input
               v-model="editedBom.assembly_stage.name"
               type="text"
               class="form-control"
             />
+          </div> -->
+
+          <div class="form-group">
+            <label for="assemblyStage">Assembly Stage</label>
+            <select v-model="editedBom.assembly_stage" class="form-control">
+              <option
+                v-for="type in assembly_stages"
+                :key="type.id"
+                :value="type.id"
+              >
+                {{ type.name }}
+              </option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -211,7 +224,7 @@
 
         <!-- Buttons for Save Changes and Delete -->
         <section class="mt-4">
-          <button @click="submit" class="btn btn-primary mr-2">
+          <button @click="saveChanges" class="btn btn-primary mr-2">
             Save Changes
           </button>
           <button @click="confirmDelete" class="btn btn-danger">
@@ -227,7 +240,7 @@
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-fullscreen-md-down">
+      <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="exampleModalLabel">
@@ -255,7 +268,13 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -283,7 +302,7 @@ export default {
         customer_part_number: "",
         quantity: "",
         uom: "",
-        assembly_stage: { name: "" },
+        assembly_stage: "",
         ecn: "",
         msl: "",
         remarks: "",
@@ -292,6 +311,7 @@ export default {
       newReference: "",
       message: "",
       manufacturerParts: [],
+      assembly_stages: [],
     };
   },
   components: {
@@ -302,18 +322,23 @@ export default {
       try {
         // Fetch BOM details
         const response = await axios.get(
-          `store/edit-bom-line-item/${this.$route.params.id}`
+          `store/edit-bom-line-item/${this.$route.params.id}/`
         );
         console.log(" Main API response for line items", response.data);
         this.editedBom = response.data.bom_line_item;
         this.line_item_types = response.data.line_item_types;
         this.manufacturerParts = response.data.manufacturers_parts;
+        this.assembly_stages = response.data.assembly_stages;
 
         console.log("line_item_types", this.line_item_types);
         // Set the default value for line_item_type
         if (this.line_item_types.length > 0) {
           this.editedBom.line_item_type =
             response.data.bom_line_item.line_item_type.id;
+        }
+        if (this.assembly_stages.length > 0) {
+          this.editedBom.assembly_stage =
+            response.data.bom_line_item.assembly_stage.id;
         }
         // this.editedBom.part_number = response.data.bom_line_item.part_number;
 
@@ -351,17 +376,77 @@ export default {
         (reference) => reference !== referenceToRemove
       );
     },
+
     submit() {
       console.log(this.editedBom);
     },
-    saveChanges() {
-      // Implement logic to update BOM line item data using API
-      // After successful update, you can show a success message or redirect
+    async saveChanges() {
+      // Make an API call to update the BOM line item
+      try {
+        // Make an API call to update the BOM line item
+        const response = await axios.put(
+          `store/edit-bom-line-item/${this.$route.params.id}/`,
+          this.editedBom
+        );
+        console.log(response.data);
+
+        // Show success notification
+        this.$notify({
+          title: "Success",
+          text: "BOM Line Item successfully edited",
+          type: "success",
+        });
+
+        // Reload the page
+        this.$router.go();
+      } catch (error) {
+        console.error("Error updating BOM line item:", error);
+
+        // Show error notification
+        this.$notify({
+          title: "Error",
+          text: "Failed to edit BOM Line Item",
+          type: "error",
+        });
+      }
     },
-    confirmDelete() {
+    async confirmDelete() {
       if (confirm("Are you sure you want to delete this BOM Line Item?")) {
-        // Implement logic to delete BOM line item using API
-        // After successful deletion, you can show a success message or redirect
+        try {
+          // Make a DELETE request to the delete-bom-line-item endpoint
+          const response = await axios.delete(
+            `store/delete-bom-line-item/${this.$route.params.id}`
+          );
+
+          // Check if the deletion was successful
+          if (response.status === 204) {
+            // Show a success notification
+            this.$notify({
+              title: "Success",
+              message: "BOM Line Item deleted successfully",
+              type: "success",
+            });
+
+            // Optionally, you can redirect to another page or reload the current page
+            // this.$router.push("/some-other-page");
+            location.reload();
+          } else {
+            // Show an error notification
+            this.$notify({
+              title: "Error",
+              message: "Failed to delete BOM Line Item",
+              type: "error",
+            });
+          }
+        } catch (error) {
+          console.error("Error deleting BOM Line Item:", error);
+          // Show an error notification
+          this.$notify({
+            title: "Error",
+            message: "An error occurred while deleting BOM Line Item",
+            type: "error",
+          });
+        }
       }
     },
     updateManufacturerParts(selectedManufacturerParts) {
@@ -381,6 +466,9 @@ export default {
       }
       return "";
     },
+  },
+  updateManufacturerParts(selectedManufacturerParts) {
+    this.editedBom.manufacturer_parts = selectedManufacturerParts;
   },
   mounted() {
     // Fetch data when the component is mounted

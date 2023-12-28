@@ -1,9 +1,58 @@
 <template>
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-md-8 offset-md-2">
-        <h2 class="mb-4">Edit/Delete BOM Line Item</h2>
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
 
+  <div v-else class="container mt-4">
+    <div class="row align-items-center">
+      <div class="col-md-8 mt-4">
+        <div class="d-flex align-items-center">
+          <h2 class="mb-0">Edit Line Item |</h2>
+          <nav aria-label="breadcrumb" class="ms-3">
+            <ol class="breadcrumb bg-transparent m-0 p-0 justify-content-end">
+              <li class="breadcrumb-item">
+                <a href="/"> <i class="fas fa-home me-1"></i>Home</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <router-link to="/bom">
+                  <i class="fas fa-clipboard-list me-1"></i>Bill Of Materials
+                </router-link>
+              </li>
+              <li class="breadcrumb-item" aria-current="page">
+                <!-- In BomLineLevel.vue or wherever you have the router-link to BomLineItemEdit -->
+
+                <router-link :to="`/bom/edit/${bom_id}`">
+                  <i class="fas fa-list-alt me-1"></i>
+                  BOM Details
+                </router-link>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <i class="fa fa-bars me-1" aria-hidden="true"></i>BOM Line Item
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+      <div class="col-md-4 mt-4 d-flex justify-content-end">
+        <button type="button" class="btn btn-success me-2" @click="saveChanges">
+          Update Changes
+        </button>
+        <button type="button" class="btn btn-danger" @click="confirmDelete">
+          Delete Button
+        </button>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-md-8 offset-md-2">
         <!-- Display BOM fields within sections -->
         <section>
           <div class="row">
@@ -223,14 +272,6 @@
         </section>
 
         <!-- Buttons for Save Changes and Delete -->
-        <section class="mt-4">
-          <button @click="saveChanges" class="btn btn-primary mr-2">
-            Save Changes
-          </button>
-          <button @click="confirmDelete" class="btn btn-danger">
-            Delete BOM Line Item
-          </button>
-        </section>
       </div>
     </div>
     <div
@@ -279,6 +320,7 @@
         </div>
       </div>
     </div>
+    <p>Received ID: {{ receivedId }}</p>
   </div>
 </template>
 
@@ -287,6 +329,13 @@ import axios from "axios";
 import ManufacturerPartsGrid from "../components/ManufacturerPartsGrid.vue";
 
 export default {
+  // props: {
+  //   bom_id: {
+  //     type: Number,
+  //     required: true, // Set the type to Number if the ID is an integer
+  //   },
+  // },
+
   data() {
     return {
       editedBom: {
@@ -312,8 +361,10 @@ export default {
       message: "",
       manufacturerParts: [],
       assembly_stages: [],
+      bom_id: "",
     };
   },
+
   components: {
     "manufacturer-parts-grid": ManufacturerPartsGrid,
   },
@@ -326,6 +377,8 @@ export default {
         );
         console.log(" Main API response for line items", response.data);
         this.editedBom = response.data.bom_line_item;
+        this.bom_id = response.data.bom_line_item.bom;
+        console.log("bom-id", this.bom_id);
         this.line_item_types = response.data.line_item_types;
         this.manufacturerParts = response.data.manufacturers_parts;
         this.assembly_stages = response.data.assembly_stages;
@@ -428,8 +481,7 @@ export default {
             });
 
             // Optionally, you can redirect to another page or reload the current page
-            // this.$router.push("/some-other-page");
-            location.reload();
+            this.$router.push(`/bom/edit/${this.bom_id}`);
           } else {
             // Show an error notification
             this.$notify({
@@ -472,6 +524,7 @@ export default {
   },
   mounted() {
     // Fetch data when the component is mounted
+
     this.fetchDataFromAPI();
   },
 };

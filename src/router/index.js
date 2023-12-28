@@ -102,6 +102,7 @@ const routes = [
     path: "/bom-line-item/edit/:id",
     name: "BomLineItemEdit",
     component: BomLineItemEdit,
+    props: (route) => ({ bom_id: route.params.id }), // Rename 'id' to 'bom_id'
   },
 ];
 

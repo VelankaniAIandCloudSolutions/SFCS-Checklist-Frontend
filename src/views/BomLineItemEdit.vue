@@ -47,7 +47,7 @@
           Update Changes
         </button>
         <button type="button" class="btn btn-danger" @click="confirmDelete">
-          Delete Button
+          Delete Line Item
         </button>
       </div>
     </div>
@@ -320,7 +320,6 @@
         </div>
       </div>
     </div>
-    <p>Received ID: {{ receivedId }}</p>
   </div>
 </template>
 
@@ -473,11 +472,10 @@ export default {
 
           // Check if the deletion was successful
           if (response.status === 204) {
-            // Show a success notification
             this.$notify({
-              title: "Success",
-              message: "BOM Line Item deleted successfully",
-              type: "success",
+              title: "Bom Line Item Deleted Successfully",
+              type: "bg-success-subtle text-success",
+              duration: 5000,
             });
 
             // Optionally, you can redirect to another page or reload the current page
@@ -485,18 +483,18 @@ export default {
           } else {
             // Show an error notification
             this.$notify({
-              title: "Error",
-              message: "Failed to delete BOM Line Item",
-              type: "error",
+              title: "An error occurred while deleting BOM Line Item",
+              type: "alert-danger", // Bootstrap class for danger/error
+              duration: 5000,
             });
           }
         } catch (error) {
           console.error("Error deleting BOM Line Item:", error);
           // Show an error notification
           this.$notify({
-            title: "Error",
-            message: "An error occurred while deleting BOM Line Item",
-            type: "error",
+            title: "An error occurred while deleting BOM Line Item",
+            type: "alert-danger", // Bootstrap class for danger/error
+            duration: 5000,
           });
         }
       }

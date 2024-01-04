@@ -283,7 +283,7 @@
             <div
               class="spinner-border ms-2"
               role="status"
-              v-if="isPcbSufficient === false"
+              v-if="isSolderPasteSufficient === false"
             >
               <span class="visually-hidden">Loading...</span>
             </div>
@@ -672,11 +672,13 @@ export default {
             this.filteredChecklistItems,
             "Solder Paste"
           );
+          console.log("checking solder paste", this.isSolderPasteSufficient);
+
           this.isSolderBarSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
             "Solder Bar"
           );
-          console.log("checking solder bar", this.isSolderBarSufficient);
+          console.log("checkinsssg solder bar", this.isSolderBarSufficient);
           this.isSolderFluxSufficient = this.isItemsSufficient(
             this.filteredChecklistItems,
             "Solder Flux"
@@ -827,6 +829,7 @@ export default {
     },
     async endChecklist() {
       this.$store.commit("setIsLoading", true);
+      clearInterval(this.pollingInterval);
 
       await axios
         .get(`store/end-checklist/${this.checklist.id}/`)
@@ -847,7 +850,6 @@ export default {
           ) {
             this.isChecklistEnded = true;
           }
-          clearInterval(this.pollingInterval);
           this.$router.push(`/generated-checklists/${this.$route.params.id}`);
           this.$store.commit("setIsLoading", false);
         })

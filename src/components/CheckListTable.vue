@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
@@ -45,11 +46,41 @@ export default {
         {
           headerName: "Present Quantity",
           field: "present_quantity",
+          editable: true,
+          onCellValueChanged: async function (params) {
+            // Handle the value change here
+            console.log("New value:", params.newValue);
+            console.log("Row data:", params.data);
+
+            // Make an API call to update the backend
+            // Example using Vue.js axios for the API call
+
+            await axios
+              .put(`store/update-checklist-item/${params.data.id}/`, {
+                present_quantity: params.newValue,
+              })
+              .then((response) => {
+                console.log("API Response:", response.data);
+              })
+              .catch((error) => {
+                console.error("API Error:", error);
+              });
+          },
         },
         {
           headerName: "Required Quantity",
           field: "required_quantity",
         },
+        {
+          headerName: "Delta",
+          valueGetter: function (params) {
+            const presentQuantity = params.data.present_quantity;
+            const requiredQuantity = params.data.required_quantity;
+            const delta = presentQuantity - requiredQuantity;
+            return delta >= 0 ? `+${delta}` : `-${Math.abs(delta)}`;
+          },
+        },
+
         {
           headerName: "Is Present",
           field: "is_present",

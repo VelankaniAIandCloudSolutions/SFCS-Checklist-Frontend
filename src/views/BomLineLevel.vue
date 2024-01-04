@@ -36,6 +36,9 @@
               </li>
             </ol>
           </nav>
+          <button class="btn btn-primary ml-auto" @click="downloadBOM">
+            Download BOM
+          </button>
         </div>
       </div>
       <div class="card" style="margin-top: 20px">
@@ -124,6 +127,25 @@ export default {
           console.error("Error fetching data:", error);
           this.$store.commit("setIsLoading", false);
         });
+    },
+    downloadBOM() {
+      try {
+        // Use the bom_file URL for download
+
+        const bomFileURL = this.bom.bom_file_url;
+        // Create an anchor element and trigger the download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = bomFileURL;
+
+        downloadLink.download = this.bom.bom_file_name; // Set the desired file name
+
+        document.body.appendChild(downloadLink);
+
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (error) {
+        console.error("Error downloading BOM:", error);
+      }
     },
   },
   mounted() {

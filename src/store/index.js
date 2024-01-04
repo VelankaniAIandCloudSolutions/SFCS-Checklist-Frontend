@@ -66,6 +66,7 @@ const store = createStore({
       // state.user.state.user.profile = {};
       state.user.isAuthenticated = false;
       localStorage.removeItem("token");
+      localStorage.removeItem("userDetails");
       axios.defaults.headers.common["Authorization"] = "";
     },
     setAuthentication(state, isAuthenticated) {

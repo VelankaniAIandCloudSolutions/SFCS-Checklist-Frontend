@@ -8,6 +8,10 @@ const store = createStore({
       isAuthenticated: false,
       username: "",
       password: "",
+      first_name: "",
+      last_name: "",
+      is_staff: false,
+      is_superuser: false,
     },
     isLoading: false,
   },
@@ -18,6 +22,16 @@ const store = createStore({
         axios.defaults.headers.common["Authorization"] =
           "Token " + state.user.token;
         state.user.isAuthenticated = true;
+        // Check for user details in local storage
+        const userDetailsString = localStorage.getItem("userDetails");
+        if (userDetailsString) {
+          // Parse the JSON string and set properties in state
+          const userDetails = JSON.parse(userDetailsString);
+          state.user.first_name = userDetails.first_name;
+          state.user.last_name = userDetails.last_name;
+          state.user.is_staff = userDetails.is_staff;
+          state.user.is_superuser = userDetails.is_superuser;
+        }
       } else {
         state.user.token = "";
 
@@ -31,13 +45,25 @@ const store = createStore({
         "Token " + state.user.token;
       state.user.isAuthenticated = true;
     },
+
+    setUserDetails(state, userDetails) {
+      state.user.first_name = userDetails.first_name;
+      state.user.last_name = userDetails.last_name;
+      state.user.is_staff = userDetails.is_staff; // Assuming the API response has an 'is_staff' field
+      state.user.is_superuser = userDetails.is_superuser; // Assuming the API response has an 'is_superuser' field
+    },
+
     setIsLoading(state, status) {
       state.isLoading = status;
     },
 
     removeToken(state) {
       state.user.token = "";
-      state.user.profile = {};
+      state.user.first_name = "";
+      state.user.last_name = "";
+      state.user.is_staff = false;
+      state.user.is_superuser = false;
+      // state.user.state.user.profile = {};
       state.user.isAuthenticated = false;
       localStorage.removeItem("token");
       axios.defaults.headers.common["Authorization"] = "";
@@ -50,4 +76,5 @@ const store = createStore({
   modules: {},
 });
 store.commit("initializeStore");
+
 export default store;

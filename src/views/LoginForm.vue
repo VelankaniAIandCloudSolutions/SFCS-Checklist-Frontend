@@ -62,12 +62,25 @@ export default {
               type: "bg-success-subtle text-success",
               duration: 5000,
             });
-            setTimeout(() => {
+
+            setTimeout(async () => {
               const token = response.data.auth_token;
               this.$store.commit("setToken", token);
               axios.defaults.headers.common["Authorization"] = "Token " + token;
               localStorage.setItem("token", token);
               console.log("Received Token:", token);
+
+              const userDetailsResponse = await axios.get(
+                "accounts/user/authenticated/"
+              );
+              // Handle the user details response here
+              const userDetails = userDetailsResponse.data;
+              console.log("User Details:", userDetails);
+
+              // Store user details in Vuex store
+              localStorage.setItem("userDetails", JSON.stringify(userDetails));
+              this.$store.commit("setUserDetails", userDetails);
+
               window.location.href = "/dashboard";
             }, 1000);
           })

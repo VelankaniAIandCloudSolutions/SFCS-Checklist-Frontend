@@ -56,7 +56,10 @@
             data-accordion="false"
           >
             <!-- Accounts -->
-            <li class="nav-item text-left">
+            <li
+              class="nav-item text-left"
+              v-if="$store.state.user.is_superuser"
+            >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-users"></i>
                 <p>

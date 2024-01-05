@@ -44,6 +44,22 @@ export default {
           field: "bom_line_item.part_number",
         },
         {
+          headerName: "UID",
+          field: "checklist_item_uids",
+          valueFormatter: function (params) {
+            // Check if checklist_item_uids is empty or null
+            if (!params.value || params.value.length === 0) {
+              return null;
+            }
+            // Extract UIDs from the array of objects and join them with commas
+            const uids = params.value.map((item) => item.uid);
+
+            // Return the joined string of UIDs
+            return uids.join(", ");
+          },
+        },
+
+        {
           headerName: "Present Quantity",
           field: "present_quantity",
           editable: true,

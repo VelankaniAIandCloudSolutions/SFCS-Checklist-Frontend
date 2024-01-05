@@ -627,7 +627,7 @@ export default {
           console.log(response.data);
           this.checklist = response.data.checklist;
           this.checklistItems = this.checklist.checklist_items;
-          console.log("chehcklist items hereeeeee", this.checklistItems);
+          console.log("checklists items hereeeeee", this.checklistItems);
           const rawMaterialItems =
             this.filterChecklistItemsByType("Raw Material");
           const pcbItems = this.filterChecklistItemsByType("PCB");

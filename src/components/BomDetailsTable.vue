@@ -72,6 +72,7 @@ export default {
     onRowClicked(params) {
       // Emit an event with the clicked row data
       this.$emit("rowClicked", params.data);
+      this.$router.push(`/bom/edit/${params.data.id}`);
     },
     onRowSelected(params) {
       // Emit an event with the selected row data

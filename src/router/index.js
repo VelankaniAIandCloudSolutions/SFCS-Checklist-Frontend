@@ -14,6 +14,8 @@ import UserManagement from "../views/UserManagement.vue";
 import BomLineItemEdit from "../views/BomLineItemEdit.vue";
 import EditUser from "../components/EditUser.vue";
 import CreateUser from "../components/CreateUser.vue";
+import OrdersLanding from "../views/OrdersLanding.vue";
+import OrderCreation from "../views/OrderCreation.vue";
 
 const routes = [
   {
@@ -103,6 +105,16 @@ const routes = [
     name: "BomLineItemEdit",
     component: BomLineItemEdit,
     props: (route) => ({ bom_id: route.params.id }), // Rename 'id' to 'bom_id'
+  },
+  {
+    path: "/orders",
+    name: "OrdersLanding",
+    component: OrdersLanding,
+  },
+  {
+    path: "/orders/create",
+    name: "OrderCreation",
+    component: OrderCreation,
   },
 ];
 

@@ -113,6 +113,25 @@
                 </li>
               </ul>
             </li>
+            <!-- Orders -->
+
+            <li class="nav-item text-left">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-shopping-cart"></i>
+                <p>
+                  Orders
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/orders" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Order</p>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->

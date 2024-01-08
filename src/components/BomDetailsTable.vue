@@ -86,6 +86,7 @@ export default {
       }
     },
     editButtonRenderer(params) {
+      console.log(params);
       const button = document.createElement("button");
       button.innerHTML = `<i class="fas fa-edit"></i>`;
       button.classList.add("btn", "btn-primary");

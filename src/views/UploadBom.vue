@@ -40,29 +40,46 @@
 
     <!-- Form Section -->
     <section class="card p-3 mb-4 mt-4">
-      <!-- Row 1: Product Name & Product Code -->
+      <!-- Row 1: Project Name & Product  -->
       <div class="row mb-3">
-        <!-- Product Name -->
+        <!-- Project Name -->
         <div class="col-md-6">
-          <label for="productName" class="form-label">Product Name</label>
-          <input
-            type="text"
-            class="form-control"
-            id="productName"
-            v-model="productName"
+          <label for="projectDropdown" class="form-label">Select Project</label>
+
+          <select
+            class="form-select"
+            id="projectDropdown"
+            v-model="selectedProject"
+            @change="loadProducts"
             required
-          />
+          >
+            <!-- <option value="" disabled>Select a project</option> -->
+            <option
+              v-for="project in projects"
+              :key="project.id"
+              :value="project.id"
+            >
+              {{ project.name }}
+            </option>
+          </select>
         </div>
         <!-- Product Code -->
         <div class="col-md-6">
-          <label for="productCode" class="form-label">Product Code</label>
-          <input
-            type="text"
-            class="form-control"
+          <label for="productCode" class="form-label">Product </label>
+          <select
+            class="form-select"
             id="productCode"
-            v-model="productCode"
+            v-model="selectedProduct"
             required
-          />
+          >
+            <option
+              v-for="product in products"
+              :key="product.id"
+              :value="product.id"
+            >
+              {{ product.name }}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -93,7 +110,7 @@
       </div>
 
       <!-- Row 3: Issue Date & Product Rev No -->
-      <div class="row mb-3">
+      <div class="row mb-3 justify-content-center">
         <!-- Issue Date -->
         <div class="col-md-6">
           <label for="issueDate" class="form-label">Issue Date</label>
@@ -106,7 +123,7 @@
           />
         </div>
         <!-- Product Rev No -->
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
           <label for="productRevNo" class="form-label">Product Rev No</label>
           <input
             type="text"
@@ -115,7 +132,7 @@
             v-model="productRevNo"
             required
           />
-        </div>
+        </div> -->
       </div>
     </section>
 
@@ -169,13 +186,51 @@ export default {
       productRevNo: "",
       uploadedFileName: null,
       uploadedFile: null,
+      selectedProject: null, // Holds the selected project ID
+      selectedProduct: null,
+      projects: [],
+      products: [],
     };
   },
+  mounted() {
+    this.getData();
+  },
   methods: {
+    async getData() {
+      try {
+        // Replace 'store/get-projects/' with your actual API endpoint
+        const response = await axios.get("store/get-projects/");
+
+        this.projects = response.data.projects; // Assuming the response is an array of projects
+        console.log(this.projects);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    },
+    async loadProducts() {
+      console.log("api for projects triggered");
+      console.log("Selected Project:", this.selectedProject);
+      if (this.selectedProject) {
+        try {
+          const response = await axios.get(
+            `store/get-products/${this.selectedProject}/`
+          );
+
+          this.products = response.data.products;
+          console.log("products for thsi porject id ", this.products);
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      } else {
+        this.products = []; // Clear products if no project is selected
+      }
+    },
+
     async submitForm() {
       this.$store.commit("setIsLoading", true);
 
       const formData = new FormData();
+      console.log("Form Data:", formData);
 
       formData.append("product_name", this.productName);
       formData.append("product_code", this.productCode);
@@ -184,6 +239,10 @@ export default {
       formData.append("bom_rev_no", this.bomRevNo);
       formData.append("issue_date", this.issueDate);
       formData.append("bom_file", this.uploadedFile);
+      formData.append("project_id", this.selectedProject);
+      formData.append("product_id", this.selectedProduct);
+
+      console.log("Form Data:", formData);
 
       await axios
         .post("store/upload-bom/", formData, {

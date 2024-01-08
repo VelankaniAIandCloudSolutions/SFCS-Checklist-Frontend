@@ -193,7 +193,7 @@
               data-bs-toggle="modal"
               data-bs-target="#exampleModal"
             >
-              Click here to see
+              Add Manufacturer Parts
             </button>
           </div>
 

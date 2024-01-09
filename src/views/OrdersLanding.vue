@@ -67,7 +67,7 @@ export default {
       try {
         // Fetch BOM data from your API endpoint
         this.$store.commit("setIsLoading", true);
-        const response = await axios.get("store/get-orders/");
+        const response = await axios.get("store/create-order/");
         console.log("response.data", response.data);
         this.orders = response.data.orders;
         console.log("orders", this.orders);

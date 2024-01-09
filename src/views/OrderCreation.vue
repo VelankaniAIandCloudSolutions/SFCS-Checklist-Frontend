@@ -55,47 +55,117 @@
       @rowSelected="handleRowSelected"
     /> -->
 
-    <section>
-      <!-- Project Name -->
-      <div class="mb-3 mt-4">
-        <label for="bom" class="form-label">
-          <i class="fas fa-project-diagram me-2"></i>Select BOM
-        </label>
-        <select
-          v-model="order.selectedBOM"
-          class="form-select"
-          @change="openBOMDetailsModal"
-        >
-          <option v-for="bom in boms" :key="bom.id" :value="bom.id">
-            {{ bom.product.name }}
-          </option>
-        </select>
+    <section class="card p-3 mb-4 mt-4">
+      <!-- Row 1: Project Name & Product  -->
+      <div class="row mb-3">
+        <!-- Project Name -->
+        <div class="col-md-6">
+          <label for="projectDropdown" class="form-label">Select Project</label>
+
+          <select
+            class="form-select"
+            id="projectDropdown"
+            v-model="selectedProject"
+            required
+          >
+            <!-- <option value="" disabled>Select a project</option> -->
+            <option
+              v-for="project in projects"
+              :key="project.id"
+              :value="project.id"
+            >
+              {{ project.name }}
+            </option>
+          </select>
+        </div>
+        <!-- Product Code -->
+        <div class="col-md-6">
+          <label for="productCode" class="form-label">Product </label>
+          <select
+            class="form-select"
+            id="productCode"
+            v-model="selectedProduct"
+            @change="filteredBoms"
+            required
+          >
+            <option
+              v-for="product in filteredProducts"
+              :key="product.id"
+              :value="product.id"
+            >
+              {{ product.name }}
+            </option>
+          </select>
+        </div>
       </div>
 
-      <!-- Batch Quantity -->
-      <div class="mb-3">
-        <label for="batchQuantity" class="form-label">
-          <i class="fas fa-flask me-2"></i>Batch Quantity
-        </label>
-        <input
-          v-model="order.batchQuantity"
-          type="number"
-          class="form-control"
-          placeholder="Enter Batch Quantity"
-          min="1"
-          required
-        />
+      <!-- Row 2: BOM Type & BOM REV No -->
+      <div class="row mb-3">
+        <!-- BOM Type -->
+
+        <!-- Issue Date -->
+        <div class="col-md-6">
+          <label for="issueDate" class="form-label">Issue Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="issueDate"
+            v-model="issueDate"
+            required
+          />
+        </div>
+        <!-- BOM REV No -->
+        <div class="col-md-6">
+          <label for="bomRevNo" class="form-label">BOM REV No</label>
+          <input
+            type="text"
+            class="form-control"
+            id="bomRevNo"
+            v-model="bomRevNo"
+            required
+          />
+        </div>
       </div>
+
+      <!-- Row 3: Issue Date & Product Rev No -->
+      <div class="row mb-3 justify-content-center">
+        <!-- Issue Date -->
+        <div class="col-md-6">
+          <label for="batchQuantity" class="form-label">
+            <i class="fas fa-flask me-2"></i>Batch Quantity
+          </label>
+          <input
+            v-model="order.batchQuantity"
+            type="number"
+            class="form-control"
+            placeholder="Enter Batch Quantity"
+            min="1"
+            required
+          />
+        </div>
+        <!-- Product Rev No -->
+        <!-- <div class="col-md-6">
+          <label for="productRevNo" class="form-label">Product Rev No</label>
+          <input
+            type="text"
+            class="form-control"
+            id="productRevNo"
+            v-model="productRevNo"
+            required
+          />
+        </div> -->
+      </div>
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+      >
+        Select BOM
+      </button>
     </section>
+
     <!-- Button trigger modal -->
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#exampleModal"
-    >
-      Launch demo modal
-    </button>
 
     <!-- Modal -->
     <div
@@ -108,7 +178,7 @@
       <div class="modal-dialog modal-xl">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="exampleModalLabel">Details</h5>
             <button
               type="button"
               class="btn-close"
@@ -116,7 +186,13 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body"></div>
+          <div class="modal-body">
+            <OrderBomDetailsVue
+              :bomByProducts="bomByProducts"
+              @rowClicked="handleRowClicked"
+              @rowSelected="handleRowSelected"
+            ></OrderBomDetailsVue>
+          </div>
           <div class="modal-footer">
             <button
               type="button"
@@ -135,9 +211,10 @@
 
 <script>
 import axios from "axios";
+import OrderBomDetailsVue from "../components/OrderBomDetails.vue";
 
 export default {
-  //   components: { OrderDetailsTable },
+  components: { OrderBomDetailsVue },
   data() {
     return {
       // selectedRow: null,
@@ -147,28 +224,104 @@ export default {
         batchQuantity: 1,
       },
       boms: [],
+
+      projects: [],
+      products: [],
+
+      selectedProduct: null,
+      selectedProject: null,
+      bomByProducts: [],
     };
   },
-  methods: {
-    async getBOMs() {
-      // Assuming you are using axios for HTTP requests
-      await axios
-        .get("/store/get-boms")
-        .then((response) => {
-          // Update bomList with the fetched BOMs
-          console.log(response.data.boms);
-          this.boms = response.data.boms;
-        })
-        .catch((error) => {
-          console.error("Error fetching BOMs:", error);
-        });
-    },
-    openBOMDetailsModal() {},
-  },
+  computed: {
+    filteredProducts() {
+      // Check if both products and projects are available and not undefined
+      if (
+        this.products &&
+        this.projects &&
+        this.products.length &&
+        this.projects.length
+      ) {
+        // Filter products based on the selected project if it's not null
+        if (this.selectedProject !== null) {
+          const filteredProducts = this.products.filter((product) => {
+            const project = this.projects.find(
+              (p) => p.id === product.project.id
+            );
+            return project && project.id === this.selectedProject;
+          });
 
+          console.log("Filtered Products:", filteredProducts);
+
+          return filteredProducts;
+        } else {
+          // If selectedProject is null, return all products or an empty array
+          console.log("All Products:", this.products);
+          return this.products;
+          // Or return [] if you want an empty array when selectedProject is null
+          // return [];
+        }
+      } else {
+        // If either products or projects is not available, return an empty array
+        console.log("No Products or Projects available.");
+        return [];
+      }
+    },
+  },
   mounted() {
     // Fetch data when the component is created
-    this.getBOMs();
+    this.getData();
+  },
+  methods: {
+    async getData() {
+      try {
+        // Replace 'store/get-projects/' with your actual API endpoint
+        const response = await axios.get("store/create-order/");
+        console.log(response.data);
+        this.boms = response.data.boms;
+        this.projects = response.data.projects;
+        this.products = response.data.products;
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    },
+    filteredBoms() {
+      // Check if both boms and selectedProduct are available and not undefined
+      console.log(this.selectedProduct);
+      if (this.boms && this.selectedProduct !== null) {
+        // Filter boms based on the selected product
+        this.bomByProducts = this.boms.filter((bom) => {
+          return bom.product.id === this.selectedProduct;
+        });
+
+        console.log("Filtered Boms i.e bomByProducts=:", this.bomByProducts);
+      } else {
+        // If either boms or selectedProduct is not available, reset bomByProducts
+        console.log("No Boms or Selected Product available.");
+        this.bomByProducts = [];
+      }
+    },
+
+    // async loadProducts() {
+    //   console.log("api for projects triggered");
+    //   console.log("Selected Project:", this.selectedProject);
+    //   if (this.selectedProject) {
+    //     try {
+    //       const response = await axios.get(
+    //         `store/create-order/?project_id=${this.selectedProject}`
+    //       );
+    //       console.log("load products", response.data);
+
+    //       this.products = response.data.products;
+    //       this.bomsByProject = response.data.bomsByProject;
+    //       console.log("products for this id=", this.products);
+    //       console.log("boms for this project id=", this.bomsByProject);
+    //     } catch (error) {
+    //       console.error("Error fetching products:", error);
+    //     }
+    //   } else {
+    //     this.products = []; // Clear products if no project is selected
+    //   }
   },
 };
 </script>

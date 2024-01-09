@@ -199,8 +199,8 @@ export default {
     async getData() {
       try {
         // Replace 'store/get-projects/' with your actual API endpoint
-        const response = await axios.get("store/get-projects/");
-
+        const response = await axios.get("store/create-order/");
+        console.log(response.data);
         this.projects = response.data.projects; // Assuming the response is an array of projects
         console.log(this.projects);
       } catch (error) {
@@ -213,7 +213,7 @@ export default {
       if (this.selectedProject) {
         try {
           const response = await axios.get(
-            `store/get-products/${this.selectedProject}/`
+            `store/create-order/?project_id=${this.selectedProject}`
           );
 
           this.products = response.data.products;

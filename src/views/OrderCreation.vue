@@ -100,22 +100,17 @@
       </div>
 
       <!-- Row 2: BOM Type & BOM REV No -->
-      <div class="row mb-3">
-        <!-- BOM Type -->
-
-        <!-- Issue Date -->
+      <div v-if="selectedRadio === 'uploadNewBom'" class="row mb-3">
         <div class="col-md-6">
-          <label for="issueDate" class="form-label">Issue Date</label>
+          <label for="bomType" class="form-label">BOM Type</label>
           <input
-            type="date"
+            type="text"
             class="form-control"
-            id="issueDate"
-            :value="formattedIssueDate"
-            required
-            readonly
+            id="bomType"
+            v-model="bomType"
           />
         </div>
-        <!-- BOM REV No -->
+
         <div class="col-md-6">
           <label for="bomRevNo" class="form-label">BOM REV No</label>
           <input
@@ -144,6 +139,16 @@
             required
           />
         </div>
+        <div v-if="selectedRadio === 'uploadNewBom'" class="col-md-6">
+          <label for="issueDate" class="form-label">Issue Date</label>
+          <input
+            type="date"
+            class="form-control"
+            id="issueDate"
+            v-model="issueDate"
+            required
+          />
+        </div>
         <!-- Product Rev No -->
         <!-- <div class="col-md-6">
               <label for="productRevNo" class="form-label">Product Rev No</label>
@@ -156,14 +161,67 @@
               />
             </div> -->
       </div>
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#exampleModal"
-      >
-        {{ selectBomButtonText }}
-      </button>
+      <div v-if="selectedRadio === 'uploadNewBom'" class="card p-3 mb-4">
+        <label for="fileInput" class="form-label">
+          <i class="fas fa-cloud-upload-alt mr-2"></i>
+          Choose BOM Excel file
+        </label>
+        <div class="custom-file">
+          <input
+            type="file"
+            class="custom-file-input"
+            id="fileInput"
+            @change="handleFileUpload"
+            accept=".xls, .xlsx"
+            required
+          />
+          <label class="custom-file-label" for="fileInput">{{
+            uploadedFileName || "Select file"
+          }}</label>
+        </div>
+      </div>
+
+      <!-- 
+      radio buton -->
+      <div class="radio-button">
+        <div class="form-check form-check-inline">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="flexRadioDefault"
+            id="flexRadioDefault1"
+            v-model="selectedRadio"
+            value="uploadNewBom"
+          />
+          <label class="form-check-label" for="flexRadioDefault1">
+            Upload a new BOM
+          </label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="flexRadioDefault"
+            id="flexRadioDefault2"
+            v-model="selectedRadio"
+            value="selectBom"
+          />
+          <label class="form-check-label" for="flexRadioDefault2">
+            Select BOM
+          </label>
+        </div>
+      </div>
+
+      <div v-if="selectedRadio === 'selectBom'">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+        >
+          {{ selectBomButtonText }}
+        </button>
+      </div>
     </section>
 
     <!-- Button trigger modal -->
@@ -227,6 +285,9 @@ export default {
   data() {
     return {
       // selectedRow: null,
+
+      selectedRadio: null,
+      issueDate: "",
       order: {
         selectedBomId: null,
         batchQuantity: 1,
@@ -242,6 +303,10 @@ export default {
       selectedBomFileName: "",
       selectedBomId: null,
       selectBomButtonText: "Select BOM",
+      bomRevNo: null,
+      bomType: null,
+      uploadedFileName: null,
+      uploadedFile: null,
     };
   },
   computed: {
@@ -303,6 +368,16 @@ export default {
     this.getData();
   },
   methods: {
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        console.log("Uploaded file:", file);
+        this.uploadedFileName = file.name;
+        this.uploadedFile = file; // Store the file directly, no need to read content
+      }
+    },
+
     async getData() {
       try {
         // Replace 'store/get-projects/' with your actual API endpoint
@@ -371,24 +446,28 @@ export default {
       this.selectedBomFileName = "";
       this.selectedBomId = null;
     },
-
     async createOrder() {
       try {
         console.log("Order Object:", this.order);
         this.$store.commit("setIsLoading", true);
 
-        // Make a POST request to the create_order API
-        const response = await axios.post("store/create-order/", this.order);
+        // Check the selected radio option
+        if (this.selectedRadio === "selectBom") {
+          // If 'Select BOM' is selected, make a POST request to create_order API
+          const response = await axios.post("store/create-order/", this.order);
+          console.log("Order Created:", response.data);
+          this.$notify({
+            title: "Order Created Successfully",
+            type: "bg-danger-subtle text-success",
+            duration: "5000",
+          });
+          // Redirect to the /orders page (adjust the route accordingly)
+          this.$router.push("/orders");
+        } else if (this.selectedRadio === "uploadNewBom") {
+          // If 'Upload a new BOM' is selected, make a POST request to create_bom_task API
+          await this.createBomTask();
+        }
 
-        console.log("Order Created:", response.data);
-
-        this.$notify({
-          title: "Order Created Successfully",
-          type: "bg-danger-subtle text-success",
-          duration: "5000",
-        });
-        // Redirect to the /orders page (adjust the route accordingly)
-        this.$router.push("/orders");
         this.$store.commit("setIsLoading", false);
       } catch (error) {
         console.error("Error creating order:", error);
@@ -400,28 +479,113 @@ export default {
           duration: "5000",
         });
       }
-      // Add any other logic related to creating an order here
     },
-    // async loadProducts() {
-    //   console.log("api for projects triggered");
-    //   console.log("Selected Project:", this.selectedProject);
-    //   if (this.selectedProject) {
-    //     try {
-    //       const response = await axios.get(
-    //         `store/create-order/?project_id=${this.selectedProject}`
-    //       );
-    //       console.log("load products", response.data);
 
-    //       this.products = response.data.products;
-    //       this.bomsByProject = response.data.bomsByProject;
-    //       console.log("products for this id=", this.products);
-    //       console.log("boms for this project id=", this.bomsByProject);
-    //     } catch (error) {
-    //       console.error("Error fetching products:", error);
-    //     }
-    //   } else {
-    //     this.products = []; // Clear products if no project is selected
-    //   }
+    async createBomTask() {
+      try {
+        const formData = new FormData();
+        console.log("Form Data:", {
+          selectedProjectId: this.selectedProject,
+          selectedProductName: this.selectedProduct,
+          bomType: this.bomType,
+          bomRevNo: this.bomRevNo,
+          issueDate: this.issueDate,
+          uploadedFileName: this.uploadedFileName,
+          batchQuantity: this.order.batchQuantity,
+        });
+
+        formData.append("project_id", this.selectedProject);
+        formData.append("product_id", this.selectedProduct);
+        formData.append("bomType", this.bomType);
+        formData.append("bomRevNo", this.bomRevNo);
+        formData.append("issueDate", this.issueDate);
+        formData.append("batch_quantity", this.batchQuantity);
+        formData.append("bom_file", this.uploadedFile);
+
+        const response = await axios.post(
+          "store/create-order-task/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log(response.data);
+        const task_id = response.data.task_id;
+
+        if (
+          response.data.task_status === "IN PROGRESS" ||
+          response.data.task_status === "PENDING"
+        ) {
+          setTimeout(() => {
+            this.checkTaskStatus(task_id);
+          }, 10000);
+        } else if (response.data.task_status === "SUCCESS") {
+          this.$store.commit("setIsLoading", false);
+
+          this.$notify({
+            title: "BOM Uploaded and Order Created Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$router.push("/orders");
+        } else {
+          this.$notify({
+            title: "BOM Upload Failed",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        }
+      } catch (error) {
+        console.error("Error creating BOM task:", error);
+        this.$store.commit("setIsLoading", false);
+        // Show a failure notification
+        this.$notify({
+          title: "Order Creation Failed",
+          type: "bg-danger-subtle text-danger ",
+          duration: "5000",
+        });
+      }
+    },
+    async checkTaskStatus(taskId) {
+      try {
+        const response = await axios.get(`store/check-task-status/${taskId}/`);
+        if (
+          response.data.task_status === "IN PROGRESS" ||
+          response.data.task_status === "PENDING"
+        ) {
+          setTimeout(() => {
+            this.checkTaskStatus(taskId);
+          }, 5000);
+        } else if (response.data.task_status === "SUCCESS") {
+          this.$notify({
+            title: " Order Created Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$router.push("/orders");
+          this.$store.commit("setIsLoading", false);
+        } else {
+          this.$notify({
+            title: "BOM Upload Failed",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
+        });
+        this.$store.commit("setIsLoading", false);
+      }
+    },
   },
 };
 </script>

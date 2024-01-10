@@ -230,7 +230,6 @@ export default {
       this.$store.commit("setIsLoading", true);
 
       const formData = new FormData();
-      console.log("Form Data:", formData);
 
       formData.append("product_name", this.productName);
       formData.append("product_code", this.productCode);

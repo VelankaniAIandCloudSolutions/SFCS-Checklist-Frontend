@@ -71,10 +71,7 @@ export default {
           field: "product.product_rev_number",
           headerName: "Product Rev No",
         },
-        {
-          field: "bom_file_name",
-          headerName: "File Name",
-        },
+
         {
           headerName: "Download",
           cellRenderer: this.editButtonRenderer,
@@ -107,7 +104,7 @@ export default {
     editButtonRenderer(params) {
       console.log(params);
       const button = document.createElement("button");
-      button.innerHTML = `<i class="fas fa-download"></i>`;
+      button.innerHTML = `<i class="fas fa-download"></i> ${params.data.bom_file_name} `;
       button.classList.add("btn-sm", "btn-primary");
 
       // Disable the button if no rows are selected or if more than one row is selected

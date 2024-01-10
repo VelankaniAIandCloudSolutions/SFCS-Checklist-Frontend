@@ -44,6 +44,8 @@ export default {
 
         { field: "bom.product.project.name", headerName: "Project" },
         { field: "bom.product.name", headerName: "Product" },
+        { field: "batch_quantity", headerName: "Batch Quantity" },
+
         {
           field: "bom.bom_file_name",
           headerName: "File Name",

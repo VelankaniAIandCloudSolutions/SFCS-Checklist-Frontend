@@ -40,8 +40,8 @@
       <!-- Buttons Column -->
       <div class="col-md-6 d-flex justify-content-end mt-4">
         <!-- <router-link to="/create-bom" class="btn btn-primary btn-sm ms-2">
-            Create BOM
-          </router-link> -->
+              Create BOM
+            </router-link> -->
         <button type="button" class="btn-sm btn-primary" @click="createOrder">
           <i class="fas fa-check me-2"></i>Create Order
         </button>
@@ -49,11 +49,11 @@
     </div>
     <!-- Rest of your component -->
     <!-- <OrderDetailsTable
-      style="margin-top: 20px"
-      :orders="orders"
-      @rowClicked="handleRowClicked"
-      @rowSelected="handleRowSelected"
-    /> -->
+        style="margin-top: 20px"
+        :orders="orders"
+        @rowClicked="handleRowClicked"
+        @rowSelected="handleRowSelected"
+      /> -->
 
     <section class="card p-3 mb-4 mt-4">
       <!-- Row 1: Project Name & Product  -->
@@ -110,8 +110,9 @@
             type="date"
             class="form-control"
             id="issueDate"
-            v-model="issueDate"
+            :value="formattedIssueDate"
             required
+            readonly
           />
         </div>
         <!-- BOM REV No -->
@@ -145,15 +146,15 @@
         </div>
         <!-- Product Rev No -->
         <!-- <div class="col-md-6">
-          <label for="productRevNo" class="form-label">Product Rev No</label>
-          <input
-            type="text"
-            class="form-control"
-            id="productRevNo"
-            v-model="productRevNo"
-            required
-          />
-        </div> -->
+            <label for="productRevNo" class="form-label">Product Rev No</label>
+            <input
+              type="text"
+              class="form-control"
+              id="productRevNo"
+              v-model="productRevNo"
+              required
+            />
+          </div> -->
       </div>
       <button
         type="button"
@@ -265,6 +266,25 @@ export default {
         // If either products or projects is not available, return an empty array
         console.log("No Products or Projects available.");
         return [];
+      }
+    },
+    prepopulatedIssueDate() {
+      // Check if there is at least one filtered BOM
+      if (this.bomByProducts.length > 0) {
+        // Use the "issue_date" of the first filtered BOM as the prepopulated value
+        return this.bomByProducts[0].issue_date;
+      } else {
+        // If no filtered BOMs, return a default value or null
+        return null;
+      }
+    },
+    formattedIssueDate() {
+      // Format the date as "yyyy-MM-dd"
+      if (this.prepopulatedIssueDate) {
+        const [month, day, year] = this.prepopulatedIssueDate.split("/");
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      } else {
+        return null;
       }
     },
   },

@@ -40,8 +40,8 @@
       <!-- Buttons Column -->
       <div class="col-md-6 d-flex justify-content-end mt-4">
         <!-- <router-link to="/create-bom" class="btn btn-primary btn-sm ms-2">
-              Create BOM
-            </router-link> -->
+                Create BOM
+              </router-link> -->
         <button type="button" class="btn-sm btn-primary" @click="createOrder">
           <i class="fas fa-check me-2"></i>Create Order
         </button>
@@ -49,11 +49,11 @@
     </div>
     <!-- Rest of your component -->
     <!-- <OrderDetailsTable
-        style="margin-top: 20px"
-        :orders="orders"
-        @rowClicked="handleRowClicked"
-        @rowSelected="handleRowSelected"
-      /> -->
+          style="margin-top: 20px"
+          :orders="orders"
+          @rowClicked="handleRowClicked"
+          @rowSelected="handleRowSelected"
+        /> -->
 
     <section class="card p-3 mb-4 mt-4">
       <!-- Row 1: Project Name & Product  -->
@@ -146,15 +146,15 @@
         </div>
         <!-- Product Rev No -->
         <!-- <div class="col-md-6">
-            <label for="productRevNo" class="form-label">Product Rev No</label>
-            <input
-              type="text"
-              class="form-control"
-              id="productRevNo"
-              v-model="productRevNo"
-              required
-            />
-          </div> -->
+              <label for="productRevNo" class="form-label">Product Rev No</label>
+              <input
+                type="text"
+                class="form-control"
+                id="productRevNo"
+                v-model="productRevNo"
+                required
+              />
+            </div> -->
       </div>
       <button
         type="button"
@@ -162,7 +162,7 @@
         data-bs-toggle="modal"
         data-bs-target="#exampleModal"
       >
-        Select BOM
+        {{ selectBomButtonText }}
       </button>
     </section>
 
@@ -192,6 +192,7 @@
               :bomByProducts="bomByProducts"
               @rowClicked="handleRowClicked"
               @rowSelected="handleRowSelected"
+              @rowDeselected="handleRowDeselected"
             ></OrderBomDetailsVue>
           </div>
           <div class="modal-footer">
@@ -202,7 +203,14 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="saveChanges"
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
@@ -220,18 +228,20 @@ export default {
     return {
       // selectedRow: null,
       order: {
-        projectName: "",
-        productName: "",
+        selectedBomId: null,
         batchQuantity: 1,
       },
-      boms: [],
 
+      boms: [],
       projects: [],
       products: [],
-
+      orders: [],
       selectedProduct: null,
       selectedProject: null,
       bomByProducts: [],
+      selectedBomFileName: "",
+      selectedBomId: null,
+      selectBomButtonText: "Select BOM",
     };
   },
   computed: {
@@ -301,6 +311,7 @@ export default {
         this.boms = response.data.boms;
         this.projects = response.data.projects;
         this.products = response.data.products;
+        this.orders = response.data.orders;
       } catch (error) {
         console.error("Error fetching projects:", error);
       }
@@ -322,6 +333,75 @@ export default {
       }
     },
 
+    handleRowClicked(rowData) {
+      // Handle the row click event with the rowData
+      console.log("Row Clicked:", rowData);
+      this.selectedBomFileName = rowData.bom_file_name;
+      this.selectedBomId = rowData.id;
+    },
+    handleRowSelected(selectedRow) {
+      // Handle the row selection event with the selectedRow
+      console.log("Row Selected:", selectedRow);
+      this.selectedBomFileName = selectedRow.bom_file_name;
+      this.selectedBomId = selectedRow.id;
+    },
+    handleRowDeselected() {
+      // Handle the row deselection event
+      console.log("Row Deselected");
+    },
+    saveChanges() {
+      // Check if a BOM is selected
+      if (this.selectedBomFileName && this.selectedBomId !== null) {
+        // Update the button text with the selected BOM file name
+        this.selectBomButtonText = this.selectedBomFileName;
+        this.order.selectedBomId = this.selectedBomId;
+
+        // Perform any other actions you need
+        console.log("Selected BOM File Name:", this.selectedBomFileName);
+        console.log("Selected BOM ID:", this.selectedBomId);
+      } else {
+        // Handle the case where no BOM is selected
+        console.warn("No BOM selected.");
+
+        // Reset the button text to "Select BOM"
+        this.selectBomButtonText = "Select BOM";
+      }
+
+      // Reset selected values for the next selection
+      this.selectedBomFileName = "";
+      this.selectedBomId = null;
+    },
+
+    async createOrder() {
+      try {
+        console.log("Order Object:", this.order);
+        this.$store.commit("setIsLoading", true);
+
+        // Make a POST request to the create_order API
+        const response = await axios.post("store/create-order/", this.order);
+
+        console.log("Order Created:", response.data);
+
+        this.$notify({
+          title: "Order Created Successfully",
+          type: "bg-danger-subtle text-success",
+          duration: "5000",
+        });
+        // Redirect to the /orders page (adjust the route accordingly)
+        this.$router.push("/orders");
+        this.$store.commit("setIsLoading", false);
+      } catch (error) {
+        console.error("Error creating order:", error);
+        this.$store.commit("setIsLoading", false);
+        // Show a failure notification
+        this.$notify({
+          title: "Order Creation Failed",
+          type: "bg-danger-subtle text-danger ",
+          duration: "5000",
+        });
+      }
+      // Add any other logic related to creating an order here
+    },
     // async loadProducts() {
     //   console.log("api for projects triggered");
     //   console.log("Selected Project:", this.selectedProject);

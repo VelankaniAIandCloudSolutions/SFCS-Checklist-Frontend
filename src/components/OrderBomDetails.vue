@@ -41,16 +41,22 @@ export default {
       colDefs: [
         {
           field: "id",
-          headerCheckboxSelection: true,
+          // headerCheckboxSelection: true,
           checkboxSelection: true,
 
           headerName: "BOM ID",
+        },
+        {
+          field: "product.project.name",
+
+          headerName: "Project Name",
         },
         {
           field: "product.name",
 
           headerName: "Product Name",
         },
+
         {
           field: "product.product_code",
           headerName: "Product Code",
@@ -59,11 +65,19 @@ export default {
           field: "bom_type.name",
           headerName: "BOM Type",
         },
-        { field: "bom_rev_number", headerName: "BOM Rev No" },
+
         { field: "issue_date", headerName: "Issue Date" },
         {
           field: "product.product_rev_number",
           headerName: "Product Rev No",
+        },
+        {
+          field: "bom_file_name",
+          headerName: "File Name",
+        },
+        {
+          headerName: "Download",
+          cellRenderer: this.editButtonRenderer,
         },
       ],
 
@@ -89,6 +103,27 @@ export default {
       } else {
         this.$emit("rowDeselected");
       }
+    },
+    editButtonRenderer(params) {
+      console.log(params);
+      const button = document.createElement("button");
+      button.innerHTML = `<i class="fas fa-download"></i>`;
+      button.classList.add("btn-sm", "btn-primary");
+
+      // Disable the button if no rows are selected or if more than one row is selected
+      button.addEventListener("click", () =>
+        this.downloadFile(params.data.bom_file_url)
+      );
+      return button;
+    },
+    downloadFile(fileUrl) {
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.target = "_blank"; // Open in a new tab
+      link.download = "BOM_File"; // You can set a default filename here
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     },
 
     onEditClick(id) {

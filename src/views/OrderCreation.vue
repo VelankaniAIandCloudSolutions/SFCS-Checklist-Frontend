@@ -368,6 +368,31 @@ export default {
     this.getData();
   },
   methods: {
+    setIsLoading(isLoading) {
+      this.$store.commit("setIsLoading", isLoading);
+    },
+
+    notifySuccess(message) {
+      this.$notify({
+        title: message,
+        type: "bg-success-subtle text-success",
+        duration: "5000",
+      });
+    },
+
+    notifyError(message) {
+      this.$notify({
+        title: message,
+        type: "bg-danger-subtle text-danger",
+        duration: "5000",
+      });
+    },
+
+    handleError(message) {
+      this.notifyError(message);
+      this.setIsLoading(false);
+    },
+
     handleFileUpload(event) {
       const file = event.target.files[0];
 
@@ -447,37 +472,32 @@ export default {
       this.selectedBomId = null;
     },
     async createOrder() {
-      try {
-        console.log("Order Object:", this.order);
-        this.$store.commit("setIsLoading", true);
+      console.log("Order Object:", this.order);
 
-        // Check the selected radio option
         if (this.selectedRadio === "selectBom") {
-          // If 'Select BOM' is selected, make a POST request to create_order API
-          const response = await axios.post("store/create-order/", this.order);
-          console.log("Order Created:", response.data);
-          this.$notify({
-            title: "Order Created Successfully",
-            type: "bg-danger-subtle text-success",
-            duration: "5000",
-          });
-          // Redirect to the /orders page (adjust the route accordingly)
-          this.$router.push("/orders");
+          // this.setIsLoading(true);
+          // const response = await axios.post("store/create-order/", this.order);
+          // console.log("Order Created:", response.data);
+          // this.setIsLoading(false);
+          // this.notifySuccess("Order Created Successfully");
+          // this.$router.push("/orders");
+          this.setIsLoading(true);
+
+          await axios
+            .post("store/create-order/", this.order)
+            .then((response) => {
+              console.log("Order Created:", response.data);
+              this.notifySuccess("Order Created Successfully");
+              this.setIsLoading(false);
+              this.$router.push("/orders");
+            })
+            .catch((error) => {
+              console.error("Error creating order:", error);
+              this.handleError("Order Creation Failed");
+            })
         } else if (this.selectedRadio === "uploadNewBom") {
-          // If 'Upload a new BOM' is selected, make a POST request to create_bom_task API
           await this.createBomTask();
         }
-
-        this.$store.commit("setIsLoading", false);
-      } catch (error) {
-        console.error("Error creating order:", error);
-        this.$store.commit("setIsLoading", false);
-        // Show a failure notification
-        this.$notify({
-          title: "Order Creation Failed",
-          type: "bg-danger-subtle text-danger ",
-          duration: "5000",
-        });
       }
     },
 
@@ -496,11 +516,13 @@ export default {
 
         formData.append("project_id", this.selectedProject);
         formData.append("product_id", this.selectedProduct);
-        formData.append("bomType", this.bomType);
-        formData.append("bomRevNo", this.bomRevNo);
-        formData.append("issueDate", this.issueDate);
-        formData.append("batch_quantity", this.batchQuantity);
+        formData.append("bom_type", this.bomType);
+        formData.append("bom_rev_no", this.bomRevNo);
+        formData.append("issue_date", this.issueDate);
+        formData.append("batch_quantity", this.order.batchQuantity);
         formData.append("bom_file", this.uploadedFile);
+
+        this.setIsLoading(true);
 
         const response = await axios.post(
           "store/create-order-task/",
@@ -519,71 +541,45 @@ export default {
           response.data.task_status === "IN PROGRESS" ||
           response.data.task_status === "PENDING"
         ) {
-          setTimeout(() => {
-            this.checkTaskStatus(task_id);
+          setTimeout(async () => {
+            await this.checkTaskStatus(task_id);
           }, 10000);
         } else if (response.data.task_status === "SUCCESS") {
-          this.$store.commit("setIsLoading", false);
-
-          this.$notify({
-            title: "BOM Uploaded and Order Created Successfully",
-            type: "bg-success-subtle text-success",
-            duration: "5000",
-          });
+          this.notifySuccess("BOM Uploaded and Order Created Successfully");
           this.$router.push("/orders");
         } else {
-          this.$notify({
-            title: "BOM Upload Failed",
-            type: "bg-danger-subtle text-danger",
-            duration: "5000",
-          });
-          this.$store.commit("setIsLoading", false);
+          this.notifyError("BOM Upload and Order Creation Failed");
         }
       } catch (error) {
-        console.error("Error creating BOM task:", error);
-        this.$store.commit("setIsLoading", false);
-        // Show a failure notification
-        this.$notify({
-          title: "Order Creation Failed",
-          type: "bg-danger-subtle text-danger ",
-          duration: "5000",
-        });
+        console.log("error:", error);
+        this.handleError("An error occurred, please try again later");
+      } finally {
+        this.setIsLoading(false);
       }
     },
+
     async checkTaskStatus(taskId) {
       try {
         const response = await axios.get(`store/check-task-status/${taskId}/`);
+
         if (
           response.data.task_status === "IN PROGRESS" ||
           response.data.task_status === "PENDING"
         ) {
-          setTimeout(() => {
-            this.checkTaskStatus(taskId);
+          setTimeout(async () => {
+            await this.checkTaskStatus(taskId);
           }, 5000);
         } else if (response.data.task_status === "SUCCESS") {
-          this.$notify({
-            title: " Order Created Successfully",
-            type: "bg-success-subtle text-success",
-            duration: "5000",
-          });
+          this.notifySuccess("BOM Uploaded and Order Created Successfully");
           this.$router.push("/orders");
-          this.$store.commit("setIsLoading", false);
         } else {
-          this.$notify({
-            title: "BOM Upload Failed",
-            type: "bg-danger-subtle text-danger",
-            duration: "5000",
-          });
-          this.$store.commit("setIsLoading", false);
+          this.notifyError("BOM Upload Failed");
         }
       } catch (error) {
         console.log("error:", error);
-        this.$notify({
-          title: "An error occurred, please try again later",
-          type: "bg-danger-subtle text-danger",
-          duration: "5000",
-        });
-        this.$store.commit("setIsLoading", false);
+        this.handleError("An error occurred, please try again later");
+      } finally {
+        this.setIsLoading(false);
       }
     },
   },

@@ -16,7 +16,9 @@ import EditUser from "../components/EditUser.vue";
 import CreateUser from "../components/CreateUser.vue";
 import OrdersLanding from "../views/OrdersLanding.vue";
 import OrderCreation from "../views/OrderCreation.vue";
-
+import ProjectsLanding from "../views/ProjectsLanding.vue";
+import ProjectEdit from "../views/ProjectEdit.vue";
+import CreateProject from "../components/CreateProject.vue";
 const routes = [
   {
     path: "/",
@@ -115,6 +117,22 @@ const routes = [
     path: "/orders/create",
     name: "OrderCreation",
     component: OrderCreation,
+  },
+  {
+    path: "/projects",
+    name: "ProjectsLanding",
+    component: ProjectsLanding,
+  },
+  {
+    path: "/projects/create-project",
+    name: "CreateProject",
+    component: CreateProject,
+  },
+  {
+    path: "/project-edit/:id",
+    name: "ProjectEdit",
+    component: ProjectEdit,
+    props: true,
   },
 ];
 

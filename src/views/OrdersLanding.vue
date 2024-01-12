@@ -25,7 +25,7 @@
               </li>
               <li class="breadcrumb-item active" aria-current="page">
                 <i class="fas fa-shopping-cart me-1"></i>
-                Order
+                Orders
               </li>
             </ol>
           </nav>
@@ -67,7 +67,7 @@ export default {
       try {
         // Fetch BOM data from your API endpoint
         this.$store.commit("setIsLoading", true);
-        const response = await axios.get("store/create-order/");
+        const response = await axios.get("store/get-orders/");
         console.log("response.data", response.data);
         this.orders = response.data.orders;
         console.log("orders", this.orders);

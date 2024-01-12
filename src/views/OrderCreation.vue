@@ -30,7 +30,7 @@
                 </router-link>
               </li>
               <li class="breadcrumb-item active" aria-current="page">
-                <i class="fas fa-shopping-cart me-1"></i>
+                <i class="fa-solid fa-receipt me-1"></i>
                 Create Order
               </li>
             </ol>
@@ -43,7 +43,7 @@
                 Create BOM
               </router-link> -->
         <button type="button" class="btn-sm btn-primary" @click="createOrder">
-          <i class="fas fa-check me-2"></i>Create Order
+          Create Order
         </button>
       </div>
     </div>
@@ -181,8 +181,6 @@
         </div>
       </div>
 
-      <!-- 
-      radio buton -->
       <div class="radio-button">
         <div class="form-check form-check-inline">
           <input
@@ -211,11 +209,10 @@
           </label>
         </div>
       </div>
-
       <div v-if="selectedRadio === 'selectBom'">
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-primary mt-4"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
         >
@@ -406,14 +403,17 @@ export default {
     async getData() {
       try {
         // Replace 'store/get-projects/' with your actual API endpoint
+        this.setIsLoading(true);
         const response = await axios.get("store/create-order/");
         console.log(response.data);
+        this.setIsLoading(false);
         this.boms = response.data.boms;
         this.projects = response.data.projects;
         this.products = response.data.products;
         this.orders = response.data.orders;
       } catch (error) {
         console.error("Error fetching projects:", error);
+        this.setIsLoading(false);
       }
     },
     filteredBoms() {
@@ -474,116 +474,148 @@ export default {
     async createOrder() {
       console.log("Order Object:", this.order);
 
-        if (this.selectedRadio === "selectBom") {
-          // this.setIsLoading(true);
-          // const response = await axios.post("store/create-order/", this.order);
-          // console.log("Order Created:", response.data);
-          // this.setIsLoading(false);
-          // this.notifySuccess("Order Created Successfully");
-          // this.$router.push("/orders");
-          this.setIsLoading(true);
-
-          await axios
-            .post("store/create-order/", this.order)
-            .then((response) => {
-              console.log("Order Created:", response.data);
-              this.notifySuccess("Order Created Successfully");
-              this.setIsLoading(false);
-              this.$router.push("/orders");
-            })
-            .catch((error) => {
-              console.error("Error creating order:", error);
-              this.handleError("Order Creation Failed");
-            })
-        } else if (this.selectedRadio === "uploadNewBom") {
-          await this.createBomTask();
-        }
-      }
-    },
-
-    async createBomTask() {
-      try {
-        const formData = new FormData();
-        console.log("Form Data:", {
-          selectedProjectId: this.selectedProject,
-          selectedProductName: this.selectedProduct,
-          bomType: this.bomType,
-          bomRevNo: this.bomRevNo,
-          issueDate: this.issueDate,
-          uploadedFileName: this.uploadedFileName,
-          batchQuantity: this.order.batchQuantity,
-        });
-
-        formData.append("project_id", this.selectedProject);
-        formData.append("product_id", this.selectedProduct);
-        formData.append("bom_type", this.bomType);
-        formData.append("bom_rev_no", this.bomRevNo);
-        formData.append("issue_date", this.issueDate);
-        formData.append("batch_quantity", this.order.batchQuantity);
-        formData.append("bom_file", this.uploadedFile);
-
+      if (this.selectedRadio === "selectBom") {
+        // this.setIsLoading(true);
+        // const response = await axios.post("store/create-order/", this.order);
+        // console.log("Order Created:", response.data);
+        // this.setIsLoading(false);
+        // this.notifySuccess("Order Created Successfully");
+        // this.$router.push("/orders");
         this.setIsLoading(true);
 
-        const response = await axios.post(
-          "store/create-order-task/",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        console.log(response.data);
-        const task_id = response.data.task_id;
-
-        if (
-          response.data.task_status === "IN PROGRESS" ||
-          response.data.task_status === "PENDING"
-        ) {
-          setTimeout(async () => {
-            await this.checkTaskStatus(task_id);
-          }, 10000);
-        } else if (response.data.task_status === "SUCCESS") {
-          this.notifySuccess("BOM Uploaded and Order Created Successfully");
-          this.$router.push("/orders");
-        } else {
-          this.notifyError("BOM Upload and Order Creation Failed");
-        }
-      } catch (error) {
-        console.log("error:", error);
-        this.handleError("An error occurred, please try again later");
-      } finally {
-        this.setIsLoading(false);
+        await axios
+          .post("store/create-order/", this.order)
+          .then((response) => {
+            console.log("Order Created:", response.data);
+            this.notifySuccess("Order Created Successfully");
+            this.setIsLoading(false);
+            this.$router.push("/orders");
+          })
+          .catch((error) => {
+            console.error("Error creating order:", error);
+            this.handleError("Order Creation Failed");
+          });
+      } else if (this.selectedRadio === "uploadNewBom") {
+        await this.createBomTask();
       }
     },
+  },
 
-    async checkTaskStatus(taskId) {
-      try {
-        const response = await axios.get(`store/check-task-status/${taskId}/`);
+  async createBomTask() {
+    try {
+      const formData = new FormData();
+      console.log("Form Data:", {
+        selectedProjectId: this.selectedProject,
+        selectedProductName: this.selectedProduct,
+        bomType: this.bomType,
+        bomRevNo: this.bomRevNo,
+        issueDate: this.issueDate,
+        uploadedFileName: this.uploadedFileName,
+        batchQuantity: this.order.batchQuantity,
+      });
 
-        if (
-          response.data.task_status === "IN PROGRESS" ||
-          response.data.task_status === "PENDING"
-        ) {
-          setTimeout(async () => {
-            await this.checkTaskStatus(taskId);
-          }, 5000);
-        } else if (response.data.task_status === "SUCCESS") {
-          this.notifySuccess("BOM Uploaded and Order Created Successfully");
-          this.$router.push("/orders");
-        } else {
-          this.notifyError("BOM Upload Failed");
-        }
-      } catch (error) {
-        console.log("error:", error);
-        this.handleError("An error occurred, please try again later");
-      } finally {
-        this.setIsLoading(false);
+      formData.append("project_id", this.selectedProject);
+      formData.append("product_id", this.selectedProduct);
+      formData.append("bom_type", this.bomType);
+      formData.append("bom_rev_no", this.bomRevNo);
+      formData.append("issue_date", this.issueDate);
+      formData.append("batch_quantity", this.order.batchQuantity);
+      formData.append("bom_file", this.uploadedFile);
+
+      this.setIsLoading(true);
+
+      const response = await axios.post("store/create-order-task/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log(response.data);
+      const task_id = response.data.task_id;
+
+      if (
+        response.data.task_status === "IN PROGRESS" ||
+        response.data.task_status === "PENDING"
+      ) {
+        setTimeout(async () => {
+          await this.checkTaskStatus(task_id);
+        }, 10000);
+      } else if (response.data.task_status === "SUCCESS") {
+        this.notifySuccess("BOM Uploaded and Order Created Successfully");
+        this.$router.push("/orders");
+      } else {
+        this.notifyError("BOM Upload and Order Creation Failed");
       }
-    },
+    } catch (error) {
+      console.log("error:", error);
+      this.handleError("An error occurred, please try again later");
+    } finally {
+      this.setIsLoading(false);
+    }
+  },
+
+  async checkTaskStatus(taskId) {
+    try {
+      const response = await axios.get(`store/check-task-status/${taskId}/`);
+
+      if (
+        response.data.task_status === "IN PROGRESS" ||
+        response.data.task_status === "PENDING"
+      ) {
+        setTimeout(async () => {
+          await this.checkTaskStatus(taskId);
+        }, 5000);
+      } else if (response.data.task_status === "SUCCESS") {
+        this.notifySuccess("BOM Uploaded and Order Created Successfully");
+        this.$router.push("/orders");
+      } else {
+        this.notifyError("BOM Upload Failed");
+      }
+    } catch (error) {
+      console.log("error:", error);
+      this.handleError("An error occurred, please try again later");
+    } finally {
+      this.setIsLoading(false);
+    }
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.form-check-label {
+  font-weight: bold;
+}
+
+/* Add this style to make radio buttons more visible with a border */
+.form-check-input {
+  border: 2px solid #3498db;
+  border-radius: 50%;
+  margin-right: 8px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Optional: Add a style to highlight the selected radio button */
+.form-check-input:checked {
+  background-color: #3498db;
+  transform: scale(1.1);
+}
+
+/* Add hover effect for radio buttons */
+.form-check-input:hover {
+  background-color: #3498db;
+}
+
+/* Add hover effect for labels */
+.form-check-label:hover {
+  color: #3498db;
+}
+
+/* Container styling */
+.radio-button {
+  display: inline-block;
+  margin-right: 20px; /* Adjust the margin as needed */
+}
+</style>

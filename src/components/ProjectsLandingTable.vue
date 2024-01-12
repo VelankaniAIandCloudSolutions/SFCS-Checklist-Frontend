@@ -3,13 +3,12 @@
     <ag-grid-vue
       style="height: 500px"
       class="ag-theme-quartz"
-      :rowData="bomByProducts"
+      :rowData="projectList"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
       @rowClicked="onRowClicked"
       @selectionChanged="onSelectionChanged"
-      rowSelection="single"
     >
     </ag-grid-vue>
   </div>
@@ -21,7 +20,7 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
 
 export default {
-  name: "OrderBomDetails",
+  name: "App",
   components: {
     AgGridVue,
   },
@@ -30,7 +29,7 @@ export default {
     //   type: Number,
     //   required: true,
     // },
-    bomByProducts: {
+    projectList: {
       type: Array,
       required: true,
     },
@@ -41,40 +40,18 @@ export default {
 
       colDefs: [
         {
-          field: "id",
-          // headerCheckboxSelection: true,
-          checkboxSelection: true,
-
-          headerName: "BOM ID",
+          field: "id", // Added "id" field
+          hide: true,
         },
         {
-          field: "product.project.name",
+          field: "name",
 
           headerName: "Project Name",
         },
+        { field: "project_code", headerName: "Project Code" },
+        { field: "project_rev_number", headerName: "Project Rev No" },
         {
-          field: "product.name",
-
-          headerName: "Product Name",
-        },
-
-        {
-          field: "product.product_code",
-          headerName: "Product Code",
-        },
-        {
-          field: "bom_type.name",
-          headerName: "BOM Type",
-        },
-
-        { field: "issue_date", headerName: "Issue Date" },
-        {
-          field: "product.product_rev_number",
-          headerName: "Product Rev No",
-        },
-
-        {
-          headerName: "Download",
+          headerName: "Actions",
           cellRenderer: this.editButtonRenderer,
         },
       ],
@@ -92,6 +69,13 @@ export default {
   methods: {
     onRowClicked(params) {
       this.$emit("rowClicked", params.data);
+      this.$router.push(`/project-edit/${params.data.id}`);
+    },
+    onRowSelected(params) {
+      // Emit an event with the selected row data
+      if (params.node.isSelected()) {
+        this.$emit("rowSelected", params.node.data);
+      }
     },
     onSelectionChanged(params) {
       const selectedData = params.api.getSelectedRows();
@@ -105,27 +89,16 @@ export default {
     editButtonRenderer(params) {
       console.log(params);
       const button = document.createElement("button");
-      button.innerHTML = `<i class="fas fa-download"></i> ${params.data.bom_file_name} `;
-      button.classList.add("btn-sm", "btn-primary");
+      button.innerHTML = `<i class="fas fa-edit"></i>`;
+      button.classList.add("btn", "btn-primary");
 
       // Disable the button if no rows are selected or if more than one row is selected
-      button.addEventListener("click", () =>
-        this.downloadFile(params.data.bom_file_url)
-      );
+      button.addEventListener("click", () => this.onEditClick(params.data.id));
       return button;
-    },
-    downloadFile(fileUrl) {
-      const link = document.createElement("a");
-      link.href = fileUrl;
-      link.target = "_blank"; // Open in a new tab
-      link.download = "BOM_File"; // You can set a default filename here
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     },
 
     onEditClick(id) {
-      this.$router.push(`/bom/edit/${id}`);
+      this.$router.push(`/project-edit/${id}`);
     },
   },
 };

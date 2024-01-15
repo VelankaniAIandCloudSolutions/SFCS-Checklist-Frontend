@@ -19,6 +19,7 @@ import OrderCreation from "../views/OrderCreation.vue";
 import ProjectsLanding from "../views/ProjectsLanding.vue";
 import ProjectEdit from "../views/ProjectEdit.vue";
 import CreateProject from "../components/CreateProject.vue";
+import ProductEdit from "../views/ProductEdit.vue";
 const routes = [
   {
     path: "/",
@@ -132,6 +133,12 @@ const routes = [
     path: "/project-edit/:id",
     name: "ProjectEdit",
     component: ProjectEdit,
+    props: true,
+  },
+  {
+    path: "/product/edit/:id",
+    name: "ProductEdit",
+    component: ProductEdit,
     props: true,
   },
 ];

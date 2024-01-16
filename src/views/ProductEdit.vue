@@ -16,7 +16,7 @@
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
         <div class="d-flex align-items-center">
-          <h2 class="mb-0">Products</h2>
+          <h2 class="mb-0">Edit Product</h2>
           <span class="ms-3 fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
@@ -149,10 +149,11 @@ export default {
   methods: {
     async fetchData() {
       this.$store.commit("setIsLoading", true);
+      console.log("id", this.$route.params.id);
       axios
-        .get(`/store/create-product/${this.$route.params.id}`) // Replace with your actual API endpoint
+        .get(`/store/edit-product/${this.$route.params.id}`) // Replace with your actual API endpoint
         .then((response) => {
-          console.log("response.data", response.data);
+          console.log("response.data ", response.data);
           this.product = response.data.product;
 
           if (this.product) {
@@ -176,43 +177,61 @@ export default {
         this.$store.commit("setIsLoading", true);
         axios
           .put(
-            `/store/create-product/${this.$route.params.id}/`,
+            `/store/edit-product/${this.$route.params.id}/`,
             this.editedProduct
           )
           .then((response) => {
             console.log("Product updated successfully:", response.data);
             // Redirect to the user list page or perform other actions as needed
             this.$store.commit("setIsLoading", false);
-            alert("Product Updated successfully!");
+            this.$notify({
+              title: "Product Updated Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
             // location.reload();
+            const projectId = this.product.project;
+            this.$router.push(`/project-edit/${projectId}`);
           })
           .catch((error) => {
             console.error("Error updating Product:", error);
+            this.$notify({
+              title: "Product Creation Unsuccessful",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
             this.$store.commit("setIsLoading", false);
           });
       }
     },
     deleteProduct() {
       // Confirm deletion with the user
-      console.log(this.params.id);
-      if (confirm("Are you sure you want to delete this user?")) {
+
+      if (confirm("Are you sure you want to delete this product?")) {
         this.$store.commit("setIsLoading", true);
 
         // Delete user data using the delete request
         axios
-          .delete(`/store/delete-product/${this.params.data.id}/`)
+          .delete(`/store/delete-product/${this.$route.params.id}/`)
           .then(() => {
             console.log("Product  deleted successfully.");
 
             this.$store.commit("setIsLoading", false);
-            alert("Product Deleted successfully!");
-
-            // Redirect to the user list page or perform other actions as needed
-            this.$router.push(`/project-edit/${this.product.project}`);
+            this.$notify({
+              title: "Product Deleted Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+            const projectId = this.product.project;
+            this.$router.push(`/project-edit/${projectId}`);
           })
           .catch((error) => {
-            alert("error deleting!");
             console.error("Error deleting user:", error);
+            this.$notify({
+              title: "Product Deletion Unsuccessful",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
           });
       }
     },

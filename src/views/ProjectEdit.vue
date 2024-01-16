@@ -8,11 +8,11 @@
       <span class="visually-hidden">Loading...</span>
     </div>
     <div>
-      <b> Loading... </b>
+      <b> Loading...</b>
     </div>
   </div>
 
-  <div v-else class="container mt-4">
+  <div v-else class="container">
     <div class="row align-items-center">
       <div class="col-md-8 mt-4">
         <div class="d-flex align-items-center">
@@ -37,54 +37,58 @@
         </div>
       </div>
       <div class="col-md-4 mt-4 d-flex justify-content-end">
-        <button type="button" class="btn btn-success me-2" @click="saveChanges">
-          Update Changes
+        <button
+          type="button"
+          class="btn btn-success me-2"
+          @click="updateProject"
+        >
+          Update Project
         </button>
-        <button type="button" class="btn btn-danger" @click="confirmDelete">
+        <button type="button" class="btn btn-danger" @click="deleteProject">
           Delete Project
         </button>
       </div>
     </div>
-    <div class="row mt-5">
-      <div class="col-md-8 offset-md-2">
-        <!-- Display BOM fields within sections -->
-        <section>
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="veplPartNumber">Project Name</label>
-                <input
-                  v-model="editedProject.name"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="level">Project Code</label>
-                <input
-                  v-model="editedProject.project_code"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label for="priorityLevel">Project Rev No</label>
-                <input
-                  v-model="editedProject.project_rev_number"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-            </div>
+    <!-- <div class="row mt-5"> -->
+    <!-- <div class="col-md-8 offset-md-2 mt-5"> -->
+    <!-- Display BOM fields within sections -->
+    <section class="mt-5">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="veplPartNumber">Project Name</label>
+            <input
+              v-model="editedProject.name"
+              type="text"
+              class="form-control"
+            />
           </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="level">Project Code</label>
+            <input
+              v-model="editedProject.project_code"
+              type="text"
+              class="form-control"
+            />
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="priorityLevel">Project Rev No</label>
+            <input
+              v-model="editedProject.project_rev_number"
+              type="text"
+              class="form-control"
+            />
+          </div>
+        </div>
+      </div>
 
-          <!-- Add other fields in a similar fashion -->
+      <!-- Add other fields in a similar fashion -->
 
-          <!-- <div class="row">
+      <!-- <div class="row">
             <div class="col-md-4">
               <div class="form-group">
                 <label for="value">Value</label>
@@ -139,7 +143,7 @@
                 disabled
               />
             </div> -->
-          <!-- <div class="form-group">
+      <!-- <div class="form-group">
             <label for="references">References</label>
             <div>
               <div
@@ -162,17 +166,17 @@
             />
           </div> -->
 
-          <div class="form-group">
-            <label for="products">Products</label>
-            <br />
+      <div class="form-group">
+        <label for="products">Products:</label>
+        <br />
 
-            <!-- <input
+        <!-- <input
                 :value="getManufacturerParts(editedBom.manufacturer_parts)"
                 type="text"
                 class="form-control"
                 disabled
               /> -->
-            <!-- <div>
+        <!-- <div>
               <div
                 v-for="(product, index) in editedProject.products"
                 :key="product.id"
@@ -181,23 +185,23 @@
                 {{ index + 1 }}. {{ product.name }} - {{ product.product_code }}
               </div>
             </div> -->
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-            >
-              Add Product
-            </button>
-            <products-for-project-grid
-              style="margin-top: 20px"
-              :products="project.products"
-              @rowSelected="handleRowSelected"
-            >
-            </products-for-project-grid>
-          </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+        >
+          Add Product
+        </button>
+        <products-for-project-grid
+          style="margin-top: 20px"
+          :products="project.products"
+          @rowSelected="handleRowSelected"
+        >
+        </products-for-project-grid>
+      </div>
 
-          <!-- <div class="form-group">
+      <!-- <div class="form-group">
             <label for="customerPartNumber">Customer Part Number</label>
             <input
               v-model="editedBom.customer_part_number"
@@ -229,7 +233,7 @@
             </div>
           </div> -->
 
-          <!-- <div class="form-group">
+      <!-- <div class="form-group">
               <label for="assemblyStage">Assembly Stage</label>
               <input
                 v-model="editedBom.assembly_stage.name"
@@ -238,7 +242,7 @@
               />
             </div> -->
 
-          <!-- <div class="form-group">
+      <!-- <div class="form-group">
             <label for="assemblyStage">Assembly Stage</label>
             <select v-model="editedBom.assembly_stage" class="form-control">
               <option
@@ -269,11 +273,11 @@
               class="form-control"
             />
           </div> -->
-        </section>
+    </section>
 
-        <!-- Buttons for Save Changes and Delete -->
-      </div>
-    </div>
+    <!-- Buttons for Save Changes and Delete -->
+    <!-- </div> -->
+    <!-- </div> -->
     <div
       class="modal fade"
       id="exampleModal"
@@ -431,7 +435,7 @@ export default {
     async fetchData() {
       this.$store.commit("setIsLoading", true);
       axios
-        .get(`/store/create-project/${this.$route.params.id}`) // Replace with your actual API endpoint
+        .get(`/store/edit-project/${this.$route.params.id}`) // Replace with your actual API endpoint
         .then((response) => {
           console.log("response.data", response.data);
           this.project = response.data.project;
@@ -441,6 +445,11 @@ export default {
             this.editedProject.project_rev_number =
               this.project.project_rev_number;
           }
+          // this.product = response.data.product;
+          // if (this.product) {
+          //   // Add the created product to your projects array as needed
+          //   this.projects.push(this.product);
+          // }
 
           this.$store.commit("setIsLoading", false);
         })
@@ -449,18 +458,48 @@ export default {
           this.$store.commit("setIsLoading", false);
         });
     },
+    // handleRowSelected(selectedProducts) {
+    //   // Update the editedProject.products array with the selected products
+    //   this.editedProject.products = selectedProducts;
+    // },
     // updateProducts(selectedProducts) {
     //   this.editedProject.products = selectedProducts;
     // },
-    saveChanges() {
+    updateProject() {
       // Log the editedProject object
       console.log("Edited Project:", this.editedProject);
+      if (confirm("Are you sure you want to update this project?")) {
+        this.$store.commit("setIsLoading", true);
+        axios
+          .put(
+            `/store/edit-project/${this.$route.params.id}/`,
+            this.editedProject
+          )
+          .then((response) => {
+            console.log("Project updated successfully:", response.data);
+            // Redirect to the user list page or perform other actions as needed
+            this.$store.commit("setIsLoading", false);
+            this.$notify({
+              title: "Project Updated Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+            // location.reload();
+            // const projectId = this.product.project;
+            // this.$router.push(`/project-edit/${projectId}`);
 
-      // Add logic to save changes to the backend if needed
-      // ...
-
-      // You can also redirect to another page or perform other actions
-      // after saving changes if needed
+            this.$router.push("/projects");
+          })
+          .catch((error) => {
+            console.error("Error updating Project:", error);
+            this.$notify({
+              title: "Project Creation Unsuccessful",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+            this.$store.commit("setIsLoading", false);
+          });
+      }
     },
     createProduct() {
       // Check if the form is valid before creating a new Product
@@ -483,21 +522,56 @@ export default {
             console.log("Product created successfully:", response.data);
             this.$store.commit("setIsLoading", false);
             // Display a success message
-
+            const newProduct = response.data.product;
+            this.project.products.push(newProduct);
             this.$notify({
               title: "Product Created Successfully",
               type: "bg-success-subtle text-success",
               duration: "5000",
             });
+            this.newProduct = {};
+            // this.$refs.agGrid.$props.products = this.project.products;
             const projectId = this.$route.params.id;
             this.$router.push(`/project-edit/${projectId}`);
-            window.location.reload();
+            // window.location.reload();
           })
           .catch((error) => {
             console.error("Error creating Product:", error);
             this.$store.commit("setIsLoading", false);
             this.$notify({
               title: "Product Creation Unsuccessful",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          });
+      }
+    },
+    deleteProject() {
+      // Confirm deletion with the user
+
+      if (confirm("Are you sure you want to delete this project?")) {
+        this.$store.commit("setIsLoading", true);
+
+        // Delete user data using the delete request
+        axios
+          .delete(`/store/delete-project/${this.$route.params.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            console.log("Project deleted successfully.");
+
+            this.$store.commit("setIsLoading", false);
+            this.$notify({
+              title: "Project Deleted Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+            // const projectId = this.product.project;
+            this.$router.push("/projects");
+          })
+          .catch((error) => {
+            console.error("Error deleting user:", error);
+            this.$notify({
+              title: "Project Deletion Unsuccessful",
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });

@@ -82,11 +82,7 @@
             type="text"
             class="form-control"
             id="projectRevNo"
-            required
           />
-          <small v-if="!newProject.project_rev_number" class="text-danger"
-            >Project Rev No is required.</small
-          >
         </div>
         <!-- ... (unchanged code) ... -->
       </div>

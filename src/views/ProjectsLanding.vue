@@ -67,7 +67,7 @@ export default {
       this.$store.commit("setIsLoading", true);
 
       axios
-        .get("/store/create-project") // Replace with your actual API endpoint
+        .get("/store/edit-project") // Replace with your actual API endpoint
         .then((response) => {
           console.log("response.data", response.data);
           this.projectList = response.data.projects;

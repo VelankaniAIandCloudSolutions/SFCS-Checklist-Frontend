@@ -44,9 +44,15 @@ export default {
           hide: true,
         },
         {
-          field: "product.name",
+          field: "product.project.name",
           headerCheckboxSelection: true,
           checkboxSelection: true,
+          headerName: "Project Name",
+        },
+
+        {
+          field: "product.name",
+
           headerName: "Product Name",
         },
         { field: "product.product_code", headerName: "Product Code" },

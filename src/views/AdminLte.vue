@@ -127,7 +127,7 @@
                 <li class="nav-item">
                   <router-link to="/orders" class="nav-link">
                     <i class="fas fa-receipt nav-icon"></i>
-                    <p>Order</p>
+                    <p>Orders</p>
                   </router-link>
                 </li>
               </ul>

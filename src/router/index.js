@@ -20,6 +20,8 @@ import ProjectsLanding from "../views/ProjectsLanding.vue";
 import ProjectEdit from "../views/ProjectEdit.vue";
 import CreateProject from "../components/CreateProject.vue";
 import ProductEdit from "../views/ProductEdit.vue";
+import CheckListOrderBased from "../views/CheckListOrderBased.vue";
+
 const routes = [
   {
     path: "/",
@@ -139,6 +141,12 @@ const routes = [
     path: "/product/edit/:id",
     name: "ProductEdit",
     component: ProductEdit,
+    props: true,
+  },
+  {
+    path: "/new",
+    name: "CheckListOrderBased",
+    component: CheckListOrderBased,
     props: true,
   },
 ];

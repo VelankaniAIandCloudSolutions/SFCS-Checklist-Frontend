@@ -42,7 +42,14 @@ export default {
           headerName: "BOM ID ",
         },
 
-        { field: "bom.product.project.name", headerName: "Project" },
+        {
+          field: "bom.product.project.name",
+
+          headerCheckboxSelection: true,
+          checkboxSelection: true,
+          headerName: "Project Name",
+        },
+
         { field: "bom.product.name", headerName: "Product" },
         { field: "batch_quantity", headerName: "Batch Quantity" },
 
@@ -70,6 +77,12 @@ export default {
     onRowClicked(params) {
       this.$emit("rowClicked", params.data);
     },
+    // onRowSelected(params) {
+    //   // Emit an event with the selected row data
+    //   if (params.node.isSelected()) {
+    //     this.$emit("rowSelected", params.node.data);
+    //   }
+    // },
     onSelectionChanged(params) {
       const selectedData = params.api.getSelectedRows();
       const selectedRow = selectedData.length > 0 ? selectedData[0] : null;

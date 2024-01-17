@@ -316,12 +316,14 @@ export default {
         this.projects.length
       ) {
         // Filter products based on the selected project if it's not null
+        console.log("selectedProject", this.selectedProject);
         if (this.selectedProject !== null) {
           const filteredProducts = this.products.filter((product) => {
-            const project = this.projects.find(
-              (p) => p.id === product.project.id
-            );
-            return project && project.id === this.selectedProject;
+            // Access the project ID directly from the product
+            const projectId = product.project;
+
+            // Check if the project ID matches the selected project
+            return projectId === this.selectedProject;
           });
 
           console.log("Filtered Products:", filteredProducts);
@@ -330,7 +332,8 @@ export default {
         } else {
           // If selectedProject is null, return all products or an empty array
           console.log("All Products:", this.products);
-          return this.products;
+          return [];
+
           // Or return [] if you want an empty array when selectedProject is null
           // return [];
         }
@@ -340,6 +343,7 @@ export default {
         return [];
       }
     },
+
     prepopulatedIssueDate() {
       // Check if there is at least one filtered BOM
       if (this.bomByProducts.length > 0) {
@@ -405,7 +409,7 @@ export default {
         // Replace 'store/get-projects/' with your actual API endpoint
         this.setIsLoading(true);
         const response = await axios.get("store/create-order/");
-        console.log(response.data);
+        console.log("boms + products + projects", response.data);
         this.setIsLoading(false);
         this.boms = response.data.boms;
         this.projects = response.data.projects;

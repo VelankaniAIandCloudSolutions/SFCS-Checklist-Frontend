@@ -7,6 +7,7 @@
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
+      :rowSelection="'multiple'"
       @rowClicked="onRowClicked"
       @selectionChanged="onSelectionChanged"
     >
@@ -47,7 +48,7 @@ export default {
         {
           field: "bom.product.project.name",
 
-          headerCheckboxSelection: true,
+          // headerCheckboxSelection: true,
           checkboxSelection: true,
           headerName: "Project Name",
         },

@@ -9,10 +9,16 @@
         </div>
 
         <div class="input-box">
-          <input v-model="password" type="password" placeholder="Password" />
-          <i class="fa fa-lock"></i>
+          <input
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+          />
+          <i
+            @click="togglePasswordVisibility"
+            :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"
+          ></i>
         </div>
-
         <button type="submit">Login</button>
 
         <!-- <div class="links">
@@ -33,9 +39,13 @@ export default {
       email: "",
       password: "",
       errors: [],
+      showPassword: false,
     };
   },
   methods: {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
     async handleSubmit() {
       this.$store.commit("setIsLoading", true);
       this.errors = [];

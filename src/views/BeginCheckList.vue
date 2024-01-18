@@ -36,7 +36,7 @@
           </nav>
         </div>
       </div>
-      <div class="col-md-6 mt-4 d-flex justify-content-end">
+      <div class="col-md-6 mt-4">
         <div class="container">
           <div class="d-flex justify-content-end">
             <button
@@ -48,6 +48,7 @@
             >
               View Generated Label
             </button>
+
             <button
               type="button"
               data-bs-toggle="modal"
@@ -57,6 +58,10 @@
             >
               Generate Label
             </button>
+            <button class="btn btn-primary me-2" @click="downloadBOM">
+              Download BOM
+            </button>
+
             <button
               type="button"
               data-bs-toggle="modal"
@@ -178,10 +183,10 @@
       <div class="card-body">
         <div class="row">
           <div v-if="activeBom.product" class="col">
-            <strong>Product Name:</strong> {{ activeBom.product.name }}
+            <strong>Project Name:</strong> {{ activeBom.product.project.name }}
           </div>
           <div v-if="activeBom.product" class="col">
-            <strong>Product Code:</strong> {{ activeBom.product.product_code }}
+            <strong>Product Name:</strong> {{ activeBom.product.name }}
           </div>
           <div class="col">
             <strong>BOM Rev No:</strong> {{ activeBom.bom_rev_number }}
@@ -599,6 +604,7 @@ export default {
       scannedEntries: [],
     };
   },
+
   mounted() {
     this.getChecklistBeginning();
     this.pollingInterval = setInterval(() => {
@@ -937,6 +943,27 @@ export default {
         return false;
       }
     },
+    downloadBOM() {
+      try {
+        // Use the bom_file URL for download
+
+        const bomFileURL = this.checklist.bom.bom_file_url;
+        console.log("file url", bomFileURL);
+        // Create an anchor element and trigger the download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = bomFileURL;
+
+        downloadLink.download = this.checklist.bom.bom_file_name; // Set the desired file name
+
+        document.body.appendChild(downloadLink);
+
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (error) {
+        console.error("Error downloading BOM:", error);
+      }
+    },
+
     // handleScannerInput(event) {
     //   const inputValue = event.target.value;
     //   console.log(inputValue);

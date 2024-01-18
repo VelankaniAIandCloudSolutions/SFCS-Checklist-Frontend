@@ -36,10 +36,12 @@ export default {
         {
           field: "id",
           headerName: "Order ID",
+          hide: true,
         },
         {
           field: "bom.id",
           headerName: "BOM ID ",
+          hide: true,
         },
 
         {

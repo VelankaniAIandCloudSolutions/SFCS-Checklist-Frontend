@@ -66,6 +66,7 @@ export default {
             return params.value === null ? "null" : params.value;
           },
         },
+        { headerName: "Project Name", field: "bom.product.project.name" },
         { headerName: "Product Name", field: "bom.product.name" },
         { headerName: "Product Code", field: "bom.product.product_code" },
         { headerName: "Updated At", field: "updated_at" },

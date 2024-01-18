@@ -122,10 +122,10 @@
       <div class="card-body">
         <div class="row">
           <div v-if="activeBom.product" class="col">
-            <strong>Product Name:</strong> {{ activeBom.product.name }}
+            <strong>Project Name:</strong> {{ activeBom.product.project.name }}
           </div>
           <div v-if="activeBom.product" class="col">
-            <strong>Product Code:</strong> {{ activeBom.product.product_code }}
+            <strong>Product Name:</strong> {{ activeBom.product.name }}
           </div>
           <div class="col">
             <strong>BOM Rev No:</strong> {{ activeBom.bom_rev_number }}

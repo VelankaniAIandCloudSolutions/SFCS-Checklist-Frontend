@@ -145,6 +145,7 @@ export default {
       rowData: [],
       selectedRow: null,
       clickedRowId: null,
+      orderId: null,
       isButtonEnabled: false,
       isExisting: false,
       isActive: false,
@@ -176,7 +177,10 @@ export default {
         this.selectedRow = rowData;
 
         this.clickedRowId = rowData.bom.id;
-        console.log("clicked row id", this.clickedRowId);
+        this.orderId = rowData.id;
+
+        console.log("clicked row id +BOM ID =", this.clickedRowId);
+        console.log("Order ID =", this.orderId);
         this.isButtonEnabled = true;
       }
     },
@@ -193,14 +197,16 @@ export default {
           console.log(response.data);
           this.isActive = response.data.is_active;
           this.isExisting = response.data.is_existing;
+
           if (this.isExisting) {
             this.$notify({
               title:
-                "There is already an active ongoing checklist for this bom, please end that checklist by viewing the ongoing checklist to generate a new one.",
+                "There is already an active ongoing checklist for this order, please end that checklist by viewing the ongoing checklist to generate a new one.",
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });
           } else {
+            this.$store.commit("setIsLoading", true);
             this.generateChecklist();
           }
         })
@@ -222,12 +228,14 @@ export default {
       //   batch_quantity: this.batch_quantity, // Use the name you are using for batch_quantity
       // };
       await axios
-        .post(`store/generate-new-checklist/${this.clickedRowId}/`)
+        .post(`store/generate-new-checklist/${this.orderId}/`)
         .then((response) => {
+          this.$store.commit("setIsLoading", false);
           console.log(response.data);
           this.$router.push(`/begin-checklist/${this.clickedRowId}`);
         })
         .catch((error) => {
+          this.$store.commit("setIsLoading", false);
           console.log("error:", error);
           this.$notify({
             title: "An error occurred, please try again later",
@@ -239,6 +247,7 @@ export default {
           this.$store.commit("setIsLoading", false);
         });
     },
+
     async checkExistingChecklist() {
       this.$store.commit("setIsLoading", true);
       await axios
@@ -261,7 +270,7 @@ export default {
           } else {
             this.$notify({
               title:
-                "No ongoing checklist found for this bom, please generate a new checklist",
+                "No ongoing checklist found for this order, please generate a new checklist",
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });

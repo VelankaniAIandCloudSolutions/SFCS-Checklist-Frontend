@@ -78,7 +78,13 @@
             </li>
 
             <!-- Store -->
-            <li class="nav-item text-left">
+            <li
+              class="nav-item text-left"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_store_team
+              "
+            >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-store"></i>
                 <p>
@@ -93,12 +99,7 @@
                     <p>Dashboard</p>
                   </router-link>
                 </li>
-                <li class="nav-item">
-                  <router-link to="/bom" class="nav-link">
-                    <i class="fas fa-clipboard-list nav-icon"></i>
-                    <p>Bill Of Materials</p>
-                  </router-link>
-                </li>
+
                 <li class="nav-item">
                   <router-link to="/checklist" class="nav-link">
                     <i class="fas fa-list-ul nav-icon"></i>
@@ -115,7 +116,13 @@
             </li>
             <!-- Orders -->
 
-            <li class="nav-item text-left">
+            <li
+              class="nav-item text-left"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_design_team
+              "
+            >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-shopping-cart"></i>
                 <p>
@@ -135,7 +142,13 @@
 
             <!-- material management -->
 
-            <li class="nav-item text-left">
+            <li
+              class="nav-item text-left"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_design_team
+              "
+            >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-industry"></i>
                 <p>
@@ -144,6 +157,12 @@
                 </p>
               </a>
               <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/bom" class="nav-link">
+                    <i class="fas fa-clipboard-list nav-icon"></i>
+                    <p>Bill Of Materials</p>
+                  </router-link>
+                </li>
                 <li class="nav-item">
                   <router-link to="/projects" class="nav-link">
                     <i class="fas fa-project-diagram nav-icon"></i>

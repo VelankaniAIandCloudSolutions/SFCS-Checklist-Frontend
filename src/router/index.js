@@ -45,8 +45,9 @@ const routes = [
   },
   {
     path: "/CheckList",
-    name: "CheckList",
-    component: CheckList,
+    name: "CheckListOrderBased",
+    component: CheckListOrderBased,
+    props: true,
   },
   {
     path: "/reports",
@@ -145,8 +146,8 @@ const routes = [
   },
   {
     path: "/new",
-    name: "CheckListOrderBased",
-    component: CheckListOrderBased,
+    name: "CheckList",
+    component: CheckList,
     props: true,
   },
 ];

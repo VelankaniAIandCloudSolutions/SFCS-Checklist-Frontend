@@ -12,6 +12,8 @@ const store = createStore({
       last_name: "",
       is_staff: false,
       is_superuser: false,
+      is_store_team: false,
+      is_design_team: false,
     },
     isLoading: false,
   },
@@ -31,6 +33,8 @@ const store = createStore({
           state.user.last_name = userDetails.last_name;
           state.user.is_staff = userDetails.is_staff;
           state.user.is_superuser = userDetails.is_superuser;
+          state.user.is_store_team = userDetails.is_store_team;
+          state.user.is_design_team = userDetails.is_design_team;
         }
       } else {
         state.user.token = "";
@@ -51,6 +55,8 @@ const store = createStore({
       state.user.last_name = userDetails.last_name;
       state.user.is_staff = userDetails.is_staff; // Assuming the API response has an 'is_staff' field
       state.user.is_superuser = userDetails.is_superuser; // Assuming the API response has an 'is_superuser' field
+      state.user.is_store_team = userDetails.is_store_team; // Assuming the API response has an 'is_store_team' field
+      state.user.is_design_team = userDetails.is_design_team; // Assuming the API response has an 'is_design_team' field
     },
 
     setIsLoading(state, status) {
@@ -63,6 +69,8 @@ const store = createStore({
       state.user.last_name = "";
       state.user.is_staff = false;
       state.user.is_superuser = false;
+      state.user.is_store_team = false;
+      state.user.is_design_team = false;
       // state.user.state.user.profile = {};
       state.user.isAuthenticated = false;
       localStorage.removeItem("token");

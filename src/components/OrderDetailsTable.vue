@@ -58,11 +58,12 @@ export default {
 
         {
           field: "bom.bom_file_name",
-          headerName: "File Name",
+          headerName: "BOM File Name",
         },
         {
           headerName: "Download",
           cellRenderer: this.editButtonRenderer,
+          flex: 1,
         },
       ],
 
@@ -71,6 +72,7 @@ export default {
         sortable: true,
         resizable: true,
         autoSize: true,
+        autoSizeColumns: true,
       },
       selectedRows: [],
     };

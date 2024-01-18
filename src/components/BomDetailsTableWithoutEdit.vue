@@ -7,6 +7,7 @@
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
+      rowSelection="single"
       @rowClicked="onRowClicked"
       @selectionChanged="onSelectionChanged"
     >

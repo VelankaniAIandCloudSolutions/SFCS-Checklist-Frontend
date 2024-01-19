@@ -187,14 +187,20 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   methods: {
-    logout() {
-      // Your logout logic goes here
-      // Your logout logic goes here
-      this.$store.commit("removeToken"); // Assuming you have a mutation named 'setAuthentication' in your store
-      // Reload the entire application to navigate to the login page as a fresh page
-      window.location.href = "/login";
+    async logout() {
+      await axios
+        .post("token/logout/")
+        .then((response) => {
+          console.log("Logged out", response.data);
+          this.$store.commit("removeToken");
+          window.location.href = "/login";
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
   },
 };

@@ -43,13 +43,59 @@ export default {
           field: "bom_line_item.part_number",
         },
         {
+          headerName: "UID",
+          field: "checklist_item_uids",
+          valueFormatter: function (params) {
+            // Check if checklist_item_uids is empty or null
+            if (!params.value || params.value.length === 0) {
+              return null;
+            }
+            // Extract UIDs from the array of objects and join them with commas
+            const uids = params.value.map((item) => item.uid);
+
+            // Return the joined string of UIDs
+            return uids.join(", ");
+          },
+        },
+
+        {
           headerName: "Present Quantity",
           field: "present_quantity",
+          // editable: true,
+          // onCellValueChanged: async function (params) {
+          //   // Handle the value change here
+          //   console.log("New value:", params.newValue);
+          //   console.log("Row data:", params.data);
+
+          //   // Make an API call to update the backend
+          //   // Example using Vue.js axios for the API call
+
+          //   await axios
+          //     .put(`store/update-checklist-item/${params.data.id}/`, {
+          //       present_quantity: params.newValue,
+          //     })
+          //     .then((response) => {
+          //       console.log("API Response:", response.data);
+          //     })
+          //     .catch((error) => {
+          //       console.error("API Error:", error);
+          //     });
+          // },
         },
         {
           headerName: "Required Quantity",
           field: "required_quantity",
         },
+        {
+          headerName: "Delta",
+          valueGetter: function (params) {
+            const presentQuantity = params.data.present_quantity;
+            const requiredQuantity = params.data.required_quantity;
+            const delta = presentQuantity - requiredQuantity;
+            return delta >= 0 ? `+${delta}` : `-${Math.abs(delta)}`;
+          },
+        },
+
         {
           headerName: "Is Present",
           field: "is_present",

@@ -139,7 +139,7 @@
             <div class="form-check">
               <input
                 v-model="editedUser.is_superuser"
-                @change="updateIsStaff"
+                @change="updateOthers"
                 type="checkbox"
                 class="form-check-input"
                 id="is_superuser"
@@ -164,6 +164,36 @@
             </div>
           </div>
         </div>
+        <div class="mb-3 row">
+          <div class="col">
+            <div class="form-check">
+              <input
+                v-model="editedUser.is_store_team"
+                :disabled="editedUser.is_superuser"
+                type="checkbox"
+                class="form-check-input"
+                id="is_store_team"
+              />
+              <label class="form-check-label" for="is_store_team"
+                ><i class="fas fa-user-shield me-1"></i> Is Store Team</label
+              >
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-check">
+              <input
+                v-model="editedUser.is_design_team"
+                :disabled="editedUser.is_superuser"
+                type="checkbox"
+                class="form-check-input"
+                id="is_design_team"
+              />
+              <label class="form-check-label" for="is_design_team"
+                ><i class="fas fa-user-cog me-1"></i> Is Design Team</label
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -184,6 +214,8 @@ export default {
         phone_number: "",
         is_superuser: false,
         is_staff: false,
+        is_store_team: false,
+        is_design_team: false,
         // Add more fields as needed
       },
     };
@@ -208,10 +240,12 @@ export default {
           console.error("Error fetching user data:", error);
         });
     },
-    updateIsStaff() {
+    updateOthers() {
       // Automatically check Is Staff if Is Admin is checked
       if (this.editedUser.is_superuser) {
         this.editedUser.is_staff = true;
+        this.editedUser.is_store_team = true;
+        this.editedUser.is_design_team = true;
       }
     },
     updateUser() {

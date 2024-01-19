@@ -40,29 +40,46 @@
 
     <!-- Form Section -->
     <section class="card p-3 mb-4 mt-4">
-      <!-- Row 1: Product Name & Product Code -->
+      <!-- Row 1: Project Name & Product  -->
       <div class="row mb-3">
-        <!-- Product Name -->
+        <!-- Project Name -->
         <div class="col-md-6">
-          <label for="productName" class="form-label">Product Name</label>
-          <input
-            type="text"
-            class="form-control"
-            id="productName"
-            v-model="productName"
+          <label for="projectDropdown" class="form-label">Select Project</label>
+
+          <select
+            class="form-select"
+            id="projectDropdown"
+            v-model="selectedProject"
+            @change="loadProducts"
             required
-          />
+          >
+            <!-- <option value="" disabled>Select a project</option> -->
+            <option
+              v-for="project in projects"
+              :key="project.id"
+              :value="project.id"
+            >
+              {{ project.name }}
+            </option>
+          </select>
         </div>
         <!-- Product Code -->
         <div class="col-md-6">
-          <label for="productCode" class="form-label">Product Code</label>
-          <input
-            type="text"
-            class="form-control"
+          <label for="productCode" class="form-label">Product </label>
+          <select
+            class="form-select"
             id="productCode"
-            v-model="productCode"
+            v-model="selectedProduct"
             required
-          />
+          >
+            <option
+              v-for="product in filteredProducts"
+              :key="product.id"
+              :value="product.id"
+            >
+              {{ product.name }}
+            </option>
+          </select>
         </div>
       </div>
 
@@ -93,8 +110,22 @@
       </div>
 
       <!-- Row 3: Issue Date & Product Rev No -->
-      <div class="row mb-3">
+      <div class="row mb-3 justify-content-center">
         <!-- Issue Date -->
+        <div class="col-md-6">
+          <label for="batchQuantity" class="form-label">
+            <i class="fas fa-flask me-2"></i>Batch Quantity
+          </label>
+          <input
+            v-model="batchQuantity"
+            type="number"
+            class="form-control"
+            placeholder="Enter Batch Quantity"
+            min="1"
+            required
+          />
+        </div>
+
         <div class="col-md-6">
           <label for="issueDate" class="form-label">Issue Date</label>
           <input
@@ -106,7 +137,7 @@
           />
         </div>
         <!-- Product Rev No -->
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
           <label for="productRevNo" class="form-label">Product Rev No</label>
           <input
             type="text"
@@ -115,7 +146,7 @@
             v-model="productRevNo"
             required
           />
-        </div>
+        </div> -->
       </div>
     </section>
 
@@ -166,24 +197,123 @@ export default {
       bomType: "",
       bomRevNo: "",
       issueDate: "",
+      // order: {
+      //   selectedBomId: null,
+      //   batchQuantity: 1,
+      // },
+      batchQuantity: 1,
       productRevNo: "",
       uploadedFileName: null,
       uploadedFile: null,
+      selectedProject: null, // Holds the selected project ID
+      selectedProduct: null,
+      projects: [],
+      products: [],
     };
   },
+  computed: {
+    filteredProducts() {
+      // Check if both products and projects are available and not undefined
+      if (
+        this.products &&
+        this.projects &&
+        this.products.length &&
+        this.projects.length
+      ) {
+        // Filter products based on the selected project if it's not null
+        console.log("selectedProject", this.selectedProject);
+        if (this.selectedProject !== null) {
+          const filteredProducts = this.products.filter((product) => {
+            // Access the project ID directly from the product
+            const projectId = product.project;
+
+            // Check if the project ID matches the selected project
+            return projectId === this.selectedProject;
+          });
+
+          console.log("Filtered Products:", filteredProducts);
+
+          return filteredProducts;
+        } else {
+          // If selectedProject is null, return all products or an empty array
+          console.log("All Products:", this.products);
+          return [];
+
+          // Or return [] if you want an empty array when selectedProject is null
+          // return [];
+        }
+      } else {
+        // If either products or projects is not available, return an empty array
+        console.log("No Products or Projects available.");
+        return [];
+      }
+    },
+  },
+
+  mounted() {
+    this.getData();
+  },
+
   methods: {
+    async getData() {
+      try {
+        // Replace 'store/get-projects/' with your actual API endpoint
+        const response = await axios.get("store/create-order/");
+        console.log(response.data);
+        this.projects = response.data.projects;
+        // Assuming the response is an array of projects
+        this.projects = response.data.projects;
+        this.products = response.data.products;
+        console.log(this.projects);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    },
+    // async loadProducts() {
+    //   console.log("api for projects triggered");
+    //   console.log("Selected Project:", this.selectedProject);
+    //   if (this.selectedProject) {
+    //     try {
+    //       const response = await axios.get(
+    //         `store/create-order/?project_id=${this.selectedProject}`
+    //       );
+
+    //       this.products = response.data.products;
+    //       console.log("products for thsi porject id ", this.products);
+    //     } catch (error) {
+    //       console.error("Error fetching products:", error);
+    //     }
+    //   } else {
+    //     this.products = []; // Clear products if no project is selected
+    //   }
+    // },
+
     async submitForm() {
       this.$store.commit("setIsLoading", true);
 
       const formData = new FormData();
+      console.log("Form Data:", {
+        selectedProjectId: this.selectedProject,
+        selectedProductName: this.selectedProduct,
+        bomType: this.bomType,
+        bomRevNo: this.bomRevNo,
+        issueDate: this.issueDate,
+        uploadedFileName: this.uploadedFileName,
+        batchQuantity: this.batchQuantity,
+      });
 
-      formData.append("product_name", this.productName);
-      formData.append("product_code", this.productCode);
-      formData.append("product_rev_no", this.productRevNo);
+      formData.append("project_id", this.selectedProject);
+      formData.append("product_id", this.selectedProduct);
+      // formData.append("product_name", this.productName);
+      // formData.append("product_code", this.productCode);
+      // formData.append("product_rev_no", this.productRevNo);
       formData.append("bom_type", this.bomType);
       formData.append("bom_rev_no", this.bomRevNo);
       formData.append("issue_date", this.issueDate);
+      formData.append("batch_quantity", this.batchQuantity);
       formData.append("bom_file", this.uploadedFile);
+
+      console.log("Form Data:", formData);
 
       await axios
         .post("store/upload-bom/", formData, {

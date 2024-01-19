@@ -12,25 +12,33 @@
         <b> Loading... </b>
       </div>
     </div>
-    <div v-else class="container mt-1">
+    <div v-else class="container">
       <div class="row align-items-center">
         <!-- Heading and Breadcrumb Column -->
-        <div class="col-md-6">
-          <div class="d-flex align-items-center">
-            <h2 class="mb-0">BOM Details</h2>
-            <span class="ms-3 fs-4 text-muted">|</span>
-            <nav aria-label="breadcrumb" class="d-inline-block ms-3">
-              <ol class="breadcrumb bg-transparent m-0 p-0">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item">
-                  <router-link to="/bom">Bill of Materials</router-link>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                  Bom Details
-                </li>
-              </ol>
-            </nav>
-          </div>
+
+        <div class="d-flex align-items-center mt-4">
+          <h2 class="mb-0">BOM Details</h2>
+          <span class="ms-3 fs-4 text-muted">|</span>
+          <nav aria-label="breadcrumb" class="d-inline-block ms-3">
+            <ol class="breadcrumb bg-transparent m-0 p-0">
+              <li class="breadcrumb-item">
+                <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+              </li>
+              <li class="breadcrumb-item">
+                <router-link to="/bom"
+                  ><i class="fas fa-clipboard-list me-1"></i>Bill of
+                  Materials</router-link
+                >
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-list-alt me-1"></i>
+                Bom Details
+              </li>
+            </ol>
+          </nav>
+          <button class="btn btn-primary ml-auto" @click="downloadBOM">
+            Download BOM
+          </button>
         </div>
       </div>
       <div class="card" style="margin-top: 20px">
@@ -119,6 +127,25 @@ export default {
           console.error("Error fetching data:", error);
           this.$store.commit("setIsLoading", false);
         });
+    },
+    downloadBOM() {
+      try {
+        // Use the bom_file URL for download
+
+        const bomFileURL = this.bom.bom_file_url;
+        // Create an anchor element and trigger the download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = bomFileURL;
+
+        downloadLink.download = this.bom.bom_file_name; // Set the desired file name
+
+        document.body.appendChild(downloadLink);
+
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (error) {
+        console.error("Error downloading BOM:", error);
+      }
     },
   },
   mounted() {

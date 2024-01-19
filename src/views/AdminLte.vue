@@ -56,7 +56,10 @@
             data-accordion="false"
           >
             <!-- Accounts -->
-            <li class="nav-item text-left">
+            <li
+              class="nav-item text-left"
+              v-if="$store.state.user.is_superuser"
+            >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-users"></i>
                 <p>
@@ -67,7 +70,7 @@
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <router-link to="/users" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-user-plus nav-icon"></i>
                     <p>Users</p>
                   </router-link>
                 </li>
@@ -75,7 +78,13 @@
             </li>
 
             <!-- Store -->
-            <li class="nav-item text-left">
+            <li
+              class="nav-item text-left"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_store_team
+              "
+            >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-store"></i>
                 <p>
@@ -86,26 +95,78 @@
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <router-link to="/dashboard" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-chart-line nav-icon"></i>
                     <p>Dashboard</p>
                   </router-link>
                 </li>
-                <li class="nav-item">
-                  <router-link to="/bom" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Bill Of Materials</p>
-                  </router-link>
-                </li>
+
                 <li class="nav-item">
                   <router-link to="/checklist" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-list-ul nav-icon"></i>
                     <p>Checklist</p>
                   </router-link>
                 </li>
                 <li class="nav-item">
                   <router-link to="/reports" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
+                    <i class="fas fa-chart-bar nav-icon"></i>
                     <p>Reports</p>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+            <!-- Orders -->
+
+            <li
+              class="nav-item text-left"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_design_team
+              "
+            >
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-shopping-cart"></i>
+                <p>
+                  Orders
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/orders" class="nav-link">
+                    <i class="fas fa-receipt nav-icon"></i>
+                    <p>Orders</p>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+
+            <!-- material management -->
+
+            <li
+              class="nav-item text-left"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_design_team
+              "
+            >
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-industry"></i>
+                <p>
+                  Material Management
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/bom" class="nav-link">
+                    <i class="fas fa-clipboard-list nav-icon"></i>
+                    <p>Bill Of Materials</p>
+                  </router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link to="/projects" class="nav-link">
+                    <i class="fas fa-project-diagram nav-icon"></i>
+                    <p>Projects</p>
                   </router-link>
                 </li>
               </ul>

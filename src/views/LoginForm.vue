@@ -9,10 +9,16 @@
         </div>
 
         <div class="input-box">
-          <input v-model="password" type="password" placeholder="Password" />
-          <i class="fa fa-lock"></i>
+          <input
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+          />
+          <i
+            @click="togglePasswordVisibility"
+            :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"
+          ></i>
         </div>
-
         <button type="submit">Login</button>
 
         <!-- <div class="links">
@@ -33,9 +39,13 @@ export default {
       email: "",
       password: "",
       errors: [],
+      showPassword: false,
     };
   },
   methods: {
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
+    },
     async handleSubmit() {
       this.$store.commit("setIsLoading", true);
       this.errors = [];
@@ -62,12 +72,25 @@ export default {
               type: "bg-success-subtle text-success",
               duration: 5000,
             });
-            setTimeout(() => {
+
+            setTimeout(async () => {
               const token = response.data.auth_token;
               this.$store.commit("setToken", token);
               axios.defaults.headers.common["Authorization"] = "Token " + token;
               localStorage.setItem("token", token);
               console.log("Received Token:", token);
+
+              const userDetailsResponse = await axios.get(
+                "accounts/user/authenticated/"
+              );
+              // Handle the user details response here
+              const userDetails = userDetailsResponse.data;
+              console.log("User Details:", userDetails);
+
+              // Store user details in Vuex store
+              localStorage.setItem("userDetails", JSON.stringify(userDetails));
+              this.$store.commit("setUserDetails", userDetails);
+
               window.location.href = "/dashboard";
             }, 1000);
           })

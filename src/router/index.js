@@ -11,8 +11,16 @@ import ReportsList from "../views/ReportsList.vue";
 import CheckListsDashboard from "../views/CheckListsDashboard.vue";
 import ChecklistReport from "../views/ChecklistReport.vue";
 import UserManagement from "../views/UserManagement.vue";
+import BomLineItemEdit from "../views/BomLineItemEdit.vue";
 import EditUser from "../components/EditUser.vue";
 import CreateUser from "../components/CreateUser.vue";
+import OrdersLanding from "../views/OrdersLanding.vue";
+import OrderCreation from "../views/OrderCreation.vue";
+import ProjectsLanding from "../views/ProjectsLanding.vue";
+import ProjectEdit from "../views/ProjectEdit.vue";
+import CreateProject from "../components/CreateProject.vue";
+import ProductEdit from "../views/ProductEdit.vue";
+import CheckListOrderBased from "../views/CheckListOrderBased.vue";
 
 const routes = [
   {
@@ -37,8 +45,9 @@ const routes = [
   },
   {
     path: "/CheckList",
-    name: "CheckList",
-    component: CheckList,
+    name: "CheckListOrderBased",
+    component: CheckListOrderBased,
+    props: true,
   },
   {
     path: "/reports",
@@ -97,7 +106,50 @@ const routes = [
     name: "CreateUser",
     component: CreateUser,
   },
-
+  {
+    path: "/bom-line-item/edit/:id",
+    name: "BomLineItemEdit",
+    component: BomLineItemEdit,
+    props: (route) => ({ bom_id: route.params.id }), // Rename 'id' to 'bom_id'
+  },
+  {
+    path: "/orders",
+    name: "OrdersLanding",
+    component: OrdersLanding,
+  },
+  {
+    path: "/orders/create",
+    name: "OrderCreation",
+    component: OrderCreation,
+  },
+  {
+    path: "/projects",
+    name: "ProjectsLanding",
+    component: ProjectsLanding,
+  },
+  {
+    path: "/projects/create-project",
+    name: "CreateProject",
+    component: CreateProject,
+  },
+  {
+    path: "/project-edit/:id",
+    name: "ProjectEdit",
+    component: ProjectEdit,
+    props: true,
+  },
+  {
+    path: "/product/edit/:id",
+    name: "ProductEdit",
+    component: ProductEdit,
+    props: true,
+  },
+  {
+    path: "/new",
+    name: "CheckList",
+    component: CheckList,
+    props: true,
+  },
 ];
 
 const router = createRouter({

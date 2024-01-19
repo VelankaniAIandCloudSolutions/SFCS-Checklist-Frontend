@@ -39,7 +39,7 @@
       <div class="col-md-4 mt-4 d-flex justify-content-end">
         <button
           type="button"
-          class="btn btn-success me-2"
+          class="btn btn-primary me-2"
           @click="updateProject"
         >
           Update Project

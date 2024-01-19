@@ -30,7 +30,7 @@
       <div class="col-md-6 mt-4 text-end">
         <button
           type="submit"
-          class="btn btn-success btn-sm"
+          class="btn btn-primary btn-sm"
           @click="createUser"
         >
           <i class="fas fa-save me-1"></i> Create User
@@ -71,12 +71,18 @@
             </span>
             <input
               v-model="newUser.password"
-              type="password"
+              :type="showPassword ? 'text' : 'password'"
               class="form-control"
               id="password"
               required
               @focus="clearPasswordError"
             />
+            <span class="input-group-text" @click="togglePasswordVisibility">
+              <i
+                class="fas"
+                :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+              ></i>
+            </span>
           </div>
           <small v-if="!newUser.password && formSubmitted" class="text-danger">
             Password is required.
@@ -171,6 +177,35 @@
           </div>
         </div>
       </div>
+      <!-- is store team and design team -->
+      <div class="mb-3 row">
+        <div class="col">
+          <div class="form-check">
+            <input
+              v-model="newUser.is_store_team"
+              type="checkbox"
+              class="form-check-input"
+              id="is_store_team"
+            />
+            <label class="form-check-label" for="is_store_team">
+              Is Store Team</label
+            >
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check">
+            <input
+              v-model="newUser.is_design_team"
+              type="checkbox"
+              class="form-check-input"
+              id="is_design_team"
+            />
+            <label class="form-check-label" for="is_design_team">
+              Is Design Team</label
+            >
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -190,15 +225,19 @@ export default {
         phone_number: "",
         is_superuser: false,
         is_staff: false,
+        is_store_team: false,
+        is_design_team: false,
         // Add more fields as needed
       },
       formSubmitted: false,
       passwordAuthenticationError: null,
+      showPassword: false,
     };
   },
   methods: {
     createUser() {
       // Set formSubmitted to true before creating a new user
+      console.log("form data", this.newUser);
       this.formSubmitted = true;
       // Reset passwordAuthenticationError
       this.passwordAuthenticationError = null;
@@ -211,7 +250,7 @@ export default {
       ) {
         // Create a new user using the post request
         axios
-          .post("/accounts/users/create/", this.newUser)
+          .post("accounts/users/create/", this.newUser)
           .then((response) => {
             console.log("User created successfully:", response.data);
             // Use the notify action to display a success message
@@ -236,6 +275,10 @@ export default {
       // Clear the passwordAuthenticationError when the password field gains focus
       this.passwordAuthenticationError = null;
     },
+    togglePasswordVisibility() {
+      // Toggle the password visibility
+      this.showPassword = !this.showPassword;
+    },
   },
 };
 </script>
@@ -254,6 +297,11 @@ export default {
 .animate__fadeInUp {
   animation-name: fadeInUp;
 }
-
+.form-check-input {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* Box shadow for a subtle effect */
+  background-color: #fff; /* Set a background color */
+  border: 1px solid #ccc; /* Set a border color */
+  border-radius: 4px; /* Add rounded corners if desired */
+}
 /* Add more custom styling as needed */
 </style>

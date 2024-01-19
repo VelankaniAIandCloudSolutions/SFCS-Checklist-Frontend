@@ -1,58 +1,62 @@
 <template>
-  <div v-if="$store.state.isLoading" class="container text-center">
-    <div
-      class="spinner-border mt-5"
-      style="width: 4rem; height: 4rem"
-      role="status"
-    >
-      <span class="visually-hidden">Loading...</span>
+  <div>
+    <div v-if="$store.state.isLoading" class="container text-center">
+      <div
+        class="spinner-border mt-5"
+        style="width: 4rem; height: 4rem"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div>
+        <b> Loading... </b>
+      </div>
     </div>
-    <div>
-      <b> Loading... </b>
-    </div>
-  </div>
+    <div v-else class="container mt-4">
+      <div class="row align-items-center">
+        <div class="col-md-8 mt-4">
+          <div class="d-flex align-items-center">
+            <h2 class="mb-0">Edit Line Item |</h2>
+            <nav aria-label="breadcrumb" class="ms-3">
+              <ol class="breadcrumb bg-transparent m-0 p-0 justify-content-end">
+                <li class="breadcrumb-item">
+                  <a href="/"> <i class="fas fa-home me-1"></i>Home</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  <router-link to="/bom">
+                    <i class="fas fa-clipboard-list me-1"></i>Bill Of Materials
+                  </router-link>
+                </li>
+                <li class="breadcrumb-item" aria-current="page">
+                  <!-- In BomLineLevel.vue or wherever you have the router-link to BomLineItemEdit -->
 
-  <div v-else class="container mt-4">
-    <div class="row align-items-center">
-      <div class="col-md-8 mt-4">
-        <div class="d-flex align-items-center">
-          <h2 class="mb-0">Edit Line Item |</h2>
-          <nav aria-label="breadcrumb" class="ms-3">
-            <ol class="breadcrumb bg-transparent m-0 p-0 justify-content-end">
-              <li class="breadcrumb-item">
-                <a href="/"> <i class="fas fa-home me-1"></i>Home</a>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">
-                <router-link to="/bom">
-                  <i class="fas fa-clipboard-list me-1"></i>Bill Of Materials
-                </router-link>
-              </li>
-              <li class="breadcrumb-item" aria-current="page">
-                <!-- In BomLineLevel.vue or wherever you have the router-link to BomLineItemEdit -->
-
-                <router-link :to="`/bom/edit/${bom_id}`">
-                  <i class="fas fa-list-alt me-1"></i>
-                  BOM Details
-                </router-link>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">
-                <i class="fa fa-bars me-1" aria-hidden="true"></i>BOM Line Item
-              </li>
-            </ol>
-          </nav>
+                  <router-link :to="`/bom/edit/${bom_id}`">
+                    <i class="fas fa-list-alt me-1"></i>
+                    BOM Details
+                  </router-link>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  <i class="fa fa-bars me-1" aria-hidden="true"></i>BOM Line
+                  Item
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+        <div class="col-md-4 mt-4 d-flex justify-content-end">
+          <button
+            type="button"
+            class="btn btn-primary me-2"
+            @click="saveChanges"
+          >
+            Update Changes
+          </button>
+          <button type="button" class="btn btn-danger" @click="confirmDelete">
+            Delete Line Item
+          </button>
         </div>
       </div>
-      <div class="col-md-4 mt-4 d-flex justify-content-end">
-        <button type="button" class="btn btn-success me-2" @click="saveChanges">
-          Update Changes
-        </button>
-        <button type="button" class="btn btn-danger" @click="confirmDelete">
-          Delete Line Item
-        </button>
-      </div>
-    </div>
-    <div class="row mt-5">
-      <div class="col-md-8 offset-md-2">
+      <div class="row mt-5">
         <!-- Display BOM fields within sections -->
         <section>
           <div class="row">
@@ -146,26 +150,36 @@
             />
           </div> -->
           <div class="form-group">
-            <label for="references">References</label>
-            <div>
-              <div
-                v-for="reference in editedBom.references"
-                :key="reference.id"
-                class="tag"
-              >
-                {{ reference.name }}
-                <span @click="removeReference(reference)" class="remove-tag"
-                  >X</span
+            <label for="references">
+              References
+              <div>
+                <div
+                  v-for="reference in editedBom.references"
+                  :key="reference.id"
+                  class="tag"
                 >
+                  {{ reference.name }}
+                  <span @click="removeReference(reference)" class="remove-tag"
+                    >X</span
+                  >
+                </div>
               </div>
-            </div>
-            <input
-              v-model="newReference"
-              @keyup.enter="addNewReference"
-              type="text"
-              placeholder="Type to add a new reference"
-              class="form-control mt-2"
-            />
+              <div class="d-flex align-items-center mt-2">
+                <input
+                  v-model="newReference"
+                  @keyup.enter="addNewReference"
+                  type="text"
+                  placeholder="Type to add a new reference"
+                  class="form-control input-large"
+                />
+                <button
+                  @click="addNewReference"
+                  class="btn btn-primary ms-2"
+                >
+                  Add
+                </button>
+              </div>
+            </label>
           </div>
 
           <div class="form-group">
@@ -193,7 +207,7 @@
               data-bs-toggle="modal"
               data-bs-target="#exampleModal"
             >
-              Add Manufacturer Parts
+              Change Manufacturer Parts
             </button>
           </div>
 
@@ -273,49 +287,49 @@
 
         <!-- Buttons for Save Changes and Delete -->
       </div>
-    </div>
-    <div
-      class="modal fade"
-      id="exampleModal"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-fullscreen">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Select the Manufacturer Parts
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <manufacturer-parts-grid
-              :manufacturerParts="manufacturerParts"
-              :selectedManufacturerParts="editedBom.manufacturer_parts"
-              @update:selectedManufacturerParts="updateManufacturerParts"
-            ></manufacturer-parts-grid>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-            >
-              Save changes
-            </button>
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                Select the Manufacturer Parts
+              </h1>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <manufacturer-parts-grid
+                :manufacturerParts="manufacturerParts"
+                :selectedManufacturerParts="editedBom.manufacturer_parts"
+                @update:selectedManufacturerParts="updateManufacturerParts"
+              ></manufacturer-parts-grid>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bs-dismiss="modal"
+              >
+                Save changes
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -371,6 +385,7 @@ export default {
     async fetchDataFromAPI() {
       try {
         // Fetch BOM details
+        this.$store.commit("setIsLoading", true);
         const response = await axios.get(
           `store/edit-bom-line-item/${this.$route.params.id}/`
         );
@@ -395,10 +410,12 @@ export default {
         // this.editedBom.part_number = response.data.bom_line_item.part_number;
 
         console.log("this is edit bom", this.editedBom);
+        this.$store.commit("setIsLoading", false);
 
         // this.line_item_types = typesResponse.data;
       } catch (error) {
         console.error("Error fetching data from the API:", error);
+        this.$store.commit("setIsLoading", false);
       }
     },
     addNewReference() {
@@ -546,5 +563,9 @@ export default {
   cursor: pointer;
   margin-left: 5px;
   color: red;
+}
+
+.input-large {
+  width: 300px; /* Adjust the width as needed */
 }
 </style>

@@ -36,6 +36,7 @@ export default {
       gridOptions: {
         domLayout: "autoHeight",
         rowSelection: "multiple",
+        rowMultiSelectWithClick: true,
         pagination: true, // Enable pagination
         paginationPageSize: 20,
         // Set the number of rows per page

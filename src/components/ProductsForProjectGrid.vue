@@ -95,8 +95,8 @@ export default {
       const deleteButton = document.createElement("button");
       deleteButton.innerHTML = `<i class="fas fa-trash-alt"></i>`;
       deleteButton.classList.add("btn", "btn-danger", "ms-4");
-      deleteButton.addEventListener("click", () =>
-        this.deleteProduct(params.data.id)
+      deleteButton.addEventListener("click", (event) =>
+        this.deleteProduct(params.data.id, event)
       );
 
       const container = document.createElement("div");
@@ -109,8 +109,9 @@ export default {
       this.$router.push(`/product/edit/${id}`);
     },
 
-    async deleteProduct(id) {
+    async deleteProduct(id, event) {
       // Confirm deletion with the user
+      event.stopPropagation();
       if (confirm("Are you sure you want to delete this product?")) {
         this.$store.commit("setIsLoading", true);
 
@@ -128,6 +129,7 @@ export default {
               duration: "5000",
             });
             // const projectId = this.product.project;
+            // this.$router.push(`/project-edit/${this.$route.params.id}`);
             window.location.reload();
           })
           .catch((error) => {

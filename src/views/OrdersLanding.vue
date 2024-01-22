@@ -42,7 +42,7 @@
       </div>
     </div>
     <!-- Rest of your component -->
-    <OrderDetailsTable
+    <OrderDetailsTableWithDelete
       style="margin-top: 20px"
       :orders="orders"
       @rowClicked="handleRowClicked"
@@ -53,9 +53,9 @@
 
 <script>
 import axios from "axios";
-import OrderDetailsTable from "../components/OrderDetailsTable.vue";
+import OrderDetailsTableWithDelete from "../components/OrderDetailsTableWithDelete.vue";
 export default {
-  components: { OrderDetailsTable },
+  components: { OrderDetailsTableWithDelete },
   data() {
     return {
       orders: [],

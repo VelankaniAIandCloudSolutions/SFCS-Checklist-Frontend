@@ -42,10 +42,10 @@
       <div class="col-md-6 mt-4 text-end">
         <button
           type="submit"
-          class="btn btn-success btn-sm"
+          class="btn btn-primary btn-sm"
           @click="updateUser"
         >
-          <i class="fas fa-save me-1"></i> Save Changes
+          <i class="fas fa-save me-1"></i> Update User
         </button>
         <button
           type="button"

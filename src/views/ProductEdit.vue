@@ -26,8 +26,15 @@
                 >
               </li>
               <li class="breadcrumb-item">
-                <router-link to="/products"
-                  ><i class="fas fa-users me-1"></i> Products</router-link
+                <router-link to="/projects"
+                  ><i class="fas fa-project-diagram me-1"></i>
+                  Projects</router-link
+                >
+              </li>
+              <li class="breadcrumb-item">
+                <router-link :to="`/project-edit/${this.product.project}`"
+                  ><i class="fas fa-bars me-1"></i> Products
+                  Details</router-link
                 >
               </li>
               <li class="breadcrumb-item active" aria-current="page">
@@ -42,10 +49,10 @@
       <div class="col-md-6 mt-4 text-end">
         <button
           type="submit"
-          class="btn btn-success btn-sm"
+          class="btn btn-primary btn-sm"
           @click="updateProduct"
         >
-          <i class="fas fa-save me-1"></i> Save Changes
+          <i class="fas fa-save me-1"></i> Update Product
         </button>
         <button
           type="button"

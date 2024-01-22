@@ -21,6 +21,8 @@ import ProjectEdit from "../views/ProjectEdit.vue";
 import CreateProject from "../components/CreateProject.vue";
 import ProductEdit from "../views/ProductEdit.vue";
 import CheckListOrderBased from "../views/CheckListOrderBased.vue";
+import IqcLanding from "../views/IqcLanding.vue";
+import IqcForChecklist from "../views/IqcForChecklist.vue";
 
 const routes = [
   {
@@ -148,6 +150,18 @@ const routes = [
     path: "/new",
     name: "CheckList",
     component: CheckList,
+    props: true,
+  },
+  {
+    path: "/iqc",
+    name: "IqcLanding",
+    component: IqcLanding,
+    props: true,
+  },
+  {
+    path: "/iqc-for-checklist/:id",
+    name: "IqcForChecklist",
+    component: IqcForChecklist,
     props: true,
   },
 ];

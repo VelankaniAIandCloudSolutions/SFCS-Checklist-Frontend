@@ -37,7 +37,7 @@ export default {
         {
           field: "id",
           headerName: "Order ID",
-          hide: true,
+          checkboxSelection: true,
         },
         {
           field: "bom.id",
@@ -49,7 +49,7 @@ export default {
           field: "bom.product.project.name",
 
           // headerCheckboxSelection: true,
-          checkboxSelection: true,
+
           headerName: "Project Name",
         },
 

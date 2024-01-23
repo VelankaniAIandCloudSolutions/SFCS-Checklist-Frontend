@@ -182,17 +182,18 @@
       </div>
       <div class="card-body">
         <div class="row">
-          <div v-if="activeBom.product" class="col">
-            <strong>Project Name:</strong> {{ activeBom.product.project.name }}
+          <div v-if="checklist.bom" class="col">
+            <strong>Project Name:</strong>
+            {{ checklist.bom.product.project.name }}
           </div>
-          <div v-if="activeBom.product" class="col">
-            <strong>Product Name:</strong> {{ activeBom.product.name }}
+          <div v-if="checklist.bom" class="col">
+            <strong>Product Name:</strong> {{ checklist.bom.product.name }}
           </div>
-          <div class="col">
-            <strong>BOM Rev No:</strong> {{ activeBom.bom_rev_number }}
+          <div v-if="checklist.bom" class="col">
+            <strong>BOM Rev No:</strong> {{ checklist.bom.bom_rev_number }}
           </div>
-          <div class="col">
-            <strong>Issue Date:</strong> {{ activeBom.issue_date }}
+          <div v-if="checklist.bom" class="col">
+            <strong>Issue Date:</strong> {{ checklist.bom.issue_date }}
           </div>
           <!-- <div class="col">
             <strong>Batch Quantity:</strong> {{ checklist.batch_quantity }}
@@ -216,7 +217,7 @@
             aria-expanded="true"
             aria-controls="panelsStayOpen-collapseOne"
           >
-            Raw Material Check
+            IQC Check
             <div
               class="spinner-border ms-2"
               role="status"
@@ -235,8 +236,10 @@
           aria-labelledby="panelsStayOpen-headingOne"
         >
           <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="filteredChecklistItems['Raw Material']"
+            <IqcChecklistTable
+              :checklist_uids="checklist_uids"
+              @rowClicked="handleRowClicked"
+              @rowSelected="handleRowSelected"
             />
           </div>
         </div>
@@ -561,10 +564,12 @@
 <script>
 import CheckListTable from "../components/CheckListTable"; // Adjust the path based on your actual file structure
 import axios from "axios";
+import IqcChecklistTable from "../components/IqcChecklistTable.vue";
 
 export default {
   components: {
     CheckListTable,
+    IqcChecklistTable,
   },
   data() {
     return {
@@ -600,7 +605,9 @@ export default {
         "PCB Serial Number Label": [],
         // Initialize other types as needed
       },
-      checklist: {},
+      checklist: [],
+      checklist_uids: [],
+      selectedRow: [],
     };
   },
 
@@ -948,9 +955,10 @@ export default {
       this.$store.commit("setIsLoading", true);
 
       axios
-        .get(`store/get-checklist-details/${this.$route.params.id}`)
+        .get(`store/get-iqc-data/${this.$route.params.id}`)
         .then((response) => {
-          this.checklist = response.data.passed_checklist;
+          this.checklist = response.data.checklist;
+          this.checklist_uids = response.data.checklist_uids;
           console.log(response.data);
           this.$store.commit("setIsLoading", false);
         })
@@ -959,6 +967,7 @@ export default {
           this.$store.commit("setIsLoading", false);
         });
     },
+
     downloadBOM() {
       try {
         // Use the bom_file URL for download
@@ -978,6 +987,15 @@ export default {
       } catch (error) {
         console.error("Error downloading BOM:", error);
       }
+    },
+    handleRowClicked(clickedRow) {
+      // Handle the clicked row data in the parent component
+      console.log("Clicked Row:", clickedRow);
+      // Now you have access to the specific row data, and you can use it as needed.
+    },
+    handleRowSelected(rowData) {
+      console.log("Row Selected:", rowData);
+      this.selectedRow = rowData;
     },
 
     // handleScannerInput(event) {

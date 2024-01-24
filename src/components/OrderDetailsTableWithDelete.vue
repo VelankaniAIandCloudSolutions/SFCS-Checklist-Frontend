@@ -117,12 +117,12 @@ export default {
     },
 
     actionsCellRenderer(params) {
-      const editButton = document.createElement("button");
-      editButton.innerHTML = `<i class="fas fa-edit"></i>`;
-      editButton.classList.add("btn-sm", "btn-primary", "me-2");
-      editButton.addEventListener("click", () =>
-        this.onEditClick(params.data.id)
-      );
+      // const editButton = document.createElement("button");
+      // editButton.innerHTML = `<i class="fas fa-edit"></i>`;
+      // editButton.classList.add("btn-sm", "btn-primary", "me-2");
+      // editButton.addEventListener("click", () =>
+      //   this.onEditClick(params.data.id)
+      // );
 
       const deleteButton = document.createElement("button");
       deleteButton.innerHTML = `<i class="fas fa-trash-alt"></i>`;
@@ -132,7 +132,7 @@ export default {
       );
 
       const container = document.createElement("div");
-      container.appendChild(editButton);
+      // container.appendChild(editButton);
       container.appendChild(deleteButton);
 
       return container;

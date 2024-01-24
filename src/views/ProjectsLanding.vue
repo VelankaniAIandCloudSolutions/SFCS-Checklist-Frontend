@@ -41,7 +41,7 @@
           to="/projects/create-project"
           class="btn btn-primary btn-sm ms-2"
         >
-          <i class="fas fa-plus me-1"></i> Create New Product
+          Create New Project
         </router-link>
       </div>
     </div>

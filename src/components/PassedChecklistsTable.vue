@@ -1,40 +1,16 @@
 <template>
   <div>
-    <div class="card card-outline card-primary mt-3">
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-3 text-center">
-            <h6 class="lead">Total Completed</h6>
-            <p class="display-6">{{ total_completed }}</p>
-          </div>
-          <div class="col-md-3 text-center">
-            <h6 class="lead">Total In Progress</h6>
-            <p class="display-6">{{ total_in_progress }}</p>
-          </div>
-          <div class="col-md-3 text-center">
-            <h6 class="lead">Total Failed</h6>
-            <p class="display-6">{{ total_failed }}</p>
-          </div>
-          <div class="col-md-3 text-center">
-            <h6 class="lead">Total Checklists</h6>
-            <p class="display-6">{{ total_checklists }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <ag-grid-vue
-        style="height: 500px"
-        class="ag-theme-quartz"
-        :rowData="checklists"
-        :defaultColDef="defaultColDef"
-        :columnDefs="colDefs"
-        :pagination="true"
-        @first-data-rendered="onFirstDataRendered"
-        @grid-ready="onGridReady"
-      >
-      </ag-grid-vue>
-    </div>
+    <ag-grid-vue
+      style="height: 500px"
+      class="ag-theme-quartz"
+      :rowData="passed_checklists"
+      :defaultColDef="defaultColDef"
+      :columnDefs="colDefs"
+      :pagination="true"
+      @rowClicked="onRowClicked"
+      @selectionChanged="onSelectionChanged"
+    >
+    </ag-grid-vue>
   </div>
 </template>
 
@@ -48,7 +24,7 @@ export default {
     AgGridVue,
   },
   props: {
-    checklists: {
+    passed_checklists: {
       type: Array,
       required: true,
     },
@@ -59,6 +35,7 @@ export default {
         {
           headerName: "Checklist ID",
           field: "id",
+          checkboxSelection: true,
         },
         {
           headerName: "Unique Code",
@@ -107,39 +84,51 @@ export default {
         autoSize: true,
       },
       gridApi: null,
-      total_completed: 0,
-      total_in_progress: 0,
-      total_failed: 0,
-      total_checklists: 0,
+      // total_completed: 0,
+      // total_in_progress: 0,
+      // total_failed: 0,
+      // total_checklists: 0,
     };
   },
   mounted() {},
   methods: {
-    onFirstDataRendered() {
-      this.calculateTotalSum();
-      this.gridApi.addEventListener("filterChanged", this.calculateTotalSum);
+    onRowClicked(params) {
+      this.$emit("rowClicked", params.data);
     },
+    onSelectionChanged(params) {
+      const selectedData = params.api.getSelectedRows();
+      const selectedRow = selectedData.length > 0 ? selectedData[0] : null;
+      if (selectedRow) {
+        this.$emit("rowSelected", selectedRow);
+      } else {
+        this.$emit("rowDeselected");
+      }
+    },
+    // onFirstDataRendered() {
+    //   this.calculateTotalSum();
+    //   this.gridApi.addEventListener("filterChanged", this.calculateTotalSum);
+    // },
     onGridReady(params) {
       this.gridApi = params.api;
     },
-    calculateTotalSum() {
-      let sum_completed_checklists = 0;
-      let sum_in_progress_checklists = 0;
-      let sum_failed_checklists = 0;
-      this.gridApi.forEachNodeAfterFilter((node) => {
-        if (node.data.status == "Completed") {
-          sum_completed_checklists += 1;
-        } else if (node.data.status == "In Progress") {
-          sum_in_progress_checklists += 1;
-        } else {
-          sum_failed_checklists += 1;
-        }
-      });
-      this.total_completed = sum_completed_checklists;
-      this.total_failed = sum_failed_checklists;
-      this.total_in_progress = sum_in_progress_checklists;
-      this.total_checklists = this.gridApi.getDisplayedRowCount();
-    },
+    // calculateTotalSum() {
+    //   let sum_completed_checklists = 0;
+    //   let sum_in_progress_checklists = 0;
+    //   let sum_failed_checklists = 0;
+    //   this.gridApi.forEachNodeAfterFilter((node) => {
+    //     if (node.data.status == "Completed") {
+    //       sum_completed_checklists += 1;
+    //     } else if (node.data.status == "In Progress") {
+    //       sum_in_progress_checklists += 1;
+    //     } else {
+    //       sum_failed_checklists += 1;
+    //     }
+    //   });
+    //   this.total_completed = sum_completed_checklists;
+    //   this.total_failed = sum_failed_checklists;
+    //   this.total_in_progress = sum_in_progress_checklists;
+    //   this.total_checklists = this.gridApi.getDisplayedRowCount();
+    // },
     viewButtonRenderer(params) {
       const button = document.createElement("button");
       button.innerHTML = `<i class="fas fa-eye"></i>`; // Use an eye icon for view

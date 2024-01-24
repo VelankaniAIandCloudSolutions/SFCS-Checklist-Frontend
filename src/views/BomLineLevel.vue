@@ -41,43 +41,37 @@
           </button>
         </div>
       </div>
-      <div class="card" style="margin-top: 20px">
+
+      <div class="card" style="margin-top: 20px; padding: 10px">
         <div class="card-body">
           <div class="row">
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="fw-bold">Product Name:</label>
-                <div v-if="bom.product">{{ bom.product.name }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="fw-bold">BOM Type:</label>
-                <div v-if="bom.bom_type">{{ bom.bom_type.name }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="fw-bold">Issue Date:</label>
-                <div v-if="bom.issue_date">{{ bom.issue_date }}</div>
-              </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">Project Name:</label>
+              <div v-if="bom.product">{{ bom.product.project.name }}</div>
             </div>
-            <div class="col-md-6">
-              <div class="mb-3">
-                <label class="fw-bold">Product Code:</label>
-                <div v-if="bom.product">{{ bom.product.product_code }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="fw-bold">BOM Rev No:</label>
-                <div v-if="bom.bom_rev_number">{{ bom.bom_rev_number }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="fw-bold">Product Rev No:</label>
-                <div v-if="bom.product">
-                  {{ bom.product.product_rev_number }}
-                </div>
-              </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">BOM Type:</label>
+              <div v-if="bom.bom_type">{{ bom.bom_type.name }}</div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">Issue Date:</label>
+              <div v-if="bom.issue_date">{{ bom.issue_date }}</div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">Product Name:</label>
+              <div v-if="bom.product">{{ bom.product.name }}</div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">BOM Rev No:</label>
+              <div v-if="bom.bom_rev_number">{{ bom.bom_rev_number }}</div>
+            </div>
+            <div class="col-md-4 mb-2">
+              <label class="fw-bold">Product Rev No:</label>
+              <div v-if="bom.product">{{ bom.product.product_rev_number }}</div>
             </div>
           </div>
         </div>
       </div>
-
       <!-- Add space between BOM details card and BomItemsTable component -->
       <div class="mt-4"></div>
 

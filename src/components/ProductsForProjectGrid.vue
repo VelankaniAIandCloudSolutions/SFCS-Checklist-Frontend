@@ -37,6 +37,7 @@ export default {
     return {
       gridOptions: {
         domLayout: "autoHeight",
+
         rowSelection: "multiple",
         pagination: true, // Enable pagination
         paginationPageSize: 20,
@@ -48,9 +49,14 @@ export default {
           checkboxSelection: true,
           headerName: "Product name",
           field: "name",
+          width: 300,
         },
-        { headerName: "Product Code", field: "product_code" },
-        { headerName: "Product Rev No", field: "product_rev_number" },
+        { headerName: "Product Code", field: "product_code", width: 300 },
+        {
+          headerName: "Product Rev No",
+          field: "product_rev_number",
+          width: 300,
+        },
         {
           headerName: "Actions",
           field: "actions",
@@ -81,16 +87,16 @@ export default {
     actionsCellRenderer(params) {
       const editButton = document.createElement("button");
       editButton.innerHTML = `<i class="fas fa-edit"></i>`;
-      editButton.classList.add("btn", "btn-primary");
+      editButton.classList.add("btn", "btn-primary", "ms-2");
       editButton.addEventListener("click", () =>
         this.onEditClick(params.data.id)
       );
 
       const deleteButton = document.createElement("button");
       deleteButton.innerHTML = `<i class="fas fa-trash-alt"></i>`;
-      deleteButton.classList.add("btn", "btn-danger", "ms-1");
-      deleteButton.addEventListener("click", () =>
-        this.deleteProduct(params.data.id)
+      deleteButton.classList.add("btn", "btn-danger", "ms-4");
+      deleteButton.addEventListener("click", (event) =>
+        this.deleteProduct(params.data.id, event)
       );
 
       const container = document.createElement("div");
@@ -103,56 +109,37 @@ export default {
       this.$router.push(`/product/edit/${id}`);
     },
 
-    async deleteProduct(id) {
+    async deleteProduct(id, event) {
       // Confirm deletion with the user
-      if (confirm("Are you sure you want to delete this user?")) {
+      event.stopPropagation();
+      if (confirm("Are you sure you want to delete this product?")) {
         this.$store.commit("setIsLoading", true);
 
-        try {
-          // Delete user data using the delete request
-          const response = await axios.delete(`/store/delete-product/${id}/`);
-
-          console.log("Response:", response);
-
-          if (response.status === 204) {
+        // Delete user data using the delete request
+        axios
+          .delete(`/store/delete-product/${id}/`)
+          .then((response) => {
+            console.log(response.data);
             console.log("Product deleted successfully.");
 
             this.$store.commit("setIsLoading", false);
-
             this.$notify({
               title: "Product Deleted Successfully",
               type: "bg-success-subtle text-success",
               duration: "5000",
             });
-
-            // Redirect to the user list page or perform other actions as needed
-            // this.$router.push(`/project-edit/${this.product.project}`);
+            // const projectId = this.product.project;
+            // this.$router.push(`/project-edit/${this.$route.params.id}`);
             window.location.reload();
-          } else {
-            console.error(
-              "Error deleting product. Unexpected status:",
-              response.status
-            );
-
+          })
+          .catch((error) => {
+            console.error("Error deleting user:", error);
             this.$notify({
               title: "Product Deletion Unsuccessful",
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });
-
-            this.$store.commit("setIsLoading", false);
-          }
-        } catch (error) {
-          console.error("Error deleting product:", error);
-
-          this.$notify({
-            title: "Product Deletion Unsuccessful",
-            type: "bg-danger-subtle text-danger",
-            duration: "5000",
           });
-
-          this.$store.commit("setIsLoading", false);
-        }
       }
     },
   },

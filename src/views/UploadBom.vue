@@ -112,7 +112,7 @@
       <!-- Row 3: Issue Date & Product Rev No -->
       <div class="row mb-3 justify-content-center">
         <!-- Issue Date -->
-        <div class="col-md-6">
+        <!-- <div class="col-md-6">
           <label for="batchQuantity" class="form-label">
             <i class="fas fa-flask me-2"></i>Batch Quantity
           </label>
@@ -124,7 +124,7 @@
             min="1"
             required
           />
-        </div>
+        </div> -->
 
         <div class="col-md-6">
           <label for="issueDate" class="form-label">Issue Date</label>
@@ -299,7 +299,7 @@ export default {
         bomRevNo: this.bomRevNo,
         issueDate: this.issueDate,
         uploadedFileName: this.uploadedFileName,
-        batchQuantity: this.batchQuantity,
+        // batchQuantity: this.batchQuantity,
       });
 
       formData.append("project_id", this.selectedProject);
@@ -310,7 +310,7 @@ export default {
       formData.append("bom_type", this.bomType);
       formData.append("bom_rev_no", this.bomRevNo);
       formData.append("issue_date", this.issueDate);
-      formData.append("batch_quantity", this.batchQuantity);
+      // formData.append("batch_quantity", this.batchQuantity);
       formData.append("bom_file", this.uploadedFile);
 
       console.log("Form Data:", formData);

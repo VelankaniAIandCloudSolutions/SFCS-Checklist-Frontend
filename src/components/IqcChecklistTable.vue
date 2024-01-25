@@ -22,7 +22,9 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Upload File</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Upload IQC File
+            </h1>
             <button
               type="button"
               class="btn-close"
@@ -129,8 +131,8 @@ export default {
         return link;
       } else {
         const uploadButton = document.createElement("button");
-        uploadButton.innerHTML = `<i class="fas fa-upload"></i>`;
-        uploadButton.classList.add("btn-sm", "btn-secondary");
+        uploadButton.innerHTML = `<i class="fas fa-upload me-1"></i> Upload IQC File`;
+        uploadButton.classList.add("btn-sm", "btn-primary");
 
         // Save the UID ID for later use
         const uidId = params.data.id;

@@ -104,8 +104,12 @@
             class="form-control"
             id="bomRevNo"
             v-model="bomRevNo"
+            @input="validateBomRevNo"
             required
           />
+          <p v-if="bomRevNo !== '' && !isValidBomRevNo" class="text-danger">
+            BOM REV No should be a decimal type with a minimum of 1.0.
+          </p>
         </div>
       </div>
 
@@ -178,6 +182,41 @@
       </button>
     </div>
 
+    <!-- change note modal -->
+
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">...</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Uploaded Data Section (Same as before) -->
     <!-- <div class="card p-3"> -->
     <!-- File input for multiple files -->
@@ -196,6 +235,7 @@ export default {
       productCode: "",
       bomType: "",
       bomRevNo: "",
+      isValidBomRevNo: true,
       issueDate: "",
       // order: {
       //   selectedBomId: null,
@@ -255,6 +295,15 @@ export default {
   },
 
   methods: {
+    validateBomRevNo() {
+      const bomRevNoRegex = /^(1\.[0-9]|1[0-9]|2\.0)$/;
+
+      if (bomRevNoRegex.test(this.bomRevNo)) {
+        this.isValidBomRevNo = true;
+      } else {
+        this.isValidBomRevNo = false;
+      }
+    },
     async getData() {
       try {
         // Replace 'store/get-projects/' with your actual API endpoint
@@ -288,6 +337,78 @@ export default {
     //   }
     // },
 
+    // async submitForm() {
+    //   this.$store.commit("setIsLoading", true);
+
+    //   const formData = new FormData();
+    //   console.log("Form Data:", {
+    //     selectedProjectId: this.selectedProject,
+    //     selectedProductName: this.selectedProduct,
+    //     bomType: this.bomType,
+    //     bomRevNo: this.bomRevNo,
+    //     issueDate: this.issueDate,
+    //     uploadedFileName: this.uploadedFileName,
+    //     // batchQuantity: this.batchQuantity,
+    //   });
+
+    //   formData.append("project_id", this.selectedProject);
+    //   formData.append("product_id", this.selectedProduct);
+    //   // formData.append("product_name", this.productName);
+    //   // formData.append("product_code", this.productCode);
+    //   // formData.append("product_rev_no", this.productRevNo);
+    //   formData.append("bom_type", this.bomType);
+    //   formData.append("bom_rev_no", this.bomRevNo);
+    //   formData.append("issue_date", this.issueDate);
+    //   // formData.append("batch_quantity", this.batchQuantity);
+    //   formData.append("bom_file", this.uploadedFile);
+
+    //   console.log("Form Data:", formData);
+
+    //   await axios
+    //     .post("store/upload-bom/", formData, {
+    //       headers: {
+    //         "Content-Type": "multipart/form-data",
+    //       },
+    //     })
+    //     .then((response) => {
+    //       console.log(response.data);
+    //       const task_id = response.data.task_id;
+    //       if (
+    //         response.data.task_status === "IN PROGRESS" ||
+    //         response.data.task_status === "PENDING"
+    //       ) {
+    //         setTimeout(() => {
+    //           this.checkTaskStatus(task_id);
+    //         }, 10000);
+    //       } else if (response.data.task_status === "SUCCESS") {
+    //         this.$store.commit("setIsLoading", false);
+
+    //         this.$notify({
+    //           title: "BOM Uploaded Successfully",
+    //           type: "bg-success-subtle text-success",
+    //           duration: "5000",
+    //         });
+    //         this.$router.push("/bom");
+    //       } else {
+    //         this.$notify({
+    //           title: "BOM Upload Failed",
+    //           type: "bg-danger-subtle text-danger",
+    //           duration: "5000",
+    //         });
+    //         this.$store.commit("setIsLoading", false);
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       console.log("error:", error);
+    //       this.$notify({
+    //         title: "An error occured, please try again later",
+    //         type: "bg-danger-subtle text-danger",
+    //         duration: "5000",
+    //       });
+    //       this.$store.commit("setIsLoading", false);
+    //     });
+    // },
+
     async submitForm() {
       this.$store.commit("setIsLoading", true);
 
@@ -315,25 +436,49 @@ export default {
 
       console.log("Form Data:", formData);
 
-      await axios
-        .post("store/upload-bom/", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          const task_id = response.data.task_id;
+      try {
+        const responseCases = await axios.post(
+          "store/handle-bom-cases/",
+          formData
+        );
+
+        if (responseCases.status === 200) {
+          // Case 1: BOM already exists
+          console.log(responseCases.data.message);
+          this.$notify({
+            title: "BOM Already Exists With Rev No",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        } else if (responseCases.status === 201) {
+          // Case 2: New BOM revision number for an existing product
+          console.log(responseCases.data.message);
+          // Trigger modal here
+
+          this.$bvModal.show("#exampleModal"); // Replace 'your-modal-id' with the actual ID of your modal
+        } else if (responseCases.status === 404) {
+          console.log(responseCases.data.message);
+          const responseUploadBOM = await axios.post(
+            "store/upload-bom/",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          console.log(responseUploadBOM.data);
+          const task_id = responseUploadBOM.data.task_id;
           if (
-            response.data.task_status === "IN PROGRESS" ||
-            response.data.task_status === "PENDING"
+            responseUploadBOM.data.task_status === "IN PROGRESS" ||
+            responseUploadBOM.data.task_status === "PENDING"
           ) {
             setTimeout(() => {
               this.checkTaskStatus(task_id);
             }, 10000);
-          } else if (response.data.task_status === "SUCCESS") {
-            this.$store.commit("setIsLoading", false);
-
+          } else if (responseUploadBOM.data.task_status === "SUCCESS") {
             this.$notify({
               title: "BOM Uploaded Successfully",
               type: "bg-success-subtle text-success",
@@ -346,18 +491,18 @@ export default {
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });
-            this.$store.commit("setIsLoading", false);
           }
-        })
-        .catch((error) => {
-          console.log("error:", error);
-          this.$notify({
-            title: "An error occured, please try again later",
-            type: "bg-danger-subtle text-danger",
-            duration: "5000",
-          });
-          this.$store.commit("setIsLoading", false);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
         });
+      } finally {
+        this.$store.commit("setIsLoading", false);
+      }
     },
     async checkTaskStatus(taskId) {
       try {

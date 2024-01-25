@@ -180,7 +180,7 @@
               "
             >
               <a href="#" class="nav-link">
-                <i class="nav-icon fas fa-shopping-cart"></i>
+                <i class="nav-icon fas fa-clipboard-check"></i>
                 <p>
                   IQC
                   <i class="right fas fa-angle-left"></i>
@@ -189,7 +189,7 @@
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <router-link to="/iqc" class="nav-link">
-                    <i class="fas fa-receipt nav-icon"></i>
+                    <i class="fas fa-tasks nav-icon"></i>
                     <p>IQC Checklist</p>
                   </router-link>
                 </li>

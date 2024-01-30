@@ -217,6 +217,65 @@
       </div>
     </div>
 
+    <!-- BOM Revision Inspect Modal -->
+    <div
+      class="modal fade"
+      id="BomRevModal"
+      tabindex="-1"
+      aria-labelledby="BomRevModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="BomRevModalLabel">
+              Comments For Revision
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <textarea
+              v-model="bom_rev_change_note"
+              class="form-control"
+              rows="4"
+              placeholder="Please enter the reason for change..."
+            ></textarea>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="saveChanges"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#BomRevModal"
+      @click="openModal"
+    >
+      Launch demo modal
+    </button>
+
     <!-- Uploaded Data Section (Same as before) -->
     <!-- <div class="card p-3"> -->
     <!-- File input for multiple files -->
@@ -249,6 +308,7 @@ export default {
       selectedProduct: null,
       projects: [],
       products: [],
+      bom_rev_change_note: "",
     };
   },
   computed: {
@@ -549,6 +609,14 @@ export default {
         this.uploadedFile = file; // Store the file directly, no need to read content
       }
     },
+    saveChanges() {
+      // Log the BOM revision change note to the console
+      console.log("BOM Revision Change Note:", this.bom_rev_change_note);
+
+      // Clear the bom_rev_change_note variable
+      this.bom_rev_change_note = "";
+    },
+
     // readExcelFile(file) {
     //   const reader = new FileReader();
 

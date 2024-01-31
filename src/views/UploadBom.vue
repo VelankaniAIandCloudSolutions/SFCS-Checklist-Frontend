@@ -184,7 +184,7 @@
 
     <!-- change note modal -->
 
-    <div
+    <!-- <div
       class="modal fade"
       id="exampleModal"
       tabindex="-1"
@@ -215,15 +215,16 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- BOM Revision Inspect Modal -->
-    <div
+    <!-- <div
       class="modal fade"
       id="BomRevModal"
       tabindex="-1"
       aria-labelledby="BomRevModalLabel"
       aria-hidden="true"
+      ref="modalLaunchButton"
     >
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -271,9 +272,11 @@
       class="btn btn-primary"
       data-bs-toggle="modal"
       data-bs-target="#BomRevModal"
+      id="modalLaunchButton"
     >
       Launch demo modal
-    </button>
+    </button> -->
+    <CustomModal :show="isCustomModalVisible" @close-modal="handleCloseModal" />
 
     <!-- Uploaded Data Section (Same as before) -->
     <!-- <div class="card p-3"> -->
@@ -285,8 +288,12 @@
 
 <script>
 import axios from "axios";
+import CustomModal from "../components/CustomModal.vue";
 
 export default {
+  components: {
+    CustomModal,
+  },
   data() {
     return {
       productName: "",
@@ -308,6 +315,7 @@ export default {
       projects: [],
       products: [],
       bom_rev_change_note: "",
+      isCustomModalVisible: false,
     };
   },
   computed: {
@@ -354,6 +362,12 @@ export default {
   },
 
   methods: {
+    openCustomModal() {
+      this.isCustomModalVisible = true;
+    },
+    handleCloseModal() {
+      this.isCustomModalVisible = false;
+    },
     validateBomRevNo() {
       const bomRevNoRegex = /^(1\.[0-9]|1[0-9]|2\.0)$/;
 
@@ -378,33 +392,156 @@ export default {
       }
     },
 
+    // async submitForm() {
+    //   this.$store.commit("setIsLoading", true);
+    //   const formData = new FormData();
+    //   console.log("Form Data:", {
+    //     selectedProjectId: this.selectedProject,
+    //     selectedProductName: this.selectedProduct,
+    //     bomType: this.bomType,
+    //     bom_rev_no: this.bomRevNo,
+    //     issueDate: this.issueDate,
+    //     uploadedFileName: this.uploadedFileName,
+    //     bom_rev_change_note: this.bom_rev_change_note,
+    //     // batchQuantity: this.batchQuantity,
+    //   });
+
+    //   formData.append("project_id", this.selectedProject);
+    //   formData.append("product_id", this.selectedProduct);
+    //   // formData.append("product_name", this.productName);
+    //   // formData.append("product_code", this.productCode);
+    //   // formData.append("product_rev_no", this.productRevNo);
+    //   formData.append("bom_type", this.bomType);
+    //   formData.append("bom_rev_no", this.bomRevNo);
+    //   formData.append("issue_date", this.issueDate);
+    //   // formData.append("batch_quantity", this.batchQuantity);
+    //   formData.append("bom_file", this.uploadedFile);
+    //   // formData.append("bom_rev_change_note", this.bom_rev_change_note);
+
+    //   // console.log("Form Data:", formData);
+
+    //   try {
+    //     const responseCases = await axios.post(
+    //       "store/handle-bom-cases/",
+    //       formData,
+    //       {
+    //         headers: {
+    //           "Content-Type": "multipart/form-data",
+    //         },
+    //       }
+    //     );
+    //     console.log("Response from handle-bom-cases API:", responseCases.data);
+    //     if (responseCases.status === 200) {
+    //       // Case 1: BOM already exists
+    //       this.$store.commit("setIsLoading", true);
+    //       console.log(responseCases.data.message);
+    //       this.$notify({
+    //         title: `BOM Already Exists With Rev No: ${responseCases.data.bom_rev_number}`,
+    //         type: "bg-danger-subtle text-danger",
+    //         duration: "5000",
+    //       });
+    //       this.$store.commit("setIsLoading", false);
+    //     } else if (responseCases.status === 201) {
+    //       // Case 2: New BOM revision number for an existing product
+    //       this.$store.commit("setIsLoading", true);
+    //       console.log(responseCases.data.message);
+    //       // Trigger modal here
+
+    //       this.$bvModal.show("BomRevModal");
+    //       const responseUploadBOM = await axios.post(
+    //         "store/upload-bom/",
+    //         formData,
+    //         {
+    //           headers: {
+    //             "Content-Type": "multipart/form-data",
+    //           },
+    //         }
+    //       );
+
+    //       console.log(responseUploadBOM.data);
+    //       const task_id = responseUploadBOM.data.task_id;
+    //       if (
+    //         responseUploadBOM.data.task_status === "IN PROGRESS" ||
+    //         responseUploadBOM.data.task_status === "PENDING"
+    //       ) {
+    //         setTimeout(() => {
+    //           this.checkTaskStatus(task_id);
+    //         }, 10000);
+    //       } else if (responseUploadBOM.data.task_status === "SUCCESS") {
+    //         this.$notify({
+    //           title: "BOM Uploaded Successfully",
+    //           type: "bg-success-subtle text-success",
+    //           duration: "5000",
+    //         });
+    //         this.$router.push("/bom");
+    //       } else {
+    //         this.$notify({
+    //           title: "BOM Upload Failed",
+    //           type: "bg-danger-subtle text-danger",
+    //           duration: "5000",
+    //         });
+    //       }
+
+    //       // Replace 'your-modal-id' with the actual ID of your modal
+    //     } else if (responseCases.status === 204) {
+    //       this.$store.commit("setIsLoading", true);
+    //       console.log(responseCases.data.message);
+    //       const responseUploadBOM = await axios.post(
+    //         "store/upload-bom/",
+    //         formData,
+    //         {
+    //           headers: {
+    //             "Content-Type": "multipart/form-data",
+    //           },
+    //         }
+    //       );
+
+    //       console.log(responseUploadBOM.data);
+    //       const task_id = responseUploadBOM.data.task_id;
+    //       if (
+    //         responseUploadBOM.data.task_status === "IN PROGRESS" ||
+    //         responseUploadBOM.data.task_status === "PENDING"
+    //       ) {
+    //         setTimeout(() => {
+    //           this.checkTaskStatus(task_id);
+    //         }, 10000);
+    //       } else if (responseUploadBOM.data.task_status === "SUCCESS") {
+    //         this.$notify({
+    //           title: "BOM Uploaded Successfully",
+    //           type: "bg-success-subtle text-success",
+    //           duration: "5000",
+    //         });
+    //         this.$router.push("/bom");
+    //       } else {
+    //         this.$notify({
+    //           title: "BOM Upload Failed",
+    //           type: "bg-danger-subtle text-danger",
+    //           duration: "5000",
+    //         });
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.log("error:", error);
+    //     this.$notify({
+    //       title: "An error occurred, please try again later",
+    //       type: "bg-danger-subtle text-danger",
+    //       duration: "5000",
+    //     });
+    //   } finally {
+    //     this.$store.commit("setIsLoading", false);
+    //   }
+    // },
     async submitForm() {
       this.$store.commit("setIsLoading", true);
-      const formData = new FormData();
-      console.log("Form Data:", {
-        selectedProjectId: this.selectedProject,
-        selectedProductName: this.selectedProduct,
-        bomType: this.bomType,
-        bom_rev_no: this.bomRevNo,
-        issueDate: this.issueDate,
-        uploadedFileName: this.uploadedFileName,
-        bom_rev_change_note: this.bom_rev_change_note,
-        // batchQuantity: this.batchQuantity,
-      });
 
+      const formData = new FormData();
       formData.append("project_id", this.selectedProject);
       formData.append("product_id", this.selectedProduct);
-      // formData.append("product_name", this.productName);
-      // formData.append("product_code", this.productCode);
-      // formData.append("product_rev_no", this.productRevNo);
       formData.append("bom_type", this.bomType);
       formData.append("bom_rev_no", this.bomRevNo);
       formData.append("issue_date", this.issueDate);
-      // formData.append("batch_quantity", this.batchQuantity);
       formData.append("bom_file", this.uploadedFile);
-      // formData.append("bom_rev_change_note", this.bom_rev_change_note);
-
-      // console.log("Form Data:", formData);
+      formData.append("bom_rev_change_note", this.bom_rev_change_note);
 
       try {
         const responseCases = await axios.post(
@@ -416,27 +553,60 @@ export default {
             },
           }
         );
-        console.log(
-          "Response from handle-bom-cases API:",
-          responseCases.data
-        );
+
+        console.log("Response from handle-bom-cases API:", responseCases.data);
+
         if (responseCases.status === 200) {
           // Case 1: BOM already exists
-          this.$store.commit("setIsLoading", true);
           console.log(responseCases.data.message);
           this.$notify({
-            title: "BOM Already Exists With Rev No",
+            title: `BOM Already Exists With Rev No: ${responseCases.data.bom_rev_number}`,
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
           this.$store.commit("setIsLoading", false);
-        } else if (responseCases.status === 201) {
+        }
+        //case 2----------------------------
+        else if (responseCases.status === 201) {
           // Case 2: New BOM revision number for an existing product
-          this.$store.commit("setIsLoading", true);
+          console.log("inside case two block");
           console.log(responseCases.data.message);
-          // Trigger modal here
 
-          this.$bvModal.show("BomRevModal");
+          // Find the button element using a query selector
+          // const modalLaunchButton = document.querySelector(
+          //   '[data-bs-target="#BomRevModal"]'
+          // );
+
+          // // Log the found element
+          // console.log("Modal Launch Button:", modalLaunchButton);
+
+          // // Check if the button element is found before attempting to click
+          // if (modalLaunchButton) {
+          //   // Simulate a click on the button
+          //   modalLaunchButton.click();
+          // } else {
+          //   console.error("Modal Launch Button not found");
+          // }
+
+          // const modalLaunchButton = this.$refs.modalLaunchButton;
+
+          // // Check if the button element is found before attempting to click
+          // if (modalLaunchButton) {
+          //   // Simulate a click on the button
+          //   modalLaunchButton.click();
+          // } else {
+          //   console.error("Modal Launch Button not found");
+          // }
+          // Use $nextTick to ensure the DOM has been updated
+
+          // Get the button element by ID and simulate a click
+          // const button = document.getElementById("modalLaunchButton");
+          // if (button) {
+          //   button.click();
+          // } else {
+          //   console.error("Button not found by ID");
+          // }
+
           const responseUploadBOM = await axios.post(
             "store/upload-bom/",
             formData,
@@ -449,6 +619,7 @@ export default {
 
           console.log(responseUploadBOM.data);
           const task_id = responseUploadBOM.data.task_id;
+
           if (
             responseUploadBOM.data.task_status === "IN PROGRESS" ||
             responseUploadBOM.data.task_status === "PENDING"
@@ -469,12 +640,12 @@ export default {
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });
+            this.$store.commit("setIsLoading", false);
           }
-
-          // Replace 'your-modal-id' with the actual ID of your modal
-        } else if (responseCases.status === 404) {
-          this.$store.commit("setIsLoading", true);
+        } else if (responseCases.status === 204) {
+          // Case 3: New BOM revision number, no BOM uploaded yet (HTTP 204 No Content)
           console.log(responseCases.data.message);
+
           const responseUploadBOM = await axios.post(
             "store/upload-bom/",
             formData,
@@ -487,6 +658,7 @@ export default {
 
           console.log(responseUploadBOM.data);
           const task_id = responseUploadBOM.data.task_id;
+
           if (
             responseUploadBOM.data.task_status === "IN PROGRESS" ||
             responseUploadBOM.data.task_status === "PENDING"
@@ -500,6 +672,7 @@ export default {
               type: "bg-success-subtle text-success",
               duration: "5000",
             });
+            this.$store.commit("setIsLoading", false);
             this.$router.push("/bom");
           } else {
             this.$notify({
@@ -507,6 +680,7 @@ export default {
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });
+            this.$store.commit("setIsLoading", false);
           }
         }
       } catch (error) {
@@ -516,10 +690,13 @@ export default {
           type: "bg-danger-subtle text-danger",
           duration: "5000",
         });
-      } finally {
         this.$store.commit("setIsLoading", false);
       }
+      //  finally {
+      //   this.$store.commit("setIsLoading", false);
+      // }
     },
+
     async checkTaskStatus(taskId) {
       try {
         const response = await axios.get(`store/check-task-status/${taskId}/`);
@@ -577,7 +754,7 @@ export default {
         // Append the BOM revision change note to the form data
         // Assuming formData is defined at the beginning of the component's data
         // and it's used to store the data that will be sent in the request
-        this.formData.append("bom_rev_change_note", this.bom_rev_change_note);
+        this.formData.append(this.bom_rev_change_note);
 
         // Clear the bom_rev_change_note variable if needed
         this.bom_rev_change_note = "";

@@ -100,7 +100,7 @@
         <div class="col-md-6">
           <label for="bomRevNo" class="form-label">BOM REV No</label>
           <input
-            type="text"
+            type="number"
             class="form-control"
             id="bomRevNo"
             v-model="bomRevNo"
@@ -182,107 +182,12 @@
       </button>
     </div>
 
-    <!-- change note modal -->
-
-    <!-- <div
-      class="modal fade"
-      id="exampleModal"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">...</div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
-    <!-- BOM Revision Inspect Modal -->
-    <!-- <div
-      class="modal fade"
-      id="BomRevModal"
-      tabindex="-1"
-      aria-labelledby="BomRevModalLabel"
-      aria-hidden="true"
-      ref="modalLaunchButton"
-    >
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="BomRevModalLabel">
-              Comments For Revision
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <textarea
-              v-model="bom_rev_change_note"
-              class="form-control"
-              rows="4"
-              placeholder="Please enter the reason for change..."
-            ></textarea>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              @click="saveChanges"
-            >
-              Save changes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-bs-toggle="modal"
-      data-bs-target="#BomRevModal"
-      id="modalLaunchButton"
-    >
-      Launch demo modal
-    </button> -->
-    <CustomModal :show="isCustomModalVisible" @close-modal="handleCloseModal" />
-
-    <!-- Uploaded Data Section (Same as before) -->
-    <!-- <div class="card p-3"> -->
-    <!-- File input for multiple files -->
-    <!-- ... (same as before) ... -->
-    <!-- </div> -->
+    <CustomModal
+      :show="isCustomModalVisible"
+      @close-modal="handleCloseModal"
+      @handle-modal-submitted="handleModalSubmission"
+      @dismiss-modal="handleCloseModal"
+    />
   </div>
 </template>
 
@@ -542,6 +447,7 @@ export default {
       formData.append("issue_date", this.issueDate);
       formData.append("bom_file", this.uploadedFile);
       formData.append("bom_rev_change_note", this.bom_rev_change_note);
+      console.log("FormData:", formData);
 
       try {
         const responseCases = await axios.post(
@@ -558,7 +464,7 @@ export default {
 
         if (responseCases.status === 200) {
           // Case 1: BOM already exists
-          console.log(responseCases.data.message);
+          console.log("hiiiiiiii", responseCases.data.message);
           this.$notify({
             title: `BOM Already Exists With Rev No: ${responseCases.data.bom_rev_number}`,
             type: "bg-danger-subtle text-danger",
@@ -569,82 +475,29 @@ export default {
         //case 2----------------------------
         else if (responseCases.status === 201) {
           // Case 2: New BOM revision number for an existing product
+
           console.log("inside case two block");
           console.log(responseCases.data.message);
+          this.$store.commit("setIsLoading", false);
 
-          // Find the button element using a query selector
-          // const modalLaunchButton = document.querySelector(
-          //   '[data-bs-target="#BomRevModal"]'
-          // );
-
-          // // Log the found element
-          // console.log("Modal Launch Button:", modalLaunchButton);
-
-          // // Check if the button element is found before attempting to click
-          // if (modalLaunchButton) {
-          //   // Simulate a click on the button
-          //   modalLaunchButton.click();
-          // } else {
-          //   console.error("Modal Launch Button not found");
-          // }
-
-          // const modalLaunchButton = this.$refs.modalLaunchButton;
-
-          // // Check if the button element is found before attempting to click
-          // if (modalLaunchButton) {
-          //   // Simulate a click on the button
-          //   modalLaunchButton.click();
-          // } else {
-          //   console.error("Modal Launch Button not found");
-          // }
-          // Use $nextTick to ensure the DOM has been updated
-
-          // Get the button element by ID and simulate a click
-          // const button = document.getElementById("modalLaunchButton");
-          // if (button) {
-          //   button.click();
-          // } else {
-          //   console.error("Button not found by ID");
-          // }
-
-          const responseUploadBOM = await axios.post(
-            "store/upload-bom/",
-            formData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
+          // Log the value of isCustomModalVisible before setting it
+          console.log(
+            "Before setting isCustomModalVisible:",
+            this.isCustomModalVisible
           );
 
-          console.log(responseUploadBOM.data);
-          const task_id = responseUploadBOM.data.task_id;
+          // Try setting it to true
+          this.isCustomModalVisible = true;
 
-          if (
-            responseUploadBOM.data.task_status === "IN PROGRESS" ||
-            responseUploadBOM.data.task_status === "PENDING"
-          ) {
-            setTimeout(() => {
-              this.checkTaskStatus(task_id);
-            }, 10000);
-          } else if (responseUploadBOM.data.task_status === "SUCCESS") {
-            this.$notify({
-              title: "BOM Uploaded Successfully",
-              type: "bg-success-subtle text-success",
-              duration: "5000",
-            });
-            this.$router.push("/bom");
-          } else {
-            this.$notify({
-              title: "BOM Upload Failed",
-              type: "bg-danger-subtle text-danger",
-              duration: "5000",
-            });
-            this.$store.commit("setIsLoading", false);
-          }
+          // Log the value of isCustomModalVisible after setting it
+          console.log(
+            "After setting isCustomModalVisible:",
+            this.isCustomModalVisible
+          );
         } else if (responseCases.status === 204) {
           // Case 3: New BOM revision number, no BOM uploaded yet (HTTP 204 No Content)
           console.log(responseCases.data.message);
+          this.$store.commit("setIsLoading", true);
 
           const responseUploadBOM = await axios.post(
             "store/upload-bom/",
@@ -697,6 +550,56 @@ export default {
       // }
     },
 
+    async uploadBom(formData) {
+      this.$store.commit("setIsLoading", true);
+      try {
+        const responseUploadBOM = await axios.post(
+          "store/upload-bom/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log(responseUploadBOM.data);
+        const task_id = responseUploadBOM.data.task_id;
+
+        if (
+          responseUploadBOM.data.task_status === "IN PROGRESS" ||
+          responseUploadBOM.data.task_status === "PENDING"
+        ) {
+          setTimeout(() => {
+            this.checkTaskStatus(task_id);
+          }, 10000);
+        } else if (responseUploadBOM.data.task_status === "SUCCESS") {
+          this.$notify({
+            title: "BOM Uploaded Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+          this.$router.push("/bom");
+        } else {
+          this.$notify({
+            title: "BOM Upload Failed",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
+        });
+        this.$store.commit("setIsLoading", false);
+      }
+    },
+
     async checkTaskStatus(taskId) {
       try {
         const response = await axios.get(`store/check-task-status/${taskId}/`);
@@ -741,6 +644,26 @@ export default {
         this.uploadedFileName = file.name;
         this.uploadedFile = file; // Store the file directly, no need to read content
       }
+    },
+
+    async handleModalSubmission(bomRevChangeNote) {
+      console.log(
+        "inside handleModal Submisison which will revece CHANGE NOTE IN ARFUMENT"
+      );
+
+      console.log("this is the change note ", bomRevChangeNote);
+
+      const formData = new FormData();
+      formData.append("project_id", this.selectedProject);
+      formData.append("product_id", this.selectedProduct);
+      formData.append("bom_type", this.bomType);
+      formData.append("bom_rev_no", this.bomRevNo);
+      formData.append("issue_date", this.issueDate);
+      formData.append("bom_file", this.uploadedFile);
+      formData.append("bom_rev_change_note", bomRevChangeNote);
+
+      console.log("FormData:", formData);
+      await this.uploadBom(formData);
     },
     saveChanges() {
       // Save the BOM revision change note to the variable

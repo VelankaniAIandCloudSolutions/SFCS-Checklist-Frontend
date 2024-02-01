@@ -12,6 +12,34 @@
       @rowSelected="onRowSelected"
     >
     </ag-grid-vue>
+
+    <!-- Bootstrap 5 Modal for BOM Revision Note -->
+    <div
+      class="modal fade"
+      id="bomRevisionNoteModal"
+      tabindex="-1"
+      aria-labelledby="bomRevisionNoteModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bomRevisionNoteModalLabel">
+              BOM Revision Note
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>{{ selectedBomRevisionNote }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -45,8 +73,8 @@ export default {
         },
         {
           field: "product.project.name",
-          headerCheckboxSelection: true,
-          checkboxSelection: true,
+          // headerCheckboxSelection: true,
+          // checkboxSelection: true,
           headerName: "Project Name",
         },
 
@@ -57,9 +85,15 @@ export default {
         },
         { field: "product.product_code", headerName: "Product Code" },
         { field: "bom_type.name", headerName: "BOM Type" },
-        { field: "bom_rev_number", headerName: "BOM Rev No" },
+
         { field: "issue_date", headerName: "Issue Date" },
         { field: "product.product_rev_number", headerName: "Product Rev No" },
+        { field: "bom_rev_number", headerName: "BOM Rev No" },
+
+        {
+          headerName: "BOM Revision Note",
+          cellRenderer: this.bomRevisionNoteRenderer,
+        },
         {
           headerName: "Actions",
           cellRenderer: this.editButtonRenderer,
@@ -72,6 +106,7 @@ export default {
         autoSize: true,
       },
       selectedRows: [],
+      selectedBomRevisionNote: "",
     };
   },
   methods: {
@@ -103,6 +138,62 @@ export default {
     },
     onEditClick(id) {
       this.$router.push(`/bom/edit/${id}`);
+    },
+    // bomRevisionNoteRenderer(params) {
+    //   const button = document.createElement("button");
+
+    //   if (params.data.change_note) {
+    //     // If change_note is present, render the button
+    //     button.innerHTML = `<i class="fas fa-eye"></i>`;
+    //     button.classList.add("btn", "btn-secondary");
+    //     button.dataset.bsToggle = "modal";
+    //     button.dataset.bsTarget = "#bomRevisionNoteModal";
+    //     button.addEventListener(
+    //       "click",
+    //       (event) => event.stopPropagation(),
+    //       this.loadBomRevisionChangeNoteInModal(params.data)
+    //     );
+    //   } else {
+    //     // If change_note is absent, render a text
+    //     button.innerText = "Change note is absent";
+    //     button.classList.add("btn", "btn-secondary", "disabled");
+    //     button.disabled = true;
+    //   }
+
+    //   return button;
+    // },
+
+    bomRevisionNoteRenderer(params) {
+      const contentWrapper = document.createElement("div");
+
+      if (params.data.change_note) {
+        // If change_note is present, render the button
+        const button = document.createElement("button");
+        button.innerHTML = `<i class="fas fa-eye"></i>`;
+        button.classList.add("btn", "btn-secondary");
+        button.dataset.bsToggle = "modal";
+        button.dataset.bsTarget = "#bomRevisionNoteModal";
+        button.addEventListener(
+          "click",
+          (event) => event.stopPropagation(),
+          this.loadBomRevisionChangeNoteInModal(params.data)
+        );
+        contentWrapper.appendChild(button);
+      } else {
+        // If change_note is absent, render plain text
+        const text = document.createElement("span");
+        text.innerText = "No Change";
+        text.classList.add("text-muted");
+        contentWrapper.appendChild(text);
+      }
+
+      return contentWrapper;
+    },
+
+    loadBomRevisionChangeNoteInModal(rowData) {
+      // Set the BOM Revision Note for the selected row
+      console.log("to set the data i the modal", rowData);
+      this.selectedBomRevisionNote = rowData.change_note;
     },
   },
 };

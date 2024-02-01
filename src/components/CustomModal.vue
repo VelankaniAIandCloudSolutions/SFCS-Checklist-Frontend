@@ -1,47 +1,53 @@
 <template>
-  <div
-    v-if="show"
-    class="modal fade show"
-    id="customBomRevisionModal"
-    tabindex="-1"
-    aria-labelledby="customBomRevisionLabel"
-    aria-modal="true"
-    role="dialog"
-    style="display: block"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="customBomRevisionLabel">
-            <strong style="color: #333">Custom Bom Revision</strong>
-          </h4>
-        </div>
-        <div class="modal-body">
-          <div class="row justify-content-center">
-            <div class="col-md-10 text-center signin mt-4" style="">
-              <form
-                class="needs-validation"
-                @submit="submitCustomBomRevision"
-                novalidate
-              >
+  <div>
+    <div
+      v-if="show"
+      class="modal fade show"
+      id="customBomRevisionModal"
+      tabindex="-1"
+      aria-labelledby="customBomRevisionLabel"
+      aria-modal="true"
+      role="dialog"
+      style="display: block"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="customBomRevisionLabel">
+              <strong style="color: #333"> Reason for BOM Revision</strong>
+            </h4>
+            <button
+              type="button"
+              class="btn-close"
+              aria-label="Close"
+              @click="closeModal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="row justify-content-center">
+              <!-- Remove @submit binding and use button click -->
+              <form class="needs-validation" novalidate>
                 <div class="mb-4">
-                  <label for="revisionReason" class="form-label"
-                    >Please provide reason for change:</label
-                  >
+                  <!-- <label for="revisionReason" class="form-label">
+                    Please provide reason for change:
+                  </label> -->
                   <textarea
                     v-model="bom_rev_change_note"
                     class="form-control"
                     id="revisionReason"
-                    rows="4"
                     required
+                    placeholder="Please provide the reason for the change..."
+                    style="height: 150px"
                   ></textarea>
                   <div class="invalid-feedback">Reason is required.</div>
                 </div>
 
                 <div class="button mb-2">
+                  <!-- Change type to button and add click event -->
                   <button
                     class="btn btn-outline-success btn-block"
-                    type="submit"
+                    type="button"
+                    @click="submitCustomBomRevision"
                   >
                     Submit
                   </button>
@@ -52,18 +58,18 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <div
-    v-if="show"
-    class="modal-backdrop fade show"
-    id="customBomRevisionBackdrop"
-    style="display: block"
-  ></div>
+    <div
+      v-if="show"
+      class="modal-backdrop fade show"
+      id="customBomRevisionBackdrop"
+      style="display: block"
+      @click="closeModal"
+    ></div>
+  </div>
 </template>
 
 <script>
-// import axios from "axios";
 export default {
   data() {
     return {
@@ -86,29 +92,19 @@ export default {
         .getElementById("customBomRevisionModal")
         .classList.remove("show");
     },
-    async submitCustomBomRevision(event) {
-      event.preventDefault();
-      const form = event.target;
+    // dismissModal() {
+    //   // Emit an event to notify the parent component to close the modal
+    //   console.log("dismiss modal emitter triggered");
+    //   this.$emit("dismiss-modal");
+    // },
 
-      if (form.checkValidity()) {
-        try {
-          // Use this.bom_rev_change_note for further processing
+    // Modified method to be triggered on button click
+    submitCustomBomRevision() {
+      // Emit the 'modal-submitted' event and pass the bom_rev_change_note data
+      this.$emit("handle-modal-submitted", this.bom_rev_change_note);
 
-          this.$notify({
-            title: "Custom BOM Revision Submitted Successfully",
-            type: "bg-success-subtle text-success",
-            duration: "5000",
-          });
-        } catch (error) {
-          console.error(error);
-          // Handle error if needed
-        }
-      } else {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-
-      form.classList.add("was-validated");
+      // Close the modal
+      this.closeModal();
     },
   },
 };

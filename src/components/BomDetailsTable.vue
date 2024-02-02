@@ -73,8 +73,8 @@ export default {
         },
         {
           field: "product.project.name",
-          // headerCheckboxSelection: true,
-          // checkboxSelection: true,
+          headerCheckboxSelection: true,
+          checkboxSelection: true,
           headerName: "Project Name",
         },
 
@@ -173,11 +173,10 @@ export default {
         button.classList.add("btn", "btn-secondary");
         button.dataset.bsToggle = "modal";
         button.dataset.bsTarget = "#bomRevisionNoteModal";
-        button.addEventListener(
-          "click",
-          (event) => event.stopPropagation(),
-          this.loadBomRevisionChangeNoteInModal(params.data)
-        );
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.loadBomRevisionChangeNoteInModal(params.data);
+        });
         contentWrapper.appendChild(button);
       } else {
         // If change_note is absent, render plain text
@@ -192,7 +191,8 @@ export default {
 
     loadBomRevisionChangeNoteInModal(rowData) {
       // Set the BOM Revision Note for the selected row
-      console.log("to set the data i the modal", rowData);
+      console.log("to set the data in the modal", rowData);
+      console.log("revision note", rowData.change_note);
       this.selectedBomRevisionNote = rowData.change_note;
     },
   },

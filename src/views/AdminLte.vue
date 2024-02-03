@@ -195,6 +195,26 @@
                 </li>
               </ul>
             </li>
+            <li
+              class="nav-item text-left"
+              v-if="$store.state.user.is_superuser"
+            >
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-tag"></i>
+                <p>
+                  Pricing
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/project-pricing" class="nav-link">
+                    <i class="fas fa-money-bill nav-icon"></i>
+                    <p>Project Pricing Details</p>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -203,7 +223,13 @@
     </aside>
 
     <!-- Content Wrapper -->
-    <div class="content-wrapper">
+    <div class="content-wrapper" v-if="showLogInModal">
+      <RestrictedAccess
+        @closeLogInModal="handleCloseLogInModal"
+        :show="showLogInModal"
+      />
+    </div>
+    <div v-else class="content-wrapper">
       <router-view></router-view>
     </div>
     <!-- /.content-wrapper -->
@@ -212,7 +238,19 @@
 
 <script>
 import axios from "axios";
+import RestrictedAccess from "@/components/RestrictedAccess.vue";
 export default {
+  data() {
+    return {
+      showLogInModal: false,
+    };
+  },
+  mounted() {
+    this.checkLogin();
+  },
+  components: {
+    RestrictedAccess,
+  },
   methods: {
     async logout() {
       await axios
@@ -225,6 +263,27 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    async checkLogin() {
+      await axios
+        .get("accounts/check-login")
+        .then((response) => {
+          if (response.status === 200) {
+            this.showLogInModal = false;
+          } else {
+            this.showLogInModal = true;
+          }
+        })
+        .catch((error) => {
+          console.error("Error in API call:", error);
+          this.showLogInModal = true;
+          localStorage.removeItem("token");
+          this.$store.commit("removeToken");
+        });
+    },
+    handleCloseLogInModal() {
+      this.showLogInModal = false;
+      this.$router.push("/login");
     },
   },
 };

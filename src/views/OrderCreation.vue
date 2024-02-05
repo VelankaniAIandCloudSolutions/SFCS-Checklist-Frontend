@@ -737,6 +737,7 @@ export default {
       formData.append("issue_date", this.issueDate);
       formData.append("bom_file", this.uploadedFile);
       formData.append("bom_rev_change_note", bomRevChangeNote);
+      formData.append("batch_quantity", this.order.batchQuantity);
 
       console.log("FormData:", formData);
       await this.createOrderAndUploadBom(formData);

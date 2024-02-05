@@ -1,5 +1,17 @@
 <template>
-  <div>
+  <div v-if="$store.state.isLoading" class="container text-center">
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
+  </div>
+  <div v-else>
     <ag-grid-vue
       style="height: 500px"
       class="ag-theme-quartz"
@@ -35,7 +47,7 @@ export default {
           headerName: "VEPL Part Number",
         },
         {
-          field: "name",
+          field: "part_name",
           headerName: "Name",
         },
         {
@@ -43,12 +55,19 @@ export default {
           headerName: "Description",
         },
         {
-          field: "po.currency_code",
-          headerName: "Currency",
-        },
-        {
           field: "rate",
           headerName: "Rate",
+          cellRenderer: (params) => {
+            if (params.data.po_json) {
+              const currencyCode = params.data.po_json.currency_symbol;
+              const rawRate = params.data.rate;
+              const formattedRate = this.$parsePriceToString(rawRate);
+
+              return `${currencyCode} ${formattedRate}`;
+            } else {
+              return params.data.rate;
+            }
+          },
         },
         {
           field: "quantity",
@@ -57,6 +76,16 @@ export default {
         {
           field: "total",
           headerName: "Total",
+          cellRenderer: (params) => {
+            if (params.data.po_json) {
+              const currencyCode = params.data.po_json.currency_symbol;
+              const rawTotal = params.data.total;
+              const formattedTotal = this.$parsePriceToString(rawTotal);
+              return `${currencyCode} ${formattedTotal}`;
+            } else {
+              return params.data.total;
+            }
+          },
         },
       ],
       defaultColDef: {

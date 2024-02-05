@@ -48,7 +48,7 @@
             <option
               v-for="project in projects"
               :key="project.id"
-              :value="project.id"
+              :value="project"
             >
               {{ project.name }}
             </option>
@@ -65,7 +65,7 @@
             <option
               v-for="product in filteredProducts"
               :key="product.id"
-              :value="product.id"
+              :value="product"
             >
               {{ product.name }}
             </option>
@@ -81,7 +81,21 @@
         >
           Fetch Prices
         </button>
+        <button
+          class="btn btn-secondary ms-2"
+          @click="refreshProductPrices"
+          :disabled="isRefreshing"
+        >
+          <span
+            v-if="isRefreshing"
+            class="spinner-border spinner-border-sm me-1"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          {{ isRefreshing ? "Refreshing Prices..." : "Refresh Prices" }}
+        </button>
       </div>
+      <span class="text-muted"> Last Refreshed At: {{ lastUpdatedAt }}</span>
     </section>
   </div>
   <div
@@ -95,7 +109,9 @@
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="pricingTableModalLabel">
-            Pricing Details
+            Pricing Details - {{ form.selectedProject.name }} ({{
+              form.selectedProduct.name
+            }})
           </h1>
           <button
             type="button"
@@ -135,10 +151,29 @@ export default {
         selectedProduct: "",
       },
       partPrices: [],
+      lastUpdatedAt: "",
+      isRefreshing: this.$route.query.is_refreshing === "1",
     };
   },
   mounted() {
     this.getProjectPricingPage();
+
+    const isRefreshingQueryParam = this.$route.query.is_refreshing === "1";
+    this.isRefreshing = isRefreshingQueryParam;
+
+    const refresh_prices_task_id = sessionStorage.getItem(
+      "refresh_prices_task_id"
+    );
+    if (isRefreshingQueryParam) {
+      if (refresh_prices_task_id) {
+        this.checkTaskStatus(refresh_prices_task_id);
+      }
+    }
+  },
+  watch: {
+    "$route.query.is_refreshing": function (newValue) {
+      this.isRefreshing = newValue === "1";
+    },
   },
   computed: {
     filteredProducts() {
@@ -146,7 +181,7 @@ export default {
         if (this.form.selectedProject !== null) {
           const filteredProducts = this.products.filter((product) => {
             const projectId = product.project;
-            return projectId === this.form.selectedProject;
+            return projectId === this.form.selectedProject.id;
           });
           return filteredProducts;
         } else {
@@ -163,8 +198,10 @@ export default {
       await axios
         .get("/pricing/get-project-pricing-page") // Replace with your actual API endpoint
         .then((response) => {
+          console.log(response.data);
           this.projects = response.data.projects;
           this.products = response.data.products;
+          this.lastUpdatedAt = response.data.last_updated_at;
           this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
@@ -175,9 +212,9 @@ export default {
     async fetchProductPrices() {
       this.$store.commit("setIsLoading", true);
       await axios
-        // .get(`/pricing/get-product-pricing/${this.form.selectedProduct}/`)
-        .get(`/pricing/get-product-pricing/30/`)
+        .get(`/pricing/get-product-pricing/${this.form.selectedProduct.id}/`)
         .then((response) => {
+          console.log(response.data);
           this.partPrices = response.data.part_prices;
           this.$store.commit("setIsLoading", false);
         })
@@ -185,6 +222,99 @@ export default {
           console.error("Error:", error);
           this.$store.commit("setIsLoading", false);
         });
+    },
+    async refreshProductPrices() {
+      await axios
+        .get("/pricing/refresh-product-pricing")
+        .then((response) => {
+          console.log(response.data);
+          this.$notify({
+            title: "Pricing Refresh Started",
+            type: "bg-success-subtle text-success",
+            text: response.data.message,
+            duration: "5000",
+          });
+          if (
+            response.data.task_status === "IN PROGRESS" ||
+            response.data.task_status === "PENDING"
+          ) {
+            const currentRoute = this.$route;
+            const isRefreshingQueryParam = { is_refreshing: 1 };
+            this.$router.replace({
+              ...currentRoute,
+              query: { ...currentRoute.query, ...isRefreshingQueryParam },
+            });
+            sessionStorage.setItem(
+              "refresh_prices_task_id",
+              response.data.task_id
+            );
+            this.checkTaskStatus(response.data.task_id);
+          } else if (response.data.task_status === "SUCCESS") {
+            this.$notify({
+              title: "Prices Refreshed Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+            this.$router.push("/project-pricing");
+          } else {
+            this.$notify({
+              title: "Failed to Refresh Prices",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    },
+    async checkTaskStatus(taskId) {
+      try {
+        const response = await axios.get(`store/check-task-status/${taskId}/`);
+
+        if (
+          response.data.task_status === "IN PROGRESS" ||
+          response.data.task_status === "PENDING"
+        ) {
+          const currentRoute = this.$route;
+          const isRefreshingQueryParam = { is_refreshing: 1 };
+          this.$router.replace({
+            ...currentRoute,
+            query: { ...currentRoute.query, ...isRefreshingQueryParam },
+          });
+          setTimeout(() => {
+            this.checkTaskStatus(taskId);
+          }, 10000);
+        } else if (response.data.task_status === "SUCCESS") {
+          this.$notify({
+            title: "Prices Refreshed Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          sessionStorage.removeItem("refresh_prices_task_id");
+          this.getProjectPricingPage();
+          this.$router.push("/project-pricing");
+        } else {
+          this.$notify({
+            title: "Failed to Refresh Prices",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          sessionStorage.removeItem("refresh_prices_task_id");
+          this.getProjectPricingPage();
+          this.$router.push("/project-pricing");
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "Failed to Refresh Prices",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
+        });
+        this.getProjectPricingPage();
+        sessionStorage.removeItem("refresh_prices_task_id");
+        this.$router.push("/project-pricing");
+      }
     },
   },
 };

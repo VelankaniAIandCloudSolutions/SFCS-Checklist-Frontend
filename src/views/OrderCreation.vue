@@ -118,8 +118,12 @@
             class="form-control"
             id="bomRevNo"
             v-model="bomRevNo"
+            @input="validateBomRevNo"
             required
           />
+          <p v-if="bomRevNo !== '' && !isValidBomRevNo" class="text-danger">
+            BOM REV No should be a decimal type with a minimum of 1.0.
+          </p>
         </div>
       </div>
 
@@ -270,15 +274,23 @@
         </div>
       </div>
     </div>
+
+    <CustomModal
+      :show="isCustomModalVisible"
+      @close-modal="handleCloseModal"
+      @handle-modal-submitted="handleModalSubmission"
+      @dismiss-modal="handleCloseModal"
+    />
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import OrderBomDetailsVue from "../components/OrderBomDetails.vue";
+import CustomModal from "../components/CustomModal.vue";
 
 export default {
-  components: { OrderBomDetailsVue },
+  components: { OrderBomDetailsVue, CustomModal },
   data() {
     return {
       // selectedRow: null,
@@ -301,10 +313,13 @@ export default {
       selectedBomId: null,
       selectBomButtonText: "Select BOM",
       bomRevNo: null,
+      isValidBomRevNo: true,
       bomType: null,
       uploadedFileName: null,
       uploadedFile: null,
       isLoading: false,
+      bom_rev_change_note: "",
+      isCustomModalVisible: false,
     };
   },
   computed: {
@@ -370,9 +385,25 @@ export default {
     this.getData();
   },
   methods: {
+    openCustomModal() {
+      this.isCustomModalVisible = true;
+    },
+    handleCloseModal() {
+      this.isCustomModalVisible = false;
+    },
+
+    validateBomRevNo() {
+      const bomRevNoRegex = /^(1\.[0-9]|1[0-9]|2\.0)$/;
+
+      if (bomRevNoRegex.test(this.bomRevNo)) {
+        this.isValidBomRevNo = true;
+      } else {
+        this.isValidBomRevNo = false;
+      }
+    },
     setIsLoading(isLoading) {
       this.isLoading = isLoading;
-      // this.$store.commit("setIsLoading", isLoading);
+      this.$store.commit("setIsLoading", isLoading);
     },
 
     notifySuccess(message) {
@@ -512,36 +543,203 @@ export default {
       formData.append("batch_quantity", this.order.batchQuantity);
       formData.append("bom_file", this.uploadedFile);
 
-      await axios
-        .post("store/create-order-task/", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          const task_id = response.data.task_id;
+      try {
+        const responseCases = await axios.post(
+          "store/handle-bom-cases/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log("Response from handle-bom-cases API:", responseCases.data);
+
+        if (responseCases.status === 200) {
+          // Case 1: BOM already exists
+          // this.$store.commit("setIsLoading", false);
+          this.setIsLoading(false);
+          console.log("hi", responseCases.data.message);
+
+          this.$notify({
+            title: `BOM Already Exists With Rev No: ${responseCases.data.bom_rev_number}`,
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        }
+        //case 2----------------------------
+        else if (responseCases.status === 201) {
+          // Case 2: New BOM revision number for an existing product
+          this.setIsLoading(false);
+          console.log("inside case two block");
+          console.log(responseCases.data.message);
+
+          // Log the value of isCustomModalVisible before setting it
+          console.log(
+            "Before setting isCustomModalVisible:",
+            this.isCustomModalVisible
+          );
+
+          // Try setting it to true
+          this.isCustomModalVisible = true;
+
+          // Log the value of isCustomModalVisible after setting it
+          console.log(
+            "After setting isCustomModalVisible:",
+            this.isCustomModalVisible
+          );
+        } else if (responseCases.status === 204) {
+          // Case 3: New BOM revision number, no BOM uploaded yet (HTTP 204 No Content)
+          console.log(responseCases.data.message);
+          this.setIsLoading(true);
+
+          const responseUploadBOM = await axios.post(
+            "store/create-order-task/",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          console.log(responseUploadBOM.data);
+          const task_id = responseUploadBOM.data.task_id;
 
           if (
-            response.data.task_status === "IN PROGRESS" ||
-            response.data.task_status === "PENDING"
+            responseUploadBOM.data.task_status === "IN PROGRESS" ||
+            responseUploadBOM.data.task_status === "PENDING"
           ) {
             setTimeout(() => {
               this.checkTaskStatus(task_id);
             }, 10000);
-          } else if (response.data.task_status === "SUCCESS") {
+          } else if (responseUploadBOM.data.task_status === "SUCCESS") {
+            this.$notify({
+              title: "BOM Uploaded Successfully adn Order Created",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
             this.setIsLoading(false);
-            this.notifySuccess("BOM Uploaded and Order Created Successfully");
             this.$router.push("/orders");
           } else {
-            this.notifyError("BOM Upload and Order Creation Failed");
+            this.$notify({
+              title: "BOM Upload Failed",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
             this.setIsLoading(false);
           }
-        })
-        .catch((error) => {
-          console.log("error:", error);
-          this.handleError("An error occurred, please try again later");
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
         });
+        this.setIsLoading(false);
+      }
+
+      // await axios
+      //   .post("store/create-order-task/", formData, {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   })
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     const task_id = response.data.task_id;
+
+      //     if (
+      //       response.data.task_status === "IN PROGRESS" ||
+      //       response.data.task_status === "PENDING"
+      //     ) {
+      //       setTimeout(() => {
+      //         this.checkTaskStatus(task_id);
+      //       }, 10000);
+      //     } else if (response.data.task_status === "SUCCESS") {
+      //       this.setIsLoading(false);
+      //       this.notifySuccess("BOM Uploaded and Order Created Successfully");
+      //       this.$router.push("/orders");
+      //     } else {
+      //       this.notifyError("BOM Upload and Order Creation Failed");
+      //       this.setIsLoading(false);
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.log("error:", error);
+      //     this.handleError("An error occurred, please try again later");
+      //   });
+    },
+
+    async createOrderAndUploadBom(formData) {
+      this.setIsLoading(true);
+      try {
+        const responseUploadBOM = await axios.post(
+          "store/create-order-task/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log(responseUploadBOM.data);
+        const task_id = responseUploadBOM.data.task_id;
+
+        if (
+          responseUploadBOM.data.task_status === "IN PROGRESS" ||
+          responseUploadBOM.data.task_status === "PENDING"
+        ) {
+          setTimeout(() => {
+            this.checkTaskStatus(task_id);
+          }, 10000);
+        } else if (responseUploadBOM.data.task_status === "SUCCESS") {
+          this.$notify({
+            title: "BOM Uploaded Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.setIsLoading(false);
+          this.$router.push("/bom");
+        } else {
+          this.$notify({
+            title: "BOM Upload Failed",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.setIsLoading(false);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
+        });
+        this.setIsLoading(false);
+      }
+    },
+    async handleModalSubmission(bomRevChangeNote) {
+      console.log(
+        "inside handleModal Submisison which will revece CHANGE NOTE IN ARFUMENT"
+      );
+
+      console.log("this is the change note ", bomRevChangeNote);
+
+      const formData = new FormData();
+      formData.append("project_id", this.selectedProject);
+      formData.append("product_id", this.selectedProduct);
+      formData.append("bom_type", this.bomType);
+      formData.append("bom_rev_no", this.bomRevNo);
+      formData.append("issue_date", this.issueDate);
+      formData.append("bom_file", this.uploadedFile);
+      formData.append("bom_rev_change_note", bomRevChangeNote);
+
+      console.log("FormData:", formData);
+      await this.createOrderAndUploadBom(formData);
     },
 
     async checkTaskStatus(taskId) {

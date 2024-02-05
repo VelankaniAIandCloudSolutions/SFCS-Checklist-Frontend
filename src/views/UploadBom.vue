@@ -100,7 +100,7 @@
         <div class="col-md-6">
           <label for="bomRevNo" class="form-label">BOM REV No</label>
           <input
-            type="number"
+            type="text"
             class="form-control"
             id="bomRevNo"
             v-model="bomRevNo"

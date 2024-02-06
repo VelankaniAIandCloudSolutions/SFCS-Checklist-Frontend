@@ -274,7 +274,7 @@ export default {
       this.isCustomModalVisible = false;
     },
     validateBomRevNo() {
-      const bomRevNoRegex = /^(1\.[0-9]|1[0-9]|2\.0)$/;
+      const bomRevNoRegex = /^\d+\.\d+$/;
 
       if (bomRevNoRegex.test(this.bomRevNo)) {
         this.isValidBomRevNo = true;

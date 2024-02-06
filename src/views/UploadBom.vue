@@ -104,8 +104,12 @@
             class="form-control"
             id="bomRevNo"
             v-model="bomRevNo"
+            @input="validateBomRevNo"
             required
           />
+          <p v-if="bomRevNo !== '' && !isValidBomRevNo" class="text-danger">
+            BOM REV No should be a decimal type with a minimum of 1.0.
+          </p>
         </div>
       </div>
 
@@ -178,24 +182,30 @@
       </button>
     </div>
 
-    <!-- Uploaded Data Section (Same as before) -->
-    <!-- <div class="card p-3"> -->
-    <!-- File input for multiple files -->
-    <!-- ... (same as before) ... -->
-    <!-- </div> -->
+    <CustomModal
+      :show="isCustomModalVisible"
+      @close-modal="handleCloseModal"
+      @handle-modal-submitted="handleModalSubmission"
+      @dismiss-modal="handleCloseModal"
+    />
   </div>
 </template>
 
 <script>
 import axios from "axios";
+import CustomModal from "../components/CustomModal.vue";
 
 export default {
+  components: {
+    CustomModal,
+  },
   data() {
     return {
       productName: "",
       productCode: "",
       bomType: "",
       bomRevNo: "",
+      isValidBomRevNo: true,
       issueDate: "",
       // order: {
       //   selectedBomId: null,
@@ -209,6 +219,8 @@ export default {
       selectedProduct: null,
       projects: [],
       products: [],
+      bom_rev_change_note: "",
+      isCustomModalVisible: false,
     };
   },
   computed: {
@@ -255,6 +267,21 @@ export default {
   },
 
   methods: {
+    openCustomModal() {
+      this.isCustomModalVisible = true;
+    },
+    handleCloseModal() {
+      this.isCustomModalVisible = false;
+    },
+    validateBomRevNo() {
+      const bomRevNoRegex = /^(1\.[0-9]|1[0-9]|2\.0)$/;
+
+      if (bomRevNoRegex.test(this.bomRevNo)) {
+        this.isValidBomRevNo = true;
+      } else {
+        this.isValidBomRevNo = false;
+      }
+    },
     async getData() {
       try {
         // Replace 'store/get-projects/' with your actual API endpoint
@@ -269,76 +296,236 @@ export default {
         console.error("Error fetching projects:", error);
       }
     },
-    // async loadProducts() {
-    //   console.log("api for projects triggered");
-    //   console.log("Selected Project:", this.selectedProject);
-    //   if (this.selectedProject) {
-    //     try {
-    //       const response = await axios.get(
-    //         `store/create-order/?project_id=${this.selectedProject}`
+
+    // async submitForm() {
+    //   this.$store.commit("setIsLoading", true);
+    //   const formData = new FormData();
+    //   console.log("Form Data:", {
+    //     selectedProjectId: this.selectedProject,
+    //     selectedProductName: this.selectedProduct,
+    //     bomType: this.bomType,
+    //     bom_rev_no: this.bomRevNo,
+    //     issueDate: this.issueDate,
+    //     uploadedFileName: this.uploadedFileName,
+    //     bom_rev_change_note: this.bom_rev_change_note,
+    //     // batchQuantity: this.batchQuantity,
+    //   });
+
+    //   formData.append("project_id", this.selectedProject);
+    //   formData.append("product_id", this.selectedProduct);
+    //   // formData.append("product_name", this.productName);
+    //   // formData.append("product_code", this.productCode);
+    //   // formData.append("product_rev_no", this.productRevNo);
+    //   formData.append("bom_type", this.bomType);
+    //   formData.append("bom_rev_no", this.bomRevNo);
+    //   formData.append("issue_date", this.issueDate);
+    //   // formData.append("batch_quantity", this.batchQuantity);
+    //   formData.append("bom_file", this.uploadedFile);
+    //   // formData.append("bom_rev_change_note", this.bom_rev_change_note);
+
+    //   // console.log("Form Data:", formData);
+
+    //   try {
+    //     const responseCases = await axios.post(
+    //       "store/handle-bom-cases/",
+    //       formData,
+    //       {
+    //         headers: {
+    //           "Content-Type": "multipart/form-data",
+    //         },
+    //       }
+    //     );
+    //     console.log("Response from handle-bom-cases API:", responseCases.data);
+    //     if (responseCases.status === 200) {
+    //       // Case 1: BOM already exists
+    //       this.$store.commit("setIsLoading", true);
+    //       console.log(responseCases.data.message);
+    //       this.$notify({
+    //         title: `BOM Already Exists With Rev No: ${responseCases.data.bom_rev_number}`,
+    //         type: "bg-danger-subtle text-danger",
+    //         duration: "5000",
+    //       });
+    //       this.$store.commit("setIsLoading", false);
+    //     } else if (responseCases.status === 201) {
+    //       // Case 2: New BOM revision number for an existing product
+    //       this.$store.commit("setIsLoading", true);
+    //       console.log(responseCases.data.message);
+    //       // Trigger modal here
+
+    //       this.$bvModal.show("BomRevModal");
+    //       const responseUploadBOM = await axios.post(
+    //         "store/upload-bom/",
+    //         formData,
+    //         {
+    //           headers: {
+    //             "Content-Type": "multipart/form-data",
+    //           },
+    //         }
     //       );
 
-    //       this.products = response.data.products;
-    //       console.log("products for thsi porject id ", this.products);
-    //     } catch (error) {
-    //       console.error("Error fetching products:", error);
+    //       console.log(responseUploadBOM.data);
+    //       const task_id = responseUploadBOM.data.task_id;
+    //       if (
+    //         responseUploadBOM.data.task_status === "IN PROGRESS" ||
+    //         responseUploadBOM.data.task_status === "PENDING"
+    //       ) {
+    //         setTimeout(() => {
+    //           this.checkTaskStatus(task_id);
+    //         }, 10000);
+    //       } else if (responseUploadBOM.data.task_status === "SUCCESS") {
+    //         this.$notify({
+    //           title: "BOM Uploaded Successfully",
+    //           type: "bg-success-subtle text-success",
+    //           duration: "5000",
+    //         });
+    //         this.$router.push("/bom");
+    //       } else {
+    //         this.$notify({
+    //           title: "BOM Upload Failed",
+    //           type: "bg-danger-subtle text-danger",
+    //           duration: "5000",
+    //         });
+    //       }
+
+    //       // Replace 'your-modal-id' with the actual ID of your modal
+    //     } else if (responseCases.status === 204) {
+    //       this.$store.commit("setIsLoading", true);
+    //       console.log(responseCases.data.message);
+    //       const responseUploadBOM = await axios.post(
+    //         "store/upload-bom/",
+    //         formData,
+    //         {
+    //           headers: {
+    //             "Content-Type": "multipart/form-data",
+    //           },
+    //         }
+    //       );
+
+    //       console.log(responseUploadBOM.data);
+    //       const task_id = responseUploadBOM.data.task_id;
+    //       if (
+    //         responseUploadBOM.data.task_status === "IN PROGRESS" ||
+    //         responseUploadBOM.data.task_status === "PENDING"
+    //       ) {
+    //         setTimeout(() => {
+    //           this.checkTaskStatus(task_id);
+    //         }, 10000);
+    //       } else if (responseUploadBOM.data.task_status === "SUCCESS") {
+    //         this.$notify({
+    //           title: "BOM Uploaded Successfully",
+    //           type: "bg-success-subtle text-success",
+    //           duration: "5000",
+    //         });
+    //         this.$router.push("/bom");
+    //       } else {
+    //         this.$notify({
+    //           title: "BOM Upload Failed",
+    //           type: "bg-danger-subtle text-danger",
+    //           duration: "5000",
+    //         });
+    //       }
     //     }
-    //   } else {
-    //     this.products = []; // Clear products if no project is selected
+    //   } catch (error) {
+    //     console.log("error:", error);
+    //     this.$notify({
+    //       title: "An error occurred, please try again later",
+    //       type: "bg-danger-subtle text-danger",
+    //       duration: "5000",
+    //     });
+    //   } finally {
+    //     this.$store.commit("setIsLoading", false);
     //   }
     // },
-
     async submitForm() {
       this.$store.commit("setIsLoading", true);
 
       const formData = new FormData();
-      console.log("Form Data:", {
-        selectedProjectId: this.selectedProject,
-        selectedProductName: this.selectedProduct,
-        bomType: this.bomType,
-        bomRevNo: this.bomRevNo,
-        issueDate: this.issueDate,
-        uploadedFileName: this.uploadedFileName,
-        // batchQuantity: this.batchQuantity,
-      });
-
       formData.append("project_id", this.selectedProject);
       formData.append("product_id", this.selectedProduct);
-      // formData.append("product_name", this.productName);
-      // formData.append("product_code", this.productCode);
-      // formData.append("product_rev_no", this.productRevNo);
       formData.append("bom_type", this.bomType);
       formData.append("bom_rev_no", this.bomRevNo);
       formData.append("issue_date", this.issueDate);
-      // formData.append("batch_quantity", this.batchQuantity);
       formData.append("bom_file", this.uploadedFile);
+      formData.append("bom_rev_change_note", this.bom_rev_change_note);
+      console.log("FormData:", formData);
 
-      console.log("Form Data:", formData);
+      try {
+        const responseCases = await axios.post(
+          "store/handle-bom-cases/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
-      await axios
-        .post("store/upload-bom/", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          const task_id = response.data.task_id;
+        console.log("Response from handle-bom-cases API:", responseCases.data);
+
+        if (responseCases.status === 200) {
+          // Case 1: BOM already exists
+          console.log("hiiiiiiii", responseCases.data.message);
+          this.$notify({
+            title: `BOM Already Exists With Rev No: ${responseCases.data.bom_rev_number}`,
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        }
+        //case 2----------------------------
+        else if (responseCases.status === 201) {
+          // Case 2: New BOM revision number for an existing product
+
+          console.log("inside case two block");
+          console.log(responseCases.data.message);
+          this.$store.commit("setIsLoading", false);
+
+          // Log the value of isCustomModalVisible before setting it
+          console.log(
+            "Before setting isCustomModalVisible:",
+            this.isCustomModalVisible
+          );
+
+          // Try setting it to true
+          this.isCustomModalVisible = true;
+
+          // Log the value of isCustomModalVisible after setting it
+          console.log(
+            "After setting isCustomModalVisible:",
+            this.isCustomModalVisible
+          );
+        } else if (responseCases.status === 204) {
+          // Case 3: New BOM revision number, no BOM uploaded yet (HTTP 204 No Content)
+          console.log(responseCases.data.message);
+          this.$store.commit("setIsLoading", true);
+
+          const responseUploadBOM = await axios.post(
+            "store/upload-bom/",
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          console.log(responseUploadBOM.data);
+          const task_id = responseUploadBOM.data.task_id;
+
           if (
-            response.data.task_status === "IN PROGRESS" ||
-            response.data.task_status === "PENDING"
+            responseUploadBOM.data.task_status === "IN PROGRESS" ||
+            responseUploadBOM.data.task_status === "PENDING"
           ) {
             setTimeout(() => {
               this.checkTaskStatus(task_id);
             }, 10000);
-          } else if (response.data.task_status === "SUCCESS") {
-            this.$store.commit("setIsLoading", false);
-
+          } else if (responseUploadBOM.data.task_status === "SUCCESS") {
             this.$notify({
               title: "BOM Uploaded Successfully",
               type: "bg-success-subtle text-success",
               duration: "5000",
             });
+            this.$store.commit("setIsLoading", false);
             this.$router.push("/bom");
           } else {
             this.$notify({
@@ -348,17 +535,71 @@ export default {
             });
             this.$store.commit("setIsLoading", false);
           }
-        })
-        .catch((error) => {
-          console.log("error:", error);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
+        });
+        this.$store.commit("setIsLoading", false);
+      }
+      //  finally {
+      //   this.$store.commit("setIsLoading", false);
+      // }
+    },
+
+    async uploadBom(formData) {
+      this.$store.commit("setIsLoading", true);
+      try {
+        const responseUploadBOM = await axios.post(
+          "store/upload-bom/",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        console.log(responseUploadBOM.data);
+        const task_id = responseUploadBOM.data.task_id;
+
+        if (
+          responseUploadBOM.data.task_status === "IN PROGRESS" ||
+          responseUploadBOM.data.task_status === "PENDING"
+        ) {
+          setTimeout(() => {
+            this.checkTaskStatus(task_id);
+          }, 10000);
+        } else if (responseUploadBOM.data.task_status === "SUCCESS") {
           this.$notify({
-            title: "An error occured, please try again later",
+            title: "BOM Uploaded Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+          this.$router.push("/bom");
+        } else {
+          this.$notify({
+            title: "BOM Upload Failed",
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
           this.$store.commit("setIsLoading", false);
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
         });
+        this.$store.commit("setIsLoading", false);
+      }
     },
+
     async checkTaskStatus(taskId) {
       try {
         const response = await axios.get(`store/check-task-status/${taskId}/`);
@@ -404,29 +645,48 @@ export default {
         this.uploadedFile = file; // Store the file directly, no need to read content
       }
     },
-    // readExcelFile(file) {
-    //   const reader = new FileReader();
 
-    //   reader.onload = (e) => {
-    //     const data = e.target.result;
-    //     // Assuming you have a function to parse Excel data
-    //     const parsedData = this.parseExcelData(data);
-    //     this.uploadedData = parsedData;
-    //   };
+    async handleModalSubmission(bomRevChangeNote) {
+      console.log(
+        "inside handleModal Submisison which will revece CHANGE NOTE IN ARFUMENT"
+      );
 
-    //   reader.onerror = (error) => {
-    //     console.error(error);
-    //   };
+      console.log("this is the change note ", bomRevChangeNote);
 
-    //   reader.readAsBinaryString(file);
-    // },
-    // parseExcelData(data) {
-    //   // Implement your logic to parse Excel data here
-    //   // This is a simple example, you might need a library like XLSX or exceljs
-    //   // to handle Excel parsing in a real-world scenario
-    //   console.log("Parsing Excel data:", data);
-    //   return [];
-    // },
+      const formData = new FormData();
+      formData.append("project_id", this.selectedProject);
+      formData.append("product_id", this.selectedProduct);
+      formData.append("bom_type", this.bomType);
+      formData.append("bom_rev_no", this.bomRevNo);
+      formData.append("issue_date", this.issueDate);
+      formData.append("bom_file", this.uploadedFile);
+      formData.append("bom_rev_change_note", bomRevChangeNote);
+
+      console.log("FormData:", formData);
+      await this.uploadBom(formData);
+    },
+    saveChanges() {
+      // Save the BOM revision change note to the variable
+      this.bom_rev_change_note = this.bom_rev_change_note.trim();
+
+      // Check if the BOM revision change note is not empty
+      if (this.bom_rev_change_note !== "") {
+        // Log the BOM revision change note to the console
+        console.log("BOM Revision Change Note:", this.bom_rev_change_note);
+
+        // Append the BOM revision change note to the form data
+        // Assuming formData is defined at the beginning of the component's data
+        // and it's used to store the data that will be sent in the request
+        this.formData.append(this.bom_rev_change_note);
+
+        // Clear the bom_rev_change_note variable if needed
+        this.bom_rev_change_note = "";
+      } else {
+        // Handle the case when the BOM revision change note is empty
+        // You can display an error message or take other appropriate actions
+        console.log("Error: BOM Revision Change Note is empty");
+      }
+    },
   },
 };
 </script>

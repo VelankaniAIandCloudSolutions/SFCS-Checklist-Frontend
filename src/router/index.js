@@ -23,7 +23,7 @@ import ProductEdit from "../views/ProductEdit.vue";
 import CheckListOrderBased from "../views/CheckListOrderBased.vue";
 import IqcLanding from "../views/IqcLanding.vue";
 import IqcForChecklist from "../views/IqcForChecklist.vue";
-
+import ProjectPricing from "../views/ProjectPricing.vue";
 const routes = [
   {
     path: "/",
@@ -163,6 +163,11 @@ const routes = [
     name: "IqcForChecklist",
     component: IqcForChecklist,
     props: true,
+  },
+  {
+    path: "/project-pricing",
+    name: "ProjectPricing",
+    component: ProjectPricing,
   },
 ];
 

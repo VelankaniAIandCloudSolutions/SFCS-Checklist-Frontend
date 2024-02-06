@@ -190,63 +190,123 @@ export default {
     },
 
     async checkAndGenerateChecklist() {
+      console.log("generate checklist clicked");
       this.$store.commit("setIsLoading", true);
-      await axios
-        .post(`store/check-existing-checklist/${this.clickedRowId}/`)
-        .then((response) => {
-          console.log(response.data);
-          this.isActive = response.data.is_active;
-          this.isExisting = response.data.is_existing;
 
-          if (this.isExisting) {
-            this.$notify({
-              title:
-                "There is already an active ongoing checklist for this order, please end that checklist by viewing the ongoing checklist to generate a new one.",
-              type: "bg-danger-subtle text-danger",
-              duration: "5000",
-            });
-          } else {
-            this.$store.commit("setIsLoading", true);
-            this.generateChecklist();
-          }
-        })
-        .catch((error) => {
-          console.log("error:", error);
+      try {
+        const response = await axios.post(
+          `store/check-existing-checklist/${this.clickedRowId}/`
+        );
+        console.log(response.data);
+        this.isActive = response.data.is_active;
+        this.isExisting = response.data.is_existing;
+
+        if (this.isExisting) {
           this.$notify({
-            title: "An error occurred, please try again later",
+            title:
+              "There is already an active ongoing checklist for this order...",
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
-        })
-        .finally(() => {
           this.$store.commit("setIsLoading", false);
+        } else {
+          await this.generateChecklist();
+        }
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
         });
+      } finally {
+        this.$store.commit("setIsLoading", false);
+      }
     },
+
     async generateChecklist() {
-      this.$store.commit("setIsLoading", true);
-      // const requestData = {
-      //   batch_quantity: this.batch_quantity, // Use the name you are using for batch_quantity
-      // };
-      await axios
-        .post(`store/generate-new-checklist/${this.orderId}/`)
-        .then((response) => {
-          this.$store.commit("setIsLoading", false);
-          console.log(response.data);
-          this.$router.push(`/begin-checklist/${this.clickedRowId}`);
-        })
-        .catch((error) => {
-          this.$store.commit("setIsLoading", false);
-          console.log("error:", error);
-          this.$notify({
-            title: "An error occurred, please try again later",
-            type: "bg-danger-subtle text-danger",
-            duration: "5000",
-          });
-        })
-        .finally(() => {
-          this.$store.commit("setIsLoading", false);
+      try {
+        // const requestData = { batch_quantity: this.batch_quantity };
+        const response = await axios.post(
+          `store/generate-new-checklist/${this.orderId}/`
+        );
+        console.log(response.data);
+        this.$router.push(`/begin-checklist/${this.clickedRowId}`);
+      } catch (error) {
+        console.log("error:", error);
+        this.$notify({
+          title: "An error occurred, please try again later",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
         });
+      } finally {
+        // Ensure loading state is set to false in all cases
+        this.$store.commit("setIsLoading", false);
+      }
     },
+
+    //not working og code
+    // async checkAndGenerateChecklist() {
+    //   console.log("generate checklist clicked");
+    //   this.$store.commit("setIsLoading", true);
+
+    //   await axios
+    //     .post(`store/check-existing-checklist/${this.clickedRowId}/`)
+    //     .then((response) => {
+    //       console.log(response.data);
+    //       this.isActive = response.data.is_active;
+    //       this.isExisting = response.data.is_existing;
+
+    //       if (this.isExisting) {
+    //         this.$notify({
+    //           title:
+    //             "There is already an active ongoing checklist for this order, please end that checklist by viewing the ongoing checklist to generate a new one.",
+    //           type: "bg-danger-subtle text-danger",
+    //           duration: "5000",
+    //         });
+    //         this.$store.commit("setIsLoading", false);
+    //       } else {
+    //         this.generateChecklist();
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       console.log("error:", error);
+    //       this.$notify({
+    //         title: "An error occurred, please try again later",
+    //         type: "bg-danger-subtle text-danger",
+    //         duration: "5000",
+    //       });
+    //       // this.$store.commit("setIsLoading", false);
+    //     })
+    //     .finally(() => {
+    //       this.$store.commit("setIsLoading", false);
+    //     });
+    // },
+    // async generateChecklist() {
+    //   // this.$store.commit("setIsLoading", true);
+    //   // const requestData = {
+    //   //   batch_quantity: this.batch_quantity, // Use the name you are using for batch_quantity
+    //   // };s
+    //   await axios
+    //     .post(`store/generate-new-checklist/${this.orderId}/`)
+    //     .then((response) => {
+    //       this.$store.commit("setIsLoading", false);
+    //       console.log(response.data);
+    //       this.$router.push(`/begin-checklist/${this.clickedRowId}`);
+    //     })
+    //     .catch((error) => {
+    //       console.log("error:", error);
+    //       this.$notify({
+    //         title: "An error occurred, please try again later",
+    //         type: "bg-danger-subtle text-danger",
+    //         duration: "5000",
+    //       });
+    //       // this.$store.commit("setIsLoading", false);
+    //     })
+    //     .finally(() => {
+    //       this.$store.commit("setIsLoading", false);
+    //     });
+    // },
 
     async checkExistingChecklist() {
       this.$store.commit("setIsLoading", true);

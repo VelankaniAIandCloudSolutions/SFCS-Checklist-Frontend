@@ -100,10 +100,10 @@ export default {
         { headerName: "ECN", field: "ecn" },
         { headerName: "MSL", field: "msl" },
         { headerName: "Remarks", field: "remarks" },
-        {
-          headerName: "Actions",
-          cellRenderer: this.editButtonRenderer,
-        },
+        // {
+        //   headerName: "Actions",
+        //   cellRenderer: this.editButtonRenderer,
+        // },
       ],
 
       defaultColDef: {

@@ -13,6 +13,21 @@ import "bootstrap/dist/css/bootstrap.css";
 import "admin-lte/dist/css/adminlte.min.css";
 import "admin-lte/plugins/jquery/jquery.min.js";
 import "admin-lte/dist/js/adminlte.min.js";
+
+const parsePriceToFloat = (inputString) => {
+  const stringWithoutCommas = inputString.replace(/,/g, "");
+  const floatNumber = parseFloat(stringWithoutCommas);
+  return floatNumber;
+};
+
+const parsePriceToString = (inputString) => {
+  const numericValue = parseFloat(inputString);
+  if (!isNaN(numericValue)) {
+    return numericValue.toLocaleString("en-IN");
+  }
+  return inputString;
+};
+
 if (process.env.NODE_ENV === "development") {
   axios.defaults.baseURL = "http://localhost:8000/api/v1/";
 } else {
@@ -21,6 +36,8 @@ if (process.env.NODE_ENV === "development") {
 
 const app = createApp(App);
 
+app.config.globalProperties.$parsePriceToFloat = parsePriceToFloat;
+app.config.globalProperties.$parsePriceToString = parsePriceToString;
 app.use(store).use(router).use(Notifications);
 
 app.mount("#app");

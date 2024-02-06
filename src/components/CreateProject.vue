@@ -75,7 +75,7 @@
           >
         </div>
         <!-- Project Rev No -->
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label for="projectRevNo" class="form-label">Project Rev No:</label>
           <input
             v-model="newProject.project_rev_number"
@@ -83,7 +83,7 @@
             class="form-control"
             id="projectRevNo"
           />
-        </div>
+        </div> -->
         <!-- ... (unchanged code) ... -->
       </div>
     </div>
@@ -113,8 +113,8 @@ export default {
 
       if (
         this.newProject.name &&
-        this.newProject.project_code &&
-        this.newProject.project_rev_number
+        this.newProject.project_code
+        // this.newProject.project_rev_number
       ) {
         // Create a new project using the post request
         axios

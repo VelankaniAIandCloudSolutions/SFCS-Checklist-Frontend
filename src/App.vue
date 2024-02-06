@@ -1,10 +1,12 @@
 <template>
-  <div>
-    <div id="app" v-if="!$store.state.user.isAuthenticated">
+  <div id="app">
+    <div v-if="activeRoute == '/login'">
       <LoginForm />
     </div>
     <div v-else>
-      <AdminLte />
+      <div>
+        <AdminLte />
+      </div>
     </div>
     <notifications position="bottom right" classes="alert" />
   </div>
@@ -20,10 +22,9 @@ export default {
     AdminLte,
   },
   data() {
-    return {
-      isLoggedIn: false,
-    };
+    return {};
   },
+
   computed: {
     activeRoute() {
       return this.$route.path;

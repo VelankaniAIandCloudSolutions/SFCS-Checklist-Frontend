@@ -155,6 +155,7 @@
             <div class="form-check">
               <input
                 v-model="newUser.is_superuser"
+                @change="updateOthers"
                 type="checkbox"
                 class="form-check-input"
                 id="is_superuser"
@@ -168,6 +169,7 @@
             <div class="form-check">
               <input
                 v-model="newUser.is_staff"
+                :disabled="newUser.is_superuser"
                 type="checkbox"
                 class="form-check-input"
                 id="is_staff"
@@ -183,6 +185,7 @@
           <div class="form-check">
             <input
               v-model="newUser.is_store_team"
+              :disabled="newUser.is_superuser"
               type="checkbox"
               class="form-check-input"
               id="is_store_team"
@@ -196,6 +199,7 @@
           <div class="form-check">
             <input
               v-model="newUser.is_design_team"
+              :disabled="newUser.is_superuser"
               type="checkbox"
               class="form-check-input"
               id="is_design_team"
@@ -235,6 +239,14 @@ export default {
     };
   },
   methods: {
+    updateOthers() {
+      // Automatically check Is Staff if Is Admin is checked
+      if (this.newUser.is_superuser) {
+        this.newUser.is_staff = true;
+        this.newUser.is_store_team = true;
+        this.newUser.is_design_team = true;
+      }
+    },
     createUser() {
       // Set formSubmitted to true before creating a new user
       console.log("form data", this.newUser);

@@ -172,10 +172,7 @@
                   placeholder="Type to add a new reference"
                   class="form-control input-large"
                 />
-                <button
-                  @click="addNewReference"
-                  class="btn btn-primary ms-2"
-                >
+                <button @click="addNewReference" class="btn btn-primary ms-2">
                   Add
                 </button>
               </div>
@@ -375,6 +372,7 @@ export default {
       manufacturerParts: [],
       assembly_stages: [],
       bom_id: "",
+      bom_line_item_id: "",
     };
   },
 
@@ -391,8 +389,11 @@ export default {
         );
         console.log(" Main API response for line items", response.data);
         this.editedBom = response.data.bom_line_item;
-        this.bom_id = response.data.bom_line_item.bom;
-        console.log("bom-id", this.bom_id);
+        this.bom_id = response.data.bom_line_item.bom.id;
+        this.bom_line_item_id = response.data.bom_line_item.id;
+        console.log("bom-id=", this.bom_id);
+        console.log("bom-line-item-id=", this.bom_line_item_id);
+
         this.line_item_types = response.data.line_item_types;
         this.manufacturerParts = response.data.manufacturers_parts;
         this.assembly_stages = response.data.assembly_stages;
@@ -451,32 +452,37 @@ export default {
     },
     async saveChanges() {
       // Make an API call to update the BOM line item
-      try {
-        // Make an API call to update the BOM line item
-        const response = await axios.put(
-          `store/edit-bom-line-item/${this.$route.params.id}/`,
-          this.editedBom
-        );
-        console.log(response.data);
 
-        // Show success notification
-        this.$notify({
-          title: "Success",
-          text: "BOM Line Item successfully edited",
-          type: "success",
-        });
+      if (confirm("Are you sure you want to update this line item")) {
+        this.$store.commit("setIsLoading", true);
+        try {
+          // Make an API call to update the BOM line item
+          const response = await axios.put(
+            `store/edit-bom-line-item/${this.$route.params.id}/`,
+            this.editedBom
+          );
+          console.log(response.data);
+          this.$store.commit("setIsLoading", false);
+          // Show success notification
+          this.$notify({
+            title: "Bom Line Item Updated Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
 
-        // Reload the page
-        this.$router.go();
-      } catch (error) {
-        console.error("Error updating BOM line item:", error);
+          // Reload the page
+          this.$router.push(`/bom/edit/${this.bom_id}`);
+        } catch (error) {
+          console.error("Error updating BOM line item:", error);
+          this.$store.commit("setIsLoading", false);
 
-        // Show error notification
-        this.$notify({
-          title: "Error",
-          text: "Failed to edit BOM Line Item",
-          type: "error",
-        });
+          // Show error notification
+          this.$notify({
+            title: "Error Updating Bom Line Item",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        }
       }
     },
     async confirmDelete() {

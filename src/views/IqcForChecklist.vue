@@ -25,7 +25,7 @@
               <li class="breadcrumb-item active" aria-current="page">
                 <router-link to="/checklist">
                   <i class="fas fa-list-alt me-1"></i>
-                  Checklist</router-link
+                  IQC Checklist</router-link
                 >
               </li>
               <li class="breadcrumb-item active" aria-current="page">
@@ -36,7 +36,7 @@
           </nav>
         </div>
       </div>
-      <div class="col-md-6 mt-4">
+      <!-- <div class="col-md-6 mt-4">
         <div class="container">
           <div class="d-flex justify-content-end">
             <button
@@ -72,7 +72,7 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div
@@ -221,7 +221,7 @@
             <div
               class="spinner-border ms-2"
               role="status"
-              v-if="isRawMaterialSufficient === false"
+              v-if="isIqcPassed === false"
             >
               <span class="visually-hidden">Loading...</span>
             </div>
@@ -244,331 +244,16 @@
           </div>
         </div>
       </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseTwo"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseTwo"
-          >
-            PCB Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isPcbSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseTwo"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingTwo"
-        >
-          <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['PCB']" />
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingThree">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseThree"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseThree"
-          >
-            Solder Paste Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isSolderPasteSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseThree"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingThree"
-        >
-          <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="filteredChecklistItems['Solder Paste']"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingFour">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseFour"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseFour"
-          >
-            Solder Bar Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isSolderBarSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseFour"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingFour"
-        >
-          <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="filteredChecklistItems['Solder Bar']"
-            />>
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingFive">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseFive"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseFive"
-          >
-            Solder Flux Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isSolderFluxSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseFive"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingFive"
-        >
-          <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="filteredChecklistItems['Solder Flux']"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingSix">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseSix"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseSix"
-          >
-            IPA Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isIpaSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseSix"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingSix"
-        >
-          <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['IPA']" />
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingSeven">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseSeven"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseSeven"
-          >
-            Solder Wire Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isSolderWireSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseSeven"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingSeven"
-        >
-          <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="filteredChecklistItems['Solder Wire']"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingEight">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseEight"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseEight"
-          >
-            SMT Pallet Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isSMTPalletSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseEight"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingEight"
-        >
-          <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="filteredChecklistItems['SMT Pallet']"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingNine">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseNine"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseNine"
-          >
-            Wave Pallet Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isWavePalletSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseNine"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingNine"
-        >
-          <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="filteredChecklistItems['Wave Pallet']"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="accordion-item">
-        <h2 class="accordion-header" id="panelsStayOpen-headingTen">
-          <button
-            class="accordion-button collapsed"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#panelsStayOpen-collapseTen"
-            aria-expanded="false"
-            aria-controls="panelsStayOpen-collapseTen"
-          >
-            PCB Serial Number Label Check
-            <div
-              class="spinner-border ms-2"
-              role="status"
-              v-if="isLabelSufficient === false"
-            >
-              <span class="visually-hidden">Loading...</span>
-            </div>
-            <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
-            </div>
-          </button>
-        </h2>
-        <div
-          id="panelsStayOpen-collapseTen"
-          class="accordion-collapse collapse"
-          aria-labelledby="panelsStayOpen-headingTen"
-        >
-          <div class="accordion-body">
-            <CheckListTable
-              :checklistItems="
-                filteredChecklistItems['PCB Serial Number Label']
-              "
-            />
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script>
-import CheckListTable from "../components/CheckListTable"; // Adjust the path based on your actual file structure
 import axios from "axios";
 import IqcChecklistTable from "../components/IqcChecklistTable.vue";
 
 export default {
   components: {
-    CheckListTable,
     IqcChecklistTable,
   },
   data() {
@@ -577,34 +262,8 @@ export default {
       // checklist: "",
       checklistItems: [],
 
-      isChecklistPassed: false,
-      isChecklistEnded: false,
-      isRawMaterialSufficient: false,
-      isPcbSufficient: false,
-      isSolderPasteSufficient: false,
-      isSolderBarSufficient: false,
-      isSolderFluxSufficient: false,
-      isIpaSufficient: false,
-      isSolderWireSufficient: false,
-      isSMTPalletSufficient: false,
-      isWavePalletSufficient: false,
-      isLabelSufficient: false,
+      isIqcPassed: false,
 
-      pollingInterval: "",
-      generatedQRCode: "",
-      filteredChecklistItems: {
-        "Raw Material": [],
-        PCB: [],
-        "Solder Paste": [],
-        "Solder Bar": [],
-        "Solder Flux": [],
-        Ipa: [],
-        "Solder Wire": [],
-        "SMT Pallet": [],
-        "Wave Pallet": [],
-        "PCB Serial Number Label": [],
-        // Initialize other types as needed
-      },
       checklist: [],
       checklist_uids: [],
       selectedRow: [],
@@ -613,343 +272,9 @@ export default {
 
   mounted() {
     this.getData();
-    // this.getChecklistBeginning();
-    // this.pollingInterval = setInterval(() => {
-    //   if (!this.isChecklistPassed) {
-    //     this.getChecklist();
-    //   } else {
-    //     clearInterval(this.pollingInterval);
-    //     this.$notify({
-    //       title: "BOM Check Passed",
-    //       type: "bg-success-subtle text-success",
-    //       duration: "5000",
-    //     });
-    //   }
-    // }, 5000);
   },
-  // beforeUnmount() {
-  //   clearInterval(this.pollingInterval);
-  // },
 
   methods: {
-    // async getChecklistBeginning() {
-    //   this.$store.commit("setIsLoading", true);
-    //   await axios
-    //     .get(`store/get-active-checklist/${this.$route.params.id}/`)
-    //     .then((response) => {
-    //       console.log(response.data);
-    //       this.checklist = response.data.checklist;
-    //       this.checklistItems = this.checklist.checklist_items;
-    //       console.log("checklists items hereeeeee", this.checklistItems);
-    //       const rawMaterialItems =
-    //         this.filterChecklistItemsByType("Raw Material");
-    //       const pcbItems = this.filterChecklistItemsByType("PCB");
-    //       const solderPasteItems =
-    //         this.filterChecklistItemsByType("Solder Paste");
-    //       const solderBarItems = this.filterChecklistItemsByType("Solder Bar");
-    //       const solderFluxItems =
-    //         this.filterChecklistItemsByType("Solder Flux");
-    //       const IpaItems = this.filterChecklistItemsByType("IPA");
-    //       const stencilItems = this.filterChecklistItemsByType("Solder Wire");
-    //       const smtPalletItems = this.filterChecklistItemsByType("SMT Pallet");
-    //       const wavePalletItems =
-    //         this.filterChecklistItemsByType("Wave Pallet");
-    //       const labelItems = this.filterChecklistItemsByType(
-    //         "PCB Serial Number Label"
-    //       );
-    //       this.isChecklistPassed = this.checklist.is_passed;
-    //       this.activeBom = this.checklist.bom;
-    //       this.filteredChecklistItems = {
-    //         "Raw Material": rawMaterialItems,
-    //         PCB: pcbItems,
-    //         "Solder Paste": solderPasteItems,
-    //         "Solder Bar": solderBarItems,
-    //         "Solder Flux": solderFluxItems,
-    //         IPA: IpaItems,
-    //         "Solder Wire": stencilItems,
-    //         "SMT Pallet": smtPalletItems,
-    //         "Wave Pallet": wavePalletItems,
-    //         "PCB Serial Number Label": labelItems,
-    //       };
-    //       console.log("filered checklsit items", this.filteredChecklistItems);
-    //       this.isRawMaterialSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Raw Material"
-    //       );
-
-    //       this.isPcbSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "PCB"
-    //       );
-    //       this.isSolderPasteSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Paste"
-    //       );
-    //       console.log("checking solder paste", this.isSolderPasteSufficient);
-
-    //       this.isSolderBarSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Bar"
-    //       );
-    //       console.log("checkinsssg solder bar", this.isSolderBarSufficient);
-    //       this.isSolderFluxSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Flux"
-    //       );
-    //       this.isIpaSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "IPA"
-    //       );
-    //       this.isSolderWireSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Wire"
-    //       );
-    //       this.isSMTPalletSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "SMT Pallet"
-    //       );
-    //       this.isWavePalletSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Wave Pallet"
-    //       );
-    //       this.isLabelSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "PCB Serial Number Label"
-    //       );
-
-    //       if (
-    //         this.checklist.status == "Completed" ||
-    //         this.checklist.status == "Failed"
-    //       ) {
-    //         this.isChecklistEnded = true;
-    //       }
-    //       if (this.checklist.qr_code_link) {
-    //         this.generatedQRCode = this.checklist.qr_code_link;
-    //       }
-    //       this.$store.commit("setIsLoading", false);
-    //     })
-    //     .catch((error) => {
-    //       console.log("error:", error);
-    //       this.$notify({
-    //         title: "An error occured, please try again later",
-    //         type: "bg-danger-subtle text-danger",
-    //         duration: "5000",
-    //       });
-    //       this.$store.commit("setIsLoading", false);
-    //     });
-    // },
-    // async getChecklist() {
-    //   await axios
-    //     .get(`store/get-active-checklist/${this.$route.params.id}/`)
-    //     .then((response) => {
-    //       console.log(response.data);
-    //       this.checklist = response.data.checklist;
-    //       this.checklistItems = this.checklist.checklist_items;
-    //       console.log("chehcklist items hereeeeee", this.checklistItems);
-    //       const rawMaterialItems =
-    //         this.filterChecklistItemsByType("Raw Material");
-    //       const pcbItems = this.filterChecklistItemsByType("PCB");
-    //       const solderPasteItems =
-    //         this.filterChecklistItemsByType("Solder Paste");
-    //       const solderBarItems = this.filterChecklistItemsByType("Solder Bar");
-    //       const solderFluxItems =
-    //         this.filterChecklistItemsByType("Solder Flux");
-    //       const IpaItems = this.filterChecklistItemsByType("IPA");
-    //       const stencilItems = this.filterChecklistItemsByType("Solder Wire");
-    //       const smtPalletItems = this.filterChecklistItemsByType("SMT Pallet");
-    //       const wavePalletItems =
-    //         this.filterChecklistItemsByType("Wave Pallet");
-    //       const labelItems = this.filterChecklistItemsByType(
-    //         "PCB Serial Number Label"
-    //       );
-    //       this.isChecklistPassed = this.checklist.is_passed;
-    //       this.activeBom = this.checklist.bom;
-    //       this.filteredChecklistItems = {
-    //         "Raw Material": rawMaterialItems,
-    //         PCB: pcbItems,
-    //         "Solder Paste": solderPasteItems,
-    //         "Solder Bar": solderBarItems,
-    //         "Solder Flux": solderFluxItems,
-    //         IPA: IpaItems,
-    //         "Solder Wire": stencilItems,
-    //         "SMT Pallet": smtPalletItems,
-    //         "Wave Pallet": wavePalletItems,
-    //         "PCB Serial Number Label": labelItems,
-    //         // Add more types                                                                                                                    as needed
-    //       };
-    //       console.log("filered checklsit items", this.filteredChecklistItems);
-    //       this.isRawMaterialSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Raw Material"
-    //       );
-
-    //       this.isPcbSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "PCB"
-    //       );
-    //       this.isSolderPasteSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Paste"
-    //       );
-    //       this.isSolderBarSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Bar"
-    //       );
-    //       console.log("checking solder bar", this.isSolderBarSufficient);
-    //       this.isSolderFluxSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Flux"
-    //       );
-    //       this.isIpaSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "IPA"
-    //       );
-    //       this.isSolderWireSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Solder Wire"
-    //       );
-    //       this.isSMTPalletSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "SMT Pallet"
-    //       );
-    //       this.isWavePalletSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "Wave Pallet"
-    //       );
-    //       this.isLabelSufficient = this.isItemsSufficient(
-    //         this.filteredChecklistItems,
-    //         "PCB Serial Number Label"
-    //       );
-
-    //       if (
-    //         this.checklist.status == "Completed" ||
-    //         this.checklist.status == "Failed"
-    //       ) {
-    //         this.isChecklistEnded = true;
-    //       }
-    //       if (this.checklist.qr_code_link) {
-    //         this.generatedQRCode = this.checklist.qr_code_link;
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.log("error:", error);
-    //       this.$notify({
-    //         title: "An error occured, please try again later",
-    //         type: "bg-danger-subtle text-danger",
-    //         duration: "5000",
-    //       });
-    //     });
-    // },
-    // async endChecklist() {
-    //   this.$store.commit("setIsLoading", true);
-    //   clearInterval(this.pollingInterval);
-
-    //   await axios
-    //     .get(`store/end-checklist/${this.checklist.id}/`)
-    //     .then((response) => {
-    //       console.log(response.data);
-    //       this.$notify({
-    //         title: "Checklist ended",
-    //         type: "bg-danger-subtle text-danger",
-    //         duration: "5000",
-    //       });
-    //       this.checklist = response.data.checklist;
-    //       this.checklistItems = this.checklist.checklist_items;
-    //       this.isChecklistPassed = this.checklist.is_passed;
-    //       this.activeBom = this.checklist.bom;
-    //       if (
-    //         this.checklist.status == "Completed" ||
-    //         this.checklist.status == "Failed"
-    //       ) {
-    //         this.isChecklistEnded = true;
-    //       }
-    //       this.$router.push(`/generated-checklists/${this.$route.params.id}`);
-    //       this.$store.commit("setIsLoading", false);
-    //     })
-    //     .catch((error) => {
-    //       console.log("error:", error);
-    //       this.$notify({
-    //         title: "An error occured, please try again later",
-    //         type: "bg-danger-subtle text-danger",
-    //         duration: "5000",
-    //       });
-    //       clearInterval(this.pollingInterval);
-    //       this.$store.commit("setIsLoading", false);
-    //     });
-    // },
-    // async generateQRCode() {
-    //   const uniqueCode = this.generateUniqueCode();
-    //   console.log(uniqueCode);
-    //   const qrCodeDataURL = await QRCode.toDataURL(uniqueCode);
-    //   const postData = {
-    //     uniqueCode: uniqueCode,
-    //     qrCodeDataURL: qrCodeDataURL,
-    //   };
-    //   this.saveQRCode(postData);
-    // },
-    // generateUniqueCode() {
-    //   const timestamp = Date.now().toString();
-    //   const randomString = Math.random().toString(36).substring(7);
-    //   return `${timestamp}-${randomString}`;
-    // },
-    // async saveQRCode(postData) {
-    //   await axios
-    //     .post(`store/save-qr-code/${this.checklist.id}/`, postData)
-    //     .then((response) => {
-    //       console.log(response.data);
-    //       this.generatedQRCode = postData.qrCodeDataURL;
-    //       this.$notify({
-    //         title: "QR Code generated and saved successfully",
-    //         type: "bg-success-subtle text-success",
-    //         duration: "5000",
-    //       });
-    //     })
-    //     .catch((error) => {
-    //       console.log("error:", error);
-    //       this.$notify({
-    //         title: "An error occured, please try again later",
-    //         type: "bg-danger-subtle text-danger",
-    //         duration: "5000",
-    //       });
-    //     });
-    // },
-    // printQRCode() {
-    //   if (this.generatedQRCode) {
-    //     // Open a new window or tab with the QR code image
-    //     const printableContent = document.getElementById("printable-content");
-    //     const printWindow = window.open("", "", "height=1000,width=1000");
-    //     printWindow.document.write(printableContent.innerHTML);
-    //     printWindow.print();
-    //   }
-    // },
-    // filterChecklistItemsByType(type) {
-    //   return this.checklistItems.filter((item) => {
-    //     const itemType = item.checklist_item_type;
-    //     if (itemType && itemType.name) {
-    //       return itemType.name.toUpperCase() === type.toUpperCase();
-    //     }
-    //     return false;
-    //   });
-    // },
-    // isItemsSufficient(checklistItems, type) {
-    //   const typeItems = this.filteredChecklistItems[type];
-    //   // Check if there are no items of the specified type
-    //   if (typeItems) {
-    //     if (typeItems.length === 0) {
-    //       return true;
-    //     }
-
-    //     // Check if all items have sufficient quantity
-    //     const sufficientItems = typeItems.filter((item) => {
-    //       // Assuming 'is_quantity_sufficient' is a property indicating if the quantity is sufficient
-    //       return item.is_quantity_sufficient === true;
-    //     });
-
-    //     return sufficientItems.length === typeItems.length;
-    //   } else {
-    //     return false;
-    //   }
-    // },
     getData() {
       // Fetch BOM data from your API endpoint
       this.$store.commit("setIsLoading", true);
@@ -1011,6 +336,16 @@ export default {
     //     this.scannedEntries = [];
     //   }
     // },
+  },
+  watch: {
+    checklist_uids: {
+      handler(newVal) {
+        // Check if all items in the array have iqc_file_url
+        this.isIqcPassed = newVal.every((item) => item.iqc_file_url);
+      },
+      deep: true,
+      immediate: true,
+    },
   },
 };
 </script>

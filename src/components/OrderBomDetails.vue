@@ -12,6 +12,32 @@
       rowSelection="single"
     >
     </ag-grid-vue>
+    <div
+      class="modal fade"
+      id="bomRevisionNoteModal"
+      tabindex="-1"
+      aria-labelledby="bomRevisionNoteModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bomRevisionNoteModalLabel">
+              BOM Revision Note
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>{{ selectedBomRevisionNote }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -46,6 +72,24 @@ export default {
           checkboxSelection: true,
 
           headerName: "BOM ID",
+        },
+
+        {
+          field: "bom_rev_number",
+
+          headerName: "Bom Rev No.",
+        },
+        {
+          field: "change_note",
+          headerName: "BOM Revision Note",
+          valueFormatter: (params) => {
+            // Check if change note is present
+            if (params.value) {
+              return params.value; // If change note is present, return the value as it is
+            } else {
+              return "Change Note Absent"; // If change note is not present, return "No change note"
+            }
+          },
         },
         {
           field: "product.project.name",
@@ -86,6 +130,7 @@ export default {
         autoSize: true,
       },
       selectedRows: [],
+      selectedBomRevisionNote: "",
     };
   },
 
@@ -126,6 +171,37 @@ export default {
 
     onEditClick(id) {
       this.$router.push(`/bom/edit/${id}`);
+    },
+    bomRevisionNoteRenderer(params) {
+      const contentWrapper = document.createElement("div");
+
+      if (params.data.change_note) {
+        // If change_note is present, render the button
+        const button = document.createElement("button");
+        button.innerHTML = `<i class="fas fa-eye"></i>`;
+        button.classList.add("btn", "btn-secondary");
+        button.dataset.bsToggle = "modal";
+        button.dataset.bsTarget = "#bomRevisionNoteModal";
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          this.loadBomRevisionChangeNoteInModal(params.data);
+        });
+        contentWrapper.appendChild(button);
+      } else {
+        // If change_note is absent, render plain text
+        const text = document.createElement("span");
+        text.innerText = "No Change";
+        text.classList.add("text-muted");
+        contentWrapper.appendChild(text);
+      }
+
+      return contentWrapper;
+    },
+    loadBomRevisionChangeNoteInModal(rowData) {
+      // Set the BOM Revision Note for the selected row
+      console.log("to set the data in the modal", rowData);
+      console.log("revision note", rowData.change_note);
+      this.selectedBomRevisionNote = rowData.change_note;
     },
   },
 };

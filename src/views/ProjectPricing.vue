@@ -210,18 +210,44 @@ export default {
         });
     },
     async fetchProductPrices() {
-      this.$store.commit("setIsLoading", true);
-      await axios
-        .get(`/pricing/get-product-pricing/${this.form.selectedProduct.id}/`)
-        .then((response) => {
-          console.log(response.data);
-          this.partPrices = response.data.part_prices;
-          this.$store.commit("setIsLoading", false);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          this.$store.commit("setIsLoading", false);
+      if (this.form.selectedProduct) {
+        this.$store.commit("setIsLoading", true);
+        await axios
+          .get(`/pricing/get-product-pricing/${this.form.selectedProduct.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.partPrices = response.data.part_prices;
+            this.$store.commit("setIsLoading", false);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            this.$store.commit("setIsLoading", false);
+          });
+      } else if (this.form.selectedProject) {
+        this.$store.commit("setIsLoading", true);
+        await axios
+          .get(`/pricing/get-project-pricing/${this.form.selectedProject.id}/`)
+          .then((response) => {
+            console.log(response.data);
+            this.partPrices = response.data.part_prices;
+            this.$store.commit("setIsLoading", false);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            this.$store.commit("setIsLoading", false);
+            this.$notify({
+              title: "An error occured,please try again",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          });
+      } else {
+        this.$notify({
+          title: "Please select the project or product to fetch prices",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
         });
+      }
     },
     async refreshProductPrices() {
       await axios

@@ -24,6 +24,9 @@ import CheckListOrderBased from "../views/CheckListOrderBased.vue";
 import IqcLanding from "../views/IqcLanding.vue";
 import IqcForChecklist from "../views/IqcForChecklist.vue";
 import ProjectPricing from "../views/ProjectPricing.vue";
+import MachineLanding from "../views/machine_maintenance/MachineLanding.vue";
+import CreateMaintenanceCalendar from "../views/machine_maintenance/CreateMaintenanceCalendar.vue";
+
 const routes = [
   {
     path: "/",
@@ -168,6 +171,16 @@ const routes = [
     path: "/project-pricing",
     name: "ProjectPricing",
     component: ProjectPricing,
+  },
+  {
+    path: "/machine",
+    name: "MachineMaintenance",
+    component: MachineLanding,
+  },
+  {
+    path: "/machine/create-maintenance-calendar",
+    name: "CreateMaintenanceCalendar",
+    component: CreateMaintenanceCalendar,
   },
 ];
 

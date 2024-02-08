@@ -96,13 +96,29 @@ export default {
           },
         },
 
+        // {
+        //   headerName: "Is Present",
+        //   field: "is_present",
+        // },
+        // {
+        //   headerName: "Is Quantity Sufficient",
+        //   field: "is_quantity_sufficient",
+        // },
         {
           headerName: "Is Present",
           field: "is_present",
+          cellRenderer: (params) =>
+            params.value
+              ? '<i class="fas fa-check-circle text-success"></i>'
+              : '<i class="fa-solid fa-circle-xmark text-danger"></i>',
         },
         {
           headerName: "Is Quantity Sufficient",
           field: "is_quantity_sufficient",
+          cellRenderer: (params) =>
+            params.value
+              ? '<i class="fas fa-check-circle text-success"></i>'
+              : '<i class="fa-solid fa-circle-xmark text-danger"></i>',
         },
         {
           headerName: "Updated At",

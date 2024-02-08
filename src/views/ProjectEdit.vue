@@ -54,17 +54,16 @@
     <!-- Display BOM fields within sections -->
     <section class="mt-5">
       <div class="row">
-        <div class="col-md-4">
-          <div class="form-group">
-            <label for="veplPartNumber">Project Name</label>
-            <input
-              v-model="editedProject.name"
-              type="text"
-              class="form-control"
-            />
-          </div>
+        <div class="form-group">
+          <label for="veplPartNumber">Project Name</label>
+          <input
+            v-model="editedProject.name"
+            type="text"
+            class="form-control"
+          />
         </div>
-        <div class="col-md-4">
+
+        <!-- <div class="col-md-4">
           <div class="form-group">
             <label for="level">Project Code</label>
             <input
@@ -73,8 +72,8 @@
               class="form-control"
             />
           </div>
-        </div>
-        <div class="col-md-4">
+        </div> -->
+        <!-- <div class="col-md-4">
           <div class="form-group">
             <label for="priorityLevel">Project Rev No</label>
             <input
@@ -83,7 +82,7 @@
               class="form-control"
             />
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- Add other fields in a similar fashion -->

@@ -218,10 +218,7 @@
 
             <li
               class="nav-item text-left"
-              v-if="
-                $store.state.user.is_superuser ||
-                $store.state.user.is_design_team
-              "
+              v-if="$store.state.user.is_superuser"
             >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-cogs"></i>

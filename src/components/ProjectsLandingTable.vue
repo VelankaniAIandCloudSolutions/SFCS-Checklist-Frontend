@@ -47,19 +47,19 @@ export default {
           field: "name",
 
           headerName: "Project Name",
-          width: 300,
+          width: 600,
         },
-        { field: "project_code", headerName: "Project Code", width: 300 },
+        // { field: "project_code", headerName: "Project Code", width: 300 },
 
-        {
-          field: "project_rev_number",
-          headerName: "Project Rev No",
-          width: 300,
-        },
+        // {
+        //   field: "project_rev_number",
+        //   headerName: "Project Rev No",
+        //   width: 300,
+        // },
         {
           headerName: "Actions",
           cellRenderer: this.editButtonRenderer,
-          width: 250,
+          width: 600,
         },
       ],
 

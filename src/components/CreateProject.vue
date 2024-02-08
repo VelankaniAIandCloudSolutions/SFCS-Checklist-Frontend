@@ -61,7 +61,7 @@
           >
         </div>
         <!-- Project Code -->
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label for="projectCode" class="form-label">Project Code:</label>
           <input
             v-model="newProject.project_code"
@@ -73,7 +73,7 @@
           <small v-if="!newProject.project_code" class="text-danger"
             >Project Code is required.</small
           >
-        </div>
+        </div> -->
         <!-- Project Rev No -->
         <!-- <div class="mb-3">
           <label for="projectRevNo" class="form-label">Project Rev No:</label>
@@ -112,8 +112,8 @@ export default {
       this.$store.commit("setIsLoading", true);
 
       if (
-        this.newProject.name &&
-        this.newProject.project_code
+        this.newProject.name
+        // && this.newProject.project_code
         // this.newProject.project_rev_number
       ) {
         // Create a new project using the post request

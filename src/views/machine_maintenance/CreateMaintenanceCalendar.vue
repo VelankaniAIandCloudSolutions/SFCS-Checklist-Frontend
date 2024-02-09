@@ -146,7 +146,7 @@
         <div class="modal-content">
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Custom Dates
+              {{ editingIndex !== null ? "Update Choice" : "Custom Dates" }}
             </h1>
             <button
               type="button"
@@ -305,9 +305,11 @@
             <button
               type="button"
               class="btn btn-primary"
-              @click="addFormChoice"
+              @click="
+                editingIndex !== null ? updateFormChoice() : addFormChoice()
+              "
             >
-              Add Choice
+              {{ editingIndex !== null ? "Update Choice" : "Add Choice" }}
             </button>
           </div>
         </div>
@@ -362,6 +364,12 @@ export default {
         }
       }
     },
+    editFormChoice(index) {
+      this.editingIndex = index;
+      // Set formChoice to the choice being edited
+      this.formChoice = { ...this.DateChoices.choices[index] };
+      this.openModalGeneral(); // Open the modal
+    },
     addFormChoice() {
       console.log("Form Choice:", this.formChoice);
       this.DateChoices.choices.push({ ...this.formChoice });
@@ -384,10 +392,27 @@ export default {
         modalTriggerButton.click();
       }
     },
-    editFormChoice(index) {
-      this.editingIndex = index;
-      this.editedChoice = { ...this.DateChoices.choices[index] };
-      this.openModalGeneral;
+    closeModalGeneral() {
+      const closeModalButton = document.querySelector(
+        '[data-bs-dismiss="modal"]'
+      );
+      if (closeModalButton) {
+        closeModalButton.click();
+      }
+    },
+    updateFormChoice() {
+      this.DateChoices.choices.splice(this.editingIndex, 1, {
+        ...this.formChoice,
+      });
+      this.formChoice = {
+        selectedMonths: [],
+        selectedWeeks: [],
+        selectedDays: [],
+        selectedWeeksExcept: [],
+        selectedDaysExcept: [],
+      };
+      this.editingIndex = null;
+      this.closeModalGeneral();
     },
 
     removeFormChoice(index) {

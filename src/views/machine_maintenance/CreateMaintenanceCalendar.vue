@@ -38,7 +38,6 @@
           v-model="selectedDates"
           @change="openModal"
         >
-          <!-- <option disabled value="">Please select</option> -->
           <option
             value="customizable"
             data-bs-toggle="modal"
@@ -48,6 +47,73 @@
           </option>
           <option value="wholeMonth">Whole Month</option>
         </select>
+      </section>
+      <section>
+        <div class="accordion" id="accordion">
+          <div
+            v-for="(choice, index) in DateChoices.choices"
+            :key="index"
+            class="accordion-item"
+          >
+            <h2 class="accordion-header" :id="'headingChoice' + index">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                :data-bs-target="'#collapseChoice' + index"
+                aria-expanded="true"
+                :aria-controls="'collapseChoice' + index"
+              >
+                Choice {{ index + 1 }}
+              </button>
+            </h2>
+            <div
+              :id="'collapseChoice' + index"
+              class="accordion-collapse collapse"
+              :aria-labelledby="'headingChoice' + index"
+              data-bs-parent="#accordion"
+            >
+              <div class="accordion-body">
+                <ul>
+                  <li>
+                    <strong>Selected Months:</strong>
+                    {{ choice.selectedMonths.join(", ") }}
+                  </li>
+                  <li>
+                    <strong>Selected Weeks:</strong>
+                    {{ choice.selectedWeeks.join(", ") }}
+                  </li>
+                  <li>
+                    <strong>Selected Days:</strong>
+                    {{ choice.selectedDays.join(", ") }}
+                  </li>
+                  <li>
+                    <strong>Selected Weeks Except:</strong>
+                    {{ choice.selectedWeeksExcept.join(", ") }}
+                  </li>
+                  <li>
+                    <strong>Selected Days Except:</strong>
+                    {{ choice.selectedDaysExcept.join(", ") }}
+                  </li>
+                </ul>
+                <div class="mt-3">
+                  <button
+                    @click="editFormChoice(index)"
+                    class="btn btn-primary me-2"
+                  >
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                  <button
+                    @click="removeFormChoice(index)"
+                    class="btn btn-danger"
+                  >
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
       <section class="mb-3">
         <label for="machine" class="form-label">Machine:</label>
@@ -100,9 +166,8 @@
                   id="monthDropdown"
                   class="form-select"
                   multiple
-                  v-model="selectedMonths"
+                  v-model="formChoice.selectedMonths"
                 >
-                  <!-- Month options here -->
                   <option value="January">January</option>
                   <option value="February">February</option>
                   <option value="March">March</option>
@@ -119,7 +184,7 @@
               </div>
               <div class="col">
                 <label class="form-label">Selected Month:</label>
-                <p>{{ selectedMonths }}</p>
+                <p>{{ formChoice.selectedMonths }}</p>
               </div>
             </div>
 
@@ -131,9 +196,8 @@
                   id="weekDropdown"
                   class="form-select"
                   multiple
-                  v-model="selectedWeeks"
+                  v-model="formChoice.selectedWeeks"
                 >
-                  <!-- Week options here -->
                   <option value="Week 1">Week 1</option>
                   <option value="Week 2">Week 2</option>
                   <option value="Week 3">Week 3</option>
@@ -143,7 +207,7 @@
               </div>
               <div class="col">
                 <label class="form-label">Selected Weeks:</label>
-                <p>{{ selectedWeeks }}</p>
+                <p>{{ formChoice.selectedWeeks }}</p>
               </div>
             </div>
 
@@ -155,9 +219,8 @@
                   id="dayDropdown"
                   class="form-select"
                   multiple
-                  v-model="selectedDays"
+                  v-model="formChoice.selectedDays"
                 >
-                  <!-- Day options here -->
                   <option value="Monday">Monday</option>
                   <option value="Tuesday">Tuesday</option>
                   <option value="Wednesday">Wednesday</option>
@@ -169,7 +232,7 @@
               </div>
               <div class="col">
                 <label class="form-label">Selected Days:</label>
-                <p>{{ selectedDays }}</p>
+                <p>{{ formChoice.selectedDays }}</p>
               </div>
             </div>
 
@@ -180,7 +243,6 @@
               <label for="exceptInput" class="form-label fw-bold fs-5"
                 >Except:</label
               >
-              <!-- <input type="text" id="exceptInput" class="form-control" /> -->
             </div>
 
             <!-- For Week on Day -->
@@ -193,9 +255,8 @@
                   id="weekOnDayDropdown"
                   class="form-select"
                   multiple
-                  v-model="selectedWeeksExcept"
+                  v-model="formChoice.selectedWeeksExcept"
                 >
-                  <!-- Week options here -->
                   <option value="Week 1">Week 1</option>
                   <option value="Week 2">Week 2</option>
                   <option value="Week 3">Week 3</option>
@@ -205,7 +266,7 @@
               </div>
               <div class="col">
                 <label class="form-label">Selected Week:</label>
-                <p>{{ selectedWeeksExcept }}</p>
+                <p>{{ formChoice.selectedWeeksExcept }}</p>
               </div>
             </div>
             <div class="row mb-3">
@@ -215,9 +276,8 @@
                   id="dayOnDayDropdown"
                   class="form-select"
                   multiple
-                  v-model="selectedDaysExcept"
+                  v-model="formChoice.selectedDaysExcept"
                 >
-                  <!-- Day options here -->
                   <option value="Monday">Monday</option>
                   <option value="Tuesday">Tuesday</option>
                   <option value="Wednesday">Wednesday</option>
@@ -229,7 +289,7 @@
               </div>
               <div class="col">
                 <label class="form-label">Selected Day:</label>
-                <p>{{ selectedDaysExcept }}</p>
+                <p>{{ formChoice.selectedDaysExcept }}</p>
               </div>
             </div>
           </div>
@@ -242,7 +302,13 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="addFormChoice"
+            >
+              Add Choice
+            </button>
           </div>
         </div>
       </div>
@@ -258,16 +324,26 @@ export default {
       selectedDates: null,
       selectedMachine: null,
       type: "",
-      formChoices: [
-        {
-          id: 1,
-          selectedMonths: [],
-          selectedWeeks: [],
-          selectedDays: [],
-          selectedWeeksExcept: [],
-          selectedDaysExcept: [],
-        },
-      ],
+      formChoice: {
+        selectedMonths: [],
+        selectedWeeks: [],
+        selectedDays: [],
+        selectedWeeksExcept: [],
+        selectedDaysExcept: [],
+      },
+
+      editedChoice: {
+        // Define editedChoice object
+        selectedMonths: [],
+        selectedWeeks: [],
+        selectedDays: [],
+        selectedWeeksExcept: [],
+        selectedDaysExcept: [],
+      },
+      DateChoices: {
+        choices: [],
+      },
+      editingIndex: null,
     };
   },
   methods: {
@@ -277,17 +353,45 @@ export default {
       console.log("Type:", this.type);
     },
     openModal() {
-      // Check if the selectedDates is 'customizable'
       if (this.selectedDates === "customizable") {
-        // Find the modal trigger button element
         const modalTriggerButton = document.querySelector(
           '[data-bs-target="#exampleModal"]'
         );
-        // Trigger the modal using data-bs-toggle attribute
         if (modalTriggerButton) {
           modalTriggerButton.click();
         }
       }
+    },
+    addFormChoice() {
+      console.log("Form Choice:", this.formChoice);
+      this.DateChoices.choices.push({ ...this.formChoice });
+
+      this.formChoice = {
+        selectedMonths: [],
+        selectedWeeks: [],
+        selectedDays: [],
+        selectedWeeksExcept: [],
+        selectedDaysExcept: [],
+      };
+      console.log(" whole list of form choice array", this.DateChoices);
+    },
+
+    openModalGeneral() {
+      const modalTriggerButton = document.querySelector(
+        '[data-bs-target="#exampleModal"]'
+      );
+      if (modalTriggerButton) {
+        modalTriggerButton.click();
+      }
+    },
+    editFormChoice(index) {
+      this.editingIndex = index;
+      this.editedChoice = { ...this.DateChoices.choices[index] };
+      this.openModalGeneral;
+    },
+
+    removeFormChoice(index) {
+      this.DateChoices.choices.splice(index, 1);
     },
   },
 };

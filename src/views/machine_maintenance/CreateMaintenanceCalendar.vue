@@ -31,6 +31,23 @@
 
     <div class="container mt-5">
       <section class="mb-3">
+        <label for="year" class="form-label">Select Year:</label>
+        <select id="year" class="form-select" v-model="selectedYears" multiple>
+          <option value="" disabled selected>Select Year</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+          <option value="2031">2031</option>
+          <option value="2032">2032</option>
+          <option value="2033">2033</option>
+        </select>
+      </section>
+
+      <section class="mb-3">
         <label for="dates" class="form-label">Select Dates:</label>
         <select
           id="dates"
@@ -87,14 +104,14 @@
                     <strong>Selected Days:</strong>
                     {{ choice.selectedDays.join(", ") }}
                   </li>
-                  <li>
+                  <!-- <li>
                     <strong>Selected Weeks Except:</strong>
                     {{ choice.selectedWeeksExcept.join(", ") }}
                   </li>
                   <li>
                     <strong>Selected Days Except:</strong>
                     {{ choice.selectedDaysExcept.join(", ") }}
-                  </li>
+                  </li> -->
                 </ul>
                 <div class="mt-3">
                   <button
@@ -128,9 +145,19 @@
           </option>
         </select>
       </section>
+      <!-- Section for selecting Type -->
       <section class="mb-3">
         <label for="type" class="form-label">Type:</label>
-        <input type="text" id="type" class="form-control" v-model="type" />
+        <select id="type" class="form-select" v-model="selectedType">
+          <option disabled value="">Please select</option>
+          <option
+            v-for="type in maintenance_activity_types"
+            :key="type.id"
+            :value="type.id"
+          >
+            {{ type.name }}
+          </option>
+        </select>
       </section>
     </div>
 
@@ -239,14 +266,14 @@
             <!-- Additional Form Elements (if any) -->
 
             <!-- Except -->
-            <div class="mt-4">
+            <!-- <div class="mt-4">
               <label for="exceptInput" class="form-label fw-bold fs-5"
                 >Except:</label
               >
-            </div>
+            </div> -->
 
             <!-- For Week on Day -->
-            <div class="row mb-3">
+            <!-- <div class="row mb-3">
               <div class="col">
                 <label for="weekOnDayDropdown" class="form-label"
                   >For Week:</label
@@ -268,8 +295,8 @@
                 <label class="form-label">Selected Week:</label>
                 <p>{{ formChoice.selectedWeeksExcept }}</p>
               </div>
-            </div>
-            <div class="row mb-3">
+            </div> -->
+            <!-- <div class="row mb-3">
               <div class="col">
                 <label for="dayOnDayDropdown" class="form-label">On Day:</label>
                 <select
@@ -291,7 +318,7 @@
                 <label class="form-label">Selected Day:</label>
                 <p>{{ formChoice.selectedDaysExcept }}</p>
               </div>
-            </div>
+            </div> -->
           </div>
 
           <div class="modal-footer">
@@ -320,11 +347,14 @@
 </template>
 
 <script>
+// Call the function to generate year options for the next 10 years
+
+import axios from "axios";
 export default {
   data() {
     return {
       selectedDates: null,
-      selectedMachine: null,
+
       type: "",
       formChoice: {
         selectedMonths: [],
@@ -346,14 +376,27 @@ export default {
         choices: [],
       },
       editingIndex: null,
+      machines: [],
+      types: [],
+      selectedMachine: null,
+      selectedType: null,
+      selectedYears: [],
+      maintenance_activity_types: [],
     };
   },
-  methods: {
-    createPlan() {
-      console.log("Selected Dates:", this.selectedDates);
-      console.log("Selected Machine:", this.selectedMachine);
-      console.log("Type:", this.type);
+
+  mounted() {
+    this.getData();
+  },
+  computed: {
+    filteredTypes() {
+      if (!this.selectedMachine || this.types.length === 0) {
+        return [];
+      }
+      return this.types.filter((type) => type.id === this.selectedMachine);
     },
+  },
+  methods: {
     openModal() {
       if (this.selectedDates === "customizable") {
         const modalTriggerButton = document.querySelector(
@@ -378,8 +421,8 @@ export default {
         selectedMonths: [],
         selectedWeeks: [],
         selectedDays: [],
-        selectedWeeksExcept: [],
-        selectedDaysExcept: [],
+        // selectedWeeksExcept: [],
+        // selectedDaysExcept: [],
       };
       console.log(" whole list of form choice array", this.DateChoices);
     },
@@ -408,8 +451,8 @@ export default {
         selectedMonths: [],
         selectedWeeks: [],
         selectedDays: [],
-        selectedWeeksExcept: [],
-        selectedDaysExcept: [],
+        // selectedWeeksExcept: [],
+        // selectedDaysExcept: [],
       };
       this.editingIndex = null;
       this.closeModalGeneral();
@@ -417,6 +460,45 @@ export default {
 
     removeFormChoice(index) {
       this.DateChoices.choices.splice(index, 1);
+    },
+
+    getData() {
+      axios
+        .get("machine-maintenance/get-machine-data/")
+        .then((response) => {
+          console.log(response.data);
+          this.machines = response.data.machines;
+          this.maintenance_activity_types =
+            response.data.maintenance_activity_types;
+        })
+        .catch((error) => {
+          console.log("error fetching data", error);
+        });
+    },
+
+    createPlan() {
+      const formData = {
+        selectedYears: this.selectedYears,
+        selectedType: this.selectedType,
+        dateChoices: this.DateChoices,
+        selectedMachine: this.selectedMachine,
+      };
+
+      axios
+        .post("/machine-maintenance/create-maintenance-activity/", formData)
+        .then((response) => {
+          // Print the response message
+          console.log(response.data.message);
+        })
+        .catch((error) => {
+          // Handle errors here
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          // This block will always execute, regardless of success or failure
+          // You can perform cleanup or UI updates here
+          console.log("Request completed.");
+        });
     },
   },
 };

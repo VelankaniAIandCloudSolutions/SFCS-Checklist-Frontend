@@ -33,7 +33,7 @@
       <section class="mb-3">
         <label for="year" class="form-label">Select Year:</label>
         <select id="year" class="form-select" v-model="selectedYears" multiple>
-          <option value="" disabled selected>Select Year</option>
+          <option value="" disabled>Select Year</option>
           <option value="2024">2024</option>
           <option value="2025">2025</option>
           <option value="2026">2026</option>
@@ -134,7 +134,7 @@
       </section>
       <section class="mb-3">
         <label for="machine" class="form-label">Machine:</label>
-        <select id="machine" class="form-select" v-model="selectedMachine">
+        <!-- <select id="machine" class="form-select" v-model="selectedMachine">
           <option disabled value="">Please select</option>
           <option
             v-for="machine in machines"
@@ -143,7 +143,85 @@
           >
             {{ machine.name }}
           </option>
-        </select>
+        </select> -->
+
+        <!-- Button trigger modal -->
+        <br />
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#machineModal"
+        >
+          Select Machines
+        </button>
+        <br />
+        <div class="tag-container">
+          <div
+            v-for="(tag, index) in selectedMachinesArray"
+            :key="index"
+            class="tag badge bg-secondary"
+          >
+            <span>{{ tag.name }}</span>
+            <!-- <span
+              @click="removeTag(index)"
+              class="remove-icon"
+              style="color: #ff0000"
+              >&times;</span
+            > -->
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div
+          class="modal fade"
+          id="machineModal"
+          tabindex="-1"
+          aria-labelledby="machineModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="machineModalLabel">
+                  Select Machines
+                </h1>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <MachineTableGrid
+                  style="margin-top: 20px"
+                  :machines="machines"
+                  :selectedMachinesArray="selectedMachinesArray"
+                  @rowClicked="handleRowClicked"
+                  @rowsDeselected="handleRowDeselected"
+                  @rowsSelected="handleRowsSelected"
+                />
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-dismiss="modal"
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
       <!-- Section for selecting Type -->
       <section class="mb-3">
@@ -350,7 +428,12 @@
 // Call the function to generate year options for the next 10 years
 
 import axios from "axios";
+
+import MachineTableGrid from "../../components/machine_maintenance/MachineTableGrid.vue";
 export default {
+  components: {
+    MachineTableGrid,
+  },
   data() {
     return {
       selectedDates: null,
@@ -382,6 +465,7 @@ export default {
       selectedType: null,
       selectedYears: [],
       maintenance_activity_types: [],
+      selectedMachinesArray: [],
     };
   },
 
@@ -397,6 +481,16 @@ export default {
     },
   },
   methods: {
+    handleRowsSelected(selectedRows) {
+      // Handle rows selected event
+      this.selectedMachinesArray = selectedRows;
+      console.log("selected machines array", this.selectedMachinesArray);
+    },
+    removeTag(index) {
+      // Remove tag at the given index
+      this.selectedMachinesArray.splice(index, 1);
+      console.log("selected machiens array", this.selectedMachinesArray);
+    },
     openModal() {
       if (this.selectedDates === "customizable") {
         const modalTriggerButton = document.querySelector(
@@ -477,31 +571,51 @@ export default {
     },
 
     createPlan() {
+      console.log("this is the selected mahcine", this.selectedMachinesArray);
       const formData = {
         selectedYears: this.selectedYears,
         selectedType: this.selectedType,
         dateChoices: this.DateChoices,
-        selectedMachine: this.selectedMachine,
       };
 
-      axios
-        .post("/machine-maintenance/create-maintenance-activity/", formData)
-        .then((response) => {
-          // Print the response message
-          console.log(response.data.message);
-        })
-        .catch((error) => {
-          // Handle errors here
-          console.error("Error:", error);
-        })
-        .finally(() => {
-          // This block will always execute, regardless of success or failure
-          // You can perform cleanup or UI updates here
-          console.log("Request completed.");
-        });
+      console.log("data being passed from front-end", formData);
+
+      // axios
+      //   .post("/machine-maintenance/create-maintenance-activity/", formData)
+      //   .then((response) => {
+      //     // Print the response message
+      //     console.log(response.data.message);
+      //   })
+      //   .catch((error) => {
+      //     // Handle errors here
+      //     console.error("Error:", error);
+      //   })
+      //   .finally(() => {
+      //     // This block will always execute, regardless of success or failure
+      //     // You can perform cleanup or UI updates here
+      //     console.log("Request completed.");
+      //   });
     },
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.tag-container {
+  display: flex;
+  flex-wrap: wrap; /* Ensure tags wrap to a new line if they exceed container width */
+  justify-content: center; /* Center tags horizontally */
+  margin-top: 10px;
+}
+
+.tag {
+  margin: 5px;
+  padding: 0.25rem 0.5rem; /* Reduce padding to make tags smaller */
+  font-size: 0.875rem; /* Reduce font size to make tags smaller */
+}
+
+.remove-icon {
+  cursor: pointer;
+  margin-left: 5px;
+}
+</style>

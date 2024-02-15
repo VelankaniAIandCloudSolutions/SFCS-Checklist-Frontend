@@ -581,7 +581,7 @@ export default {
       console.log("data being passed from front-end", formData);
 
       // axios
-      //   .post("/machine-maintenance/create-maintenance-activity/", formData)
+      //   .post("/machine-maintenance/create-maintenance-plan/", formData)
       //   .then((response) => {
       //     // Print the response message
       //     console.log(response.data.message);

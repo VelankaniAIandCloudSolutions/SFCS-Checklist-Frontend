@@ -33,10 +33,16 @@
       </div>
       <!-- Buttons Column -->
       <div class="col-md-6 d-flex justify-content-end mt-4">
-        <select v-model="selectedMachine" @change="selectMachine">
+        <select v-model="selectedLine" @change="selectLine">
+          <option disabled value="">Select Line</option>
+          <option v-for="line in lines" :key="line.id" :value="line">
+            {{ line.name }}
+          </option>
+        </select>
+        <select class="ms-2" v-model="selectedMachine" @change="selectMachine">
           <option disabled value="">Select Machine</option>
           <option
-            v-for="machine in machines"
+            v-for="machine in filteredMachines"
             :key="machine.id"
             :value="machine"
           >
@@ -85,11 +91,11 @@ export default {
         },
       },
 
-      machines: [],
+      lines: [],
+
+      selectedLine: "",
       selectedMachine: "",
-      marked_dates: {
-        dates: [],
-      },
+
       maintenance_plans: {},
     };
   },
@@ -104,7 +110,7 @@ export default {
         .get("machine-maintenance/get-machine-data/")
         .then((response) => {
           console.log(response.data);
-          this.machines = response.data.machines;
+          this.lines = response.data.lines;
           this.maintenance_activity_types =
             response.data.maintenance_activity_types;
         })
@@ -136,17 +142,8 @@ export default {
         let color = ""; // Default event color
         let note = ""; // Default note
 
-        // Check if maintenance activity type code is 'D' or 'M'
-        if (
-          plan.maintenance_activity_type &&
-          plan.maintenance_activity_type.code === "D"
-        ) {
-          title = "D"; // Set event title to 'D' for daily maintenance
-        } else if (
-          plan.maintenance_activity_type &&
-          plan.maintenance_activity_type.code === "M"
-        ) {
-          title = "M"; // Set event title to 'M' for monthly maintenance
+        if (plan.maintenance_activity_type) {
+          title = plan.maintenance_activity_type.code;
         }
 
         // Determine event color based on the presence of maintenance activities
@@ -172,6 +169,16 @@ export default {
 
       // Update the calendar options with the events
       this.calendarOptions.events = events;
+    },
+    selectLine() {
+      // Filter machines based on the selected line
+      if (this.selectedLine) {
+        this.filteredMachines = this.selectedLine.machines;
+      } else {
+        this.filteredMachines = []; // Reset the filtered machines if no line is selected
+      }
+      // Reset selected machine
+      this.selectedMachine = null;
     },
 
     selectMachine() {

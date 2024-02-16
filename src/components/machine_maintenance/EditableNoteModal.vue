@@ -184,13 +184,15 @@ export default {
           .then((response) => {
             console.log("Response:", response.data);
             // Emit an event to notify the parent component (calendar) about the color change
-            this.$emit("event-color-updated", {
-              eventId: this.selectedEvent.id,
-              newColor: "green",
-              createdNote: note,
-            });
+            // this.$emit("event-color-updated", {
+            //   eventId: this.selectedEvent.id,
+            //   newColor: "green",
+            //   createdNote: note,
+            // });
             // Handle success response here
+            this.$emit("new-data", response.data.maintenance_plans);
             this.closeModal();
+
             // Display success notification for creation
             this.$notify({
               title:

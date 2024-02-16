@@ -63,6 +63,7 @@
       @close-modal="closeModal"
       :modalTitle="modalTitle"
       @event-color-updated="handleEventColorUpdated"
+      @new-data="populateCalendarNew"
     />
   </div>
 </template>
@@ -252,10 +253,14 @@ export default {
       this.modalTitle = modalTitle;
     },
     closeModal() {
-      console.log("inside show modal");
+      console.log("inside close modal parent");
       this.showModal = false;
 
       // Set showModal to false to hide the modal
+    },
+    populateCalendarNew(data) {
+      this.maintenance_plans = data;
+      this.populateCalendar();
     },
 
     handleEventColorUpdated(updatedEventData) {

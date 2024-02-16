@@ -10,6 +10,7 @@ const store = createStore({
       password: "",
       first_name: "",
       last_name: "",
+      email: "",
       is_staff: false,
       is_superuser: false,
       is_store_team: false,
@@ -31,6 +32,7 @@ const store = createStore({
           const userDetails = JSON.parse(userDetailsString);
           state.user.first_name = userDetails.first_name;
           state.user.last_name = userDetails.last_name;
+          state.user.email = userDetails.email;
           state.user.is_staff = userDetails.is_staff;
           state.user.is_superuser = userDetails.is_superuser;
           state.user.is_store_team = userDetails.is_store_team;
@@ -53,6 +55,7 @@ const store = createStore({
     setUserDetails(state, userDetails) {
       state.user.first_name = userDetails.first_name;
       state.user.last_name = userDetails.last_name;
+      state.user.email = userDetails.email;
       state.user.is_staff = userDetails.is_staff; // Assuming the API response has an 'is_staff' field
       state.user.is_superuser = userDetails.is_superuser; // Assuming the API response has an 'is_superuser' field
       state.user.is_store_team = userDetails.is_store_team; // Assuming the API response has an 'is_store_team' field
@@ -67,6 +70,7 @@ const store = createStore({
       state.user.token = "";
       state.user.first_name = "";
       state.user.last_name = "";
+      state.user.email = "";
       state.user.is_staff = false;
       state.user.is_superuser = false;
       state.user.is_store_team = false;

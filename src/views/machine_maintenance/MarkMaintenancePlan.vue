@@ -181,6 +181,8 @@ export default {
 
     handleEventClick(info) {
       console.log("inside event click");
+      console.log("info:", info);
+      console.log("info.dateStr:", info.dateStr);
       const clickedDate = new Date(info.dateStr);
       const currentDate = new Date(); // Get current date
 

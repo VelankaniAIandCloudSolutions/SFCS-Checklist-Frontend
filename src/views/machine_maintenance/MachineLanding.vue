@@ -61,6 +61,12 @@
     <div style="margin-top: 50px">
       <FullCalendar :options="calendarOptions" />
     </div>
+    <MaintenancePlanDetailsModal
+      :show="showModal"
+      :selectedEvent="selectedEvent"
+      :clickedEvent="clickedEvent"
+      @close-modal="closeModal"
+    />
   </div>
 </template>
 
@@ -71,10 +77,12 @@ import FullCalendar from "@fullcalendar/vue3";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 // import { Calendar } from "@fullcalendar/core";
 import axios from "axios";
+import MaintenancePlanDetailsModal from "../../components/machine_maintenance/MaintenancePlanDetailsModal.vue";
 
 export default {
   components: {
-    FullCalendar, // make the <FullCalendar> tag available
+    FullCalendar,
+    MaintenancePlanDetailsModal, // make the <FullCalendar> tag available
   },
   data() {
     return {
@@ -82,19 +90,15 @@ export default {
         plugins: [multiMonthPlugin],
         initialView: "multiMonthYear",
         events: [],
-        eventClick: function (info) {
-          if (info.event.extendedProps && info.event.extendedProps.note) {
-            alert(info.event.extendedProps.note); // Display note in an alert
-          } else {
-            alert("No note available for this event.");
-          }
-        },
+        eventClick: this.handleEventClick,
       },
 
       lines: [],
 
       selectedLine: "",
       selectedMachine: "",
+      selectedEvent: {},
+      showModal: false,
 
       maintenance_plans: {},
     };
@@ -137,10 +141,14 @@ export default {
     },
     populateCalendar() {
       // Convert maintenance plans array into an array of event objects
+      console.log(" isnide poplate calendar");
       const events = this.maintenance_plans.map((plan) => {
         let title = ""; // Default event title
         let color = ""; // Default event color
         let note = ""; // Default note
+        let created_by_email = ""; // Default created_by email
+        let created_by_firstName = "";
+        let created_at_info = "";
 
         if (plan.maintenance_activity_type) {
           title = plan.maintenance_activity_type.code;
@@ -155,21 +163,81 @@ export default {
           note = plan.maintenance_activities
             .map((activity) => activity.note)
             .join("\n");
+
+          // Get created_by email from the first maintenance activity
+          if (
+            plan.maintenance_activities[0].created_by &&
+            plan.maintenance_activities[0].created_at
+          ) {
+            created_by_email = plan.maintenance_activities[0].created_by.email;
+            created_by_firstName =
+              plan.maintenance_activities[0].created_by.first_name;
+            created_at_info = plan.maintenance_activities[0].created_at;
+          }
         } else {
           color = "orange"; // Set event color to orange if maintenance activities are empty
+          // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
+          if (plan.created_by) {
+            created_by_email = plan.created_by.email;
+            created_by_firstName = plan.created_by.first_name;
+          }
         }
 
         return {
+          id: plan.id,
           title: title,
           start: plan.maintenance_date,
           color: color,
+
           extendedProps: { note: note },
+          created_by_userMail: created_by_email,
+          created_by_name: created_by_firstName,
+          created_at: created_at_info,
         };
       });
 
       // Update the calendar options with the events
       this.calendarOptions.events = events;
     },
+    // handleEventClick(info) {
+    //   if (info.event.extendedProps && info.event.extendedProps.note) {
+    //     alert(info.event.extendedProps.note); // Display note in an alert
+    //   } else {
+    //     alert("No note available for this event.");
+    //   }
+    // },
+
+    handleEventClick(info) {
+      console.log("event clicked");
+      console.log("info:", info);
+      console.log("info.dateStr:", info.dateStr);
+
+      // const clickedEvent = this.calendarOptions.events.find(
+      //   (event) => event.start === info.dateStr
+      // );
+      const clickedEvent = info.event;
+
+      console.log("th=is is the clicked event", clickedEvent);
+
+      if (clickedEvent) {
+        this.selectedEvent = clickedEvent;
+
+        console.log("this is clicked event=", clickedEvent);
+        this.toggleModal(clickedEvent);
+      }
+    },
+
+    closeModal() {
+      console.log("inside close modal parent");
+      this.showModal = false;
+
+      // Set showModal to false to hide the modal
+    },
+
+    toggleModal() {
+      this.showModal = !this.showModal;
+    },
+
     selectLine() {
       // Filter machines based on the selected line
       if (this.selectedLine) {

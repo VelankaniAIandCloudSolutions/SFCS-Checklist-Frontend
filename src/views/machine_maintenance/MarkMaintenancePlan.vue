@@ -63,7 +63,9 @@
       @close-modal="closeModal"
       :modalTitle="modalTitle"
       @event-color-updated="handleEventColorUpdated"
-      @new-data="populateCalendarNew"
+      @date-marked-maintenance-activity-created="populateCalendarNew"
+      @maintenance-activity-note-updated="populateCalendarNew"
+      @maintenance-activity-deleted="populateCalendarNew"
     />
   </div>
 </template>

@@ -23,7 +23,7 @@
           <button
             class="btn btn-danger"
             :disabled="modalTitle === 'Add Note'"
-            @click="deleteNote"
+            @click="confirmDelete"
           >
             Delete
           </button>
@@ -80,20 +80,34 @@ export default {
     },
   },
   methods: {
+    confirmDelete() {
+      if (
+        window.confirm(
+          "Are you sure you want to delete this maintenance activity?"
+        )
+      ) {
+        this.deleteNote();
+      }
+    },
     async deleteNote() {
       axios
         .delete(
-          `/machine-maintenance/update-or-delete-maintenance-activity-note/${this.selectedEvent.id}`
+          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.id}`
         )
         .then((response) => {
           // Handle successful deletion response
           if (response.status === 200 || response.status === 204) {
             // Deletion was successful
+            this.$emit(
+              "maintenance-activity-deleted",
+              response.data.maintenance_plans
+            );
+
             this.closeModal();
 
             // Display success notification for deletion
             this.$notify({
-              title: "Note Deleted Successfully",
+              title: "Date Unmarked and Maintenance Activity Deleted",
               type: "bg-success-subtle text-success",
               duration: "5000",
             });
@@ -104,7 +118,7 @@ export default {
           // Handle error
           // Display error notification
           this.$notify({
-            title: "Error deleting note",
+            title: "Error deleing Maintenance Activity",
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
@@ -166,6 +180,8 @@ export default {
     //     });
     // },
     async saveChanges() {
+      console.log("first time maitnenace activity date markign creation api");
+
       console.log(
         "isnide save changes api starting..loggin selected events =",
         this.selectedEvent
@@ -177,7 +193,7 @@ export default {
         const note = this.note;
 
         axios
-          .post("/machine-maintenance/create-or-delete-maintenance-activity", {
+          .post("/machine-maintenance/create-maintenance-activity", {
             id: id,
             note: note,
           })
@@ -190,13 +206,15 @@ export default {
             //   createdNote: note,
             // });
             // Handle success response here
-            this.$emit("new-data", response.data.maintenance_plans);
+            this.$emit(
+              "date-marked-maintenance-activity-created",
+              response.data.maintenance_plans
+            );
             this.closeModal();
 
             // Display success notification for creation
             this.$notify({
-              title:
-                "Maintenance Activity Created Successfully adn Note Attached ",
+              title: "Maintenance Activity Created Successfully with the note",
               type: "bg-success-subtle text-success",
               duration: "5000",
             });
@@ -213,9 +231,11 @@ export default {
           });
       } else if (this.selectedEvent.color === "green") {
         // If the event is green, it means it's an existing note
+        console.log("put api called to update the activity note");
+
         axios
           .put(
-            `/machine-maintenance/update-or-delete-maintenance-activity-note/${this.selectedEvent.maintenancePlanId}`,
+            `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.id}/`,
             {
               note: this.note,
             }
@@ -224,6 +244,10 @@ export default {
             // Handle successful update response
             if (response.status === 200 || response.status === 204) {
               // Update was successful
+              this.$emit(
+                "maintenance-activity-note-updated",
+                response.data.maintenance_plans
+              );
               this.closeModal();
               // Display success notification for update
               this.$notify({

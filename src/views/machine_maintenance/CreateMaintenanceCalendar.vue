@@ -573,6 +573,7 @@ export default {
     },
 
     createPlan() {
+      this.$store.commit("setIsLoading", true);
       console.log("this is the selected mahcine", this.selectedMachinesArray);
       const selectedMachineIds = this.selectedMachinesArray.map(
         (machine) => machine.id
@@ -598,6 +599,7 @@ export default {
             duration: "5000",
           });
           this.$router.push("/machine");
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
           // Handle errors here
@@ -607,6 +609,7 @@ export default {
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
+          this.$store.commit("setIsLoading", false);
         });
     },
   },

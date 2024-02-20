@@ -162,7 +162,7 @@
             :key="index"
             class="tag badge bg-secondary"
           >
-            <span>{{ tag.name }}</span>
+            <span>{{ tag.name }} Of {{ tag.line.name }}</span>
             <!-- <span
               @click="removeTag(index)"
               class="remove-icon"
@@ -460,6 +460,7 @@ export default {
       },
       editingIndex: null,
       machines: [],
+      lines: [],
       types: [],
       selectedMachine: null,
       selectedType: null,
@@ -560,8 +561,9 @@ export default {
       axios
         .get("machine-maintenance/get-machine-data/")
         .then((response) => {
-          console.log(response.data);
+          console.log("this is resposne.data", response.data);
           this.machines = response.data.machines;
+          this.lines = response.data.lines;
           this.maintenance_activity_types =
             response.data.maintenance_activity_types;
         })
@@ -572,29 +574,40 @@ export default {
 
     createPlan() {
       console.log("this is the selected mahcine", this.selectedMachinesArray);
+      const selectedMachineIds = this.selectedMachinesArray.map(
+        (machine) => machine.id
+      );
+
       const formData = {
         selectedYears: this.selectedYears,
         selectedType: this.selectedType,
         dateChoices: this.DateChoices,
+        selectedMachines: selectedMachineIds,
       };
 
       console.log("data being passed from front-end", formData);
 
-      // axios
-      //   .post("/machine-maintenance/create-maintenance-plan/", formData)
-      //   .then((response) => {
-      //     // Print the response message
-      //     console.log(response.data.message);
-      //   })
-      //   .catch((error) => {
-      //     // Handle errors here
-      //     console.error("Error:", error);
-      //   })
-      //   .finally(() => {
-      //     // This block will always execute, regardless of success or failure
-      //     // You can perform cleanup or UI updates here
-      //     console.log("Request completed.");
-      //   });
+      axios
+        .post("/machine-maintenance/create-maintenance-plan/", formData)
+        .then((response) => {
+          // Print the response message
+          console.log(response.data.message);
+          this.$notify({
+            title: "Maintenance Plan Created",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$router.push("/machine");
+        })
+        .catch((error) => {
+          // Handle errors here
+          console.error("Error:", error);
+          this.$notify({
+            title: "Error creating  Maintenance plan",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        });
     },
   },
 };

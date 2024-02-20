@@ -44,6 +44,13 @@
 
         <!-- Modal footer -->
         <div class="modal-footer">
+          <button
+            class="btn btn-danger"
+            :disabled="modalTitle === 'Add Note'"
+            @click="confirmDelete"
+          >
+            Delete
+          </button>
           <button class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
       </div>
@@ -58,6 +65,7 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   props: {
     show: {
@@ -97,6 +105,49 @@ export default {
         minute: "2-digit",
       });
     },
+    confirmDelete() {
+      if (
+        window.confirm("Are you sure you want to delete this maintenance plan?")
+      ) {
+        this.deleteMaintenancePlan();
+      }
+    },
+    async deleteMaintenancePlan() {
+      axios
+        .delete(
+          `/machine-maintenance/delete-maintenance-plan/${this.selectedEvent.id}`
+        )
+        .then((response) => {
+          // Handle successful deletion response
+          if (response.status === 200 || response.status === 204) {
+            // Deletion was successful
+            this.$emit(
+              "maintenance-plan-deleted",
+              response.data.maintenance_plans
+            );
+
+            this.closeModal();
+
+            // Display success notification for deletion
+            this.$notify({
+              title: " Maintenance Plan Deleted Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting note:", error);
+          // Handle error
+          // Display error notification
+          this.$notify({
+            title: "Error deleing Maintenance Plan",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        });
+    },
+
     closeModal() {
       this.$emit("close-modal");
     },

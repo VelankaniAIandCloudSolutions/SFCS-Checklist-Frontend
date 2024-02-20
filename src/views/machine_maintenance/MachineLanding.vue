@@ -66,6 +66,7 @@
       :selectedEvent="selectedEvent"
       :clickedEvent="clickedEvent"
       @close-modal="closeModal"
+      @maintenance-plan-deleted="populateCalendarNew"
     />
   </div>
 </template>
@@ -91,6 +92,8 @@ export default {
         initialView: "multiMonthYear",
         events: [],
         eventClick: this.handleEventClick,
+        selectable: true,
+        select: this.handleDateSelect,
       },
 
       lines: [],
@@ -139,6 +142,7 @@ export default {
           console.error("Error fetching maintenance dates:", error);
         });
     },
+
     populateCalendar() {
       // Convert maintenance plans array into an array of event objects
       console.log(" isnide poplate calendar");
@@ -226,12 +230,20 @@ export default {
         this.toggleModal(clickedEvent);
       }
     },
+    handleDateSelect(info) {
+      console.log("Selected Date:", info.startStr); // Log the selected date
+      // You can perform any additional actions her
+    },
 
     closeModal() {
       console.log("inside close modal parent");
       this.showModal = false;
 
       // Set showModal to false to hide the modal
+    },
+    populateCalendarNew(data) {
+      this.maintenance_plans = data;
+      this.populateCalendar();
     },
 
     toggleModal() {
@@ -255,6 +267,10 @@ export default {
       if (this.selectedMachine) {
         this.fetchMaintenanceDates(this.selectedMachine.id);
       }
+    },
+
+    handleDateClick(info) {
+      console.log("inside date clicked", info);
     },
   },
 

@@ -93,7 +93,8 @@ export default {
         events: [],
         eventClick: this.handleEventClick,
         selectable: true,
-        select: this.handleDateSelect,
+
+        // select: this.handleDateSelect,
       },
 
       lines: [],

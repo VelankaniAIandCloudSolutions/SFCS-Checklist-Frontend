@@ -47,24 +47,39 @@
         </select>
       </section>
 
+      <!-- section for select dates -->
       <section class="mb-3">
         <label for="dates" class="form-label">Select Dates:</label>
-        <select
-          id="dates"
-          class="form-select"
-          v-model="selectedDates"
-          @change="openModal"
-        >
-          <option
-            value="customizable"
+        <div class="d-flex align-items-center">
+          <select
+            id="dates"
+            class="form-select me-2"
+            v-model="selectedDates"
+            @change="openModal"
+          >
+            <option
+              value="customizable"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+            >
+              Customizable Date
+            </option>
+            <option value="wholeMonth">Whole Month</option>
+          </select>
+          <button
+            type="button"
+            class="btn-sm btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
+            @click="addDate"
           >
-            Customizable Date
-          </option>
-          <option value="wholeMonth">Whole Month</option>
-        </select>
+            <i class="fas fa-plus"></i>
+            <!-- Font Awesome plus icon -->
+          </button>
+        </div>
       </section>
+
+      <!-- section for accordion -->
       <section>
         <div class="accordion" id="accordion">
           <div
@@ -609,7 +624,7 @@ export default {
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
-          this.$store.commit("setIsLoading", false);
+          this.$store.commit("setIsLoading", true);
         });
     },
   },

@@ -624,7 +624,7 @@ export default {
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
-          this.$store.commit("setIsLoading", true);
+          this.$store.commit("setIsLoading", false);
         });
     },
   },

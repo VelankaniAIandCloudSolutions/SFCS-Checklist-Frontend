@@ -9,8 +9,8 @@
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
               <li class="breadcrumb-item">
-                <router-link to="/">
-                  <i class="fas fa-home me-1"></i>Home
+                <router-link to="/machine">
+                  <i class="fas fa-calendar-alt me-2"></i>Calendar
                 </router-link>
               </li>
             </ol>

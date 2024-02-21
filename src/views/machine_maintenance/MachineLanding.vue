@@ -68,31 +68,45 @@
       @close-modal="closeModal"
       @maintenance-plan-deleted="populateCalendarNew"
     />
+    <CreateMaintenancePlanModal
+      :show="showCreateMaintenancePlanModal"
+      :maintenanceActivityTypes="maintenance_activity_types"
+      @close-modal="closeCreateMaintenancePlanModal"
+      :maintenance-plan-info="maintenancePlanInfo"
+      @maintenance-plan-created-by-clicking="populateCalendarNew"
+    />
   </div>
 </template>
 
 <script>
 import FullCalendar from "@fullcalendar/vue3";
-// import dayGridPlugin from "@fullcalendar/daygrid";
-// import interactionPlugin from "@fullcalendar/interaction";
-import multiMonthPlugin from "@fullcalendar/multimonth";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+// import multiMonthPlugin from "@fullcalendar/multimonth";
 // import { Calendar } from "@fullcalendar/core";
 import axios from "axios";
 import MaintenancePlanDetailsModal from "../../components/machine_maintenance/MaintenancePlanDetailsModal.vue";
+import CreateMaintenancePlanModal from "../../components/machine_maintenance/CreateMaintenancePlanModal.vue";
 
 export default {
   components: {
     FullCalendar,
-    MaintenancePlanDetailsModal, // make the <FullCalendar> tag available
+    MaintenancePlanDetailsModal,
+    CreateMaintenancePlanModal,
+    // make the <FullCalendar> tag available
   },
+
   data() {
     return {
       calendarOptions: {
-        plugins: [multiMonthPlugin],
-        initialView: "multiMonthYear",
+        // plugins: [multiMonthPlugin],
+        // initialView: "multiMonthYear",
+        plugins: [dayGridPlugin, interactionPlugin],
+        initialView: "dayGridMonth",
         events: [],
         eventClick: this.handleEventClick,
-        selectable: true,
+        dateClick: this.handleDateClick,
+        // selectable: true,
 
         // select: this.handleDateSelect,
       },
@@ -103,16 +117,14 @@ export default {
       selectedMachine: "",
       selectedEvent: {},
       showModal: false,
-
+      showCreateMaintenancePlanModal: false,
       maintenance_plans: {},
+      maintenance_activity_types: [],
+      maintenancePlanInfo: {},
     };
   },
 
   methods: {
-    // redirectToMaintenanceCalendar() {
-    //   // Navigate to the "/CreateMachineMaintenanceCalendar" page
-    //   this.$router.push("/machine/create-maintenance-calendar");
-    // },
     getData() {
       axios
         .get("machine-maintenance/get-machine-data/")
@@ -146,7 +158,7 @@ export default {
 
     populateCalendar() {
       // Convert maintenance plans array into an array of event objects
-      console.log(" isnide poplate calendar");
+      console.log(" inside populate calendar");
       const events = this.maintenance_plans.map((plan) => {
         let title = ""; // Default event title
         let color = ""; // Default event color
@@ -231,9 +243,51 @@ export default {
         this.toggleModal(clickedEvent);
       }
     },
-    handleDateSelect(info) {
-      console.log("Selected Date:", info.startStr); // Log the selected date
-      // You can perform any additional actions her
+    handleDateClick(info) {
+      console.log("Inside Date click, Selected Date:", info.dateStr);
+
+      // Find the event for the clicked date
+      const existingEvent = this.calendarOptions.events.find(
+        (event) => event.start === info.dateStr
+      );
+
+      // If an event exists for the clicked date, display a message
+      if (existingEvent) {
+        alert(`A maintenance plan already exists for ${info.dateStr}.`);
+      } else {
+        // If there is no event for the clicked date, open a modal to create a new maintenance plan
+        const maintenancePlanInfo = {
+          selectedMachine: this.selectedMachine,
+          selectedDate: info.dateStr,
+        };
+        this.maintenancePlanInfo = maintenancePlanInfo;
+
+        this.toggleCreateMaintenancePlanModal();
+      }
+    },
+    // confirmCreateMaintenancePlan(info) {
+    //   const confirmed = confirm(
+    //     `Create a maintenance plan for ${info.dateStr}?`
+    //   );
+    //   if (confirmed) {
+    //     // Create maintenance plan
+    //     const maintenancePlan = {
+    //       maintenance_date: info.date,
+    //       machine: this.selectMachine,
+
+    //       // Add other properties as needed
+    //     };
+    //     this.createMaintenancePlan(maintenancePlan);
+    //   }
+    // },
+    createMaintenancePlan(maintenancePlan) {
+      // Handle the creation of maintenance plan
+      // You can send a request to the server to create the maintenance plan
+      console.log("Creating maintenance plan:", maintenancePlan);
+    },
+
+    closeCreateMaintenancePlanModal() {
+      this.showCreateMaintenancePlanModal = false;
     },
 
     closeModal() {
@@ -245,6 +299,11 @@ export default {
     populateCalendarNew(data) {
       this.maintenance_plans = data;
       this.populateCalendar();
+    },
+
+    toggleCreateMaintenancePlanModal() {
+      this.showCreateMaintenancePlanModal =
+        !this.showCreateMaintenancePlanModal;
     },
 
     toggleModal() {
@@ -268,10 +327,6 @@ export default {
       if (this.selectedMachine) {
         this.fetchMaintenanceDates(this.selectedMachine.id);
       }
-    },
-
-    handleDateClick(info) {
-      console.log("inside date clicked", info);
     },
   },
 

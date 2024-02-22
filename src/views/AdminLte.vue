@@ -231,7 +231,16 @@
                 <li class="nav-item">
                   <router-link to="/machine" class="nav-link">
                     <i class="fas fa-calendar-alt nav-icon"></i>
-                    <p>Machine Maintenance</p>
+                    <p>Maintenance Plan</p>
+                  </router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link
+                    to="/machine/mark-maintenance-plan"
+                    class="nav-link"
+                  >
+                    <i class="fas fa-calendar-xmark nav-icon"></i>
+                    <p>Mark Maintenance</p>
                   </router-link>
                 </li>
               </ul>

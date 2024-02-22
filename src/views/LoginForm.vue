@@ -131,7 +131,7 @@ body {
   position: relative;
   min-height: 100vh;
   max-width: 100% !important;
-  background-color: #161623;
+  background-color: #dedee8;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -143,7 +143,7 @@ body {
   width: 400px;
   height: 400px;
   border-radius: 50%;
-  background: #7b66ff;
+  background: #3e383e;
   animation: move-up6 2s ease-in infinite alternate-reverse;
 }
 

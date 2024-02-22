@@ -26,6 +26,7 @@ import IqcForChecklist from "../views/IqcForChecklist.vue";
 import ProjectPricing from "../views/ProjectPricing.vue";
 import MachineLanding from "../views/machine_maintenance/MachineLanding.vue";
 import CreateMaintenanceCalendar from "../views/machine_maintenance/CreateMaintenanceCalendar.vue";
+import MarkMaintenancePlan from "../views/machine_maintenance/MarkMaintenancePlan.vue";
 
 const routes = [
   {
@@ -181,6 +182,11 @@ const routes = [
     path: "/machine/create-maintenance-calendar",
     name: "CreateMaintenanceCalendar",
     component: CreateMaintenanceCalendar,
+  },
+  {
+    path: "/machine/mark-maintenance-plan",
+    name: "MarkMaintenancePlan",
+    component: MarkMaintenancePlan,
   },
 ];
 

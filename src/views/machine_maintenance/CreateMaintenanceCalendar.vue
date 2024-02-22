@@ -9,8 +9,8 @@
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
               <li class="breadcrumb-item">
-                <router-link to="/">
-                  <i class="fas fa-home me-1"></i>Home
+                <router-link to="/machine">
+                  <i class="fas fa-calendar-alt me-2"></i>Calendar
                 </router-link>
               </li>
             </ol>
@@ -47,24 +47,39 @@
         </select>
       </section>
 
+      <!-- section for select dates -->
       <section class="mb-3">
         <label for="dates" class="form-label">Select Dates:</label>
-        <select
-          id="dates"
-          class="form-select"
-          v-model="selectedDates"
-          @change="openModal"
-        >
-          <option
-            value="customizable"
+        <div class="d-flex align-items-center">
+          <select
+            id="dates"
+            class="form-select me-2"
+            v-model="selectedDates"
+            @change="openModal"
+          >
+            <option
+              value="customizable"
+              data-bs-toggle="modal"
+              data-bs-target="#exampleModal"
+            >
+              Customizable Date
+            </option>
+            <option value="wholeMonth">Whole Month</option>
+          </select>
+          <button
+            type="button"
+            class="btn-sm btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
+            @click="addDate"
           >
-            Customizable Date
-          </option>
-          <option value="wholeMonth">Whole Month</option>
-        </select>
+            <i class="fas fa-plus"></i>
+            <!-- Font Awesome plus icon -->
+          </button>
+        </div>
       </section>
+
+      <!-- section for accordion -->
       <section>
         <div class="accordion" id="accordion">
           <div
@@ -162,7 +177,7 @@
             :key="index"
             class="tag badge bg-secondary"
           >
-            <span>{{ tag.name }}</span>
+            <span>{{ tag.name }} Of {{ tag.line.name }}</span>
             <!-- <span
               @click="removeTag(index)"
               class="remove-icon"
@@ -460,6 +475,7 @@ export default {
       },
       editingIndex: null,
       machines: [],
+      lines: [],
       types: [],
       selectedMachine: null,
       selectedType: null,
@@ -560,8 +576,9 @@ export default {
       axios
         .get("machine-maintenance/get-machine-data/")
         .then((response) => {
-          console.log(response.data);
+          console.log("this is resposne.data", response.data);
           this.machines = response.data.machines;
+          this.lines = response.data.lines;
           this.maintenance_activity_types =
             response.data.maintenance_activity_types;
         })
@@ -571,30 +588,44 @@ export default {
     },
 
     createPlan() {
+      this.$store.commit("setIsLoading", true);
       console.log("this is the selected mahcine", this.selectedMachinesArray);
+      const selectedMachineIds = this.selectedMachinesArray.map(
+        (machine) => machine.id
+      );
+
       const formData = {
         selectedYears: this.selectedYears,
         selectedType: this.selectedType,
         dateChoices: this.DateChoices,
+        selectedMachines: selectedMachineIds,
       };
 
       console.log("data being passed from front-end", formData);
 
-      // axios
-      //   .post("/machine-maintenance/create-maintenance-activity/", formData)
-      //   .then((response) => {
-      //     // Print the response message
-      //     console.log(response.data.message);
-      //   })
-      //   .catch((error) => {
-      //     // Handle errors here
-      //     console.error("Error:", error);
-      //   })
-      //   .finally(() => {
-      //     // This block will always execute, regardless of success or failure
-      //     // You can perform cleanup or UI updates here
-      //     console.log("Request completed.");
-      //   });
+      axios
+        .post("/machine-maintenance/create-maintenance-plan/", formData)
+        .then((response) => {
+          // Print the response message
+          console.log(response.data.message);
+          this.$notify({
+            title: "Maintenance Plan Created",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          this.$router.push("/machine");
+          this.$store.commit("setIsLoading", false);
+        })
+        .catch((error) => {
+          // Handle errors here
+          console.error("Error:", error);
+          this.$notify({
+            title: "Error creating  Maintenance plan",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        });
     },
   },
 };

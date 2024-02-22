@@ -16,7 +16,7 @@
       <!-- Heading and Breadcrumb Column -->
       <div class="col-md-6 mt-4">
         <div class="d-flex align-items-center">
-          <h2 class="mb-0">Maintenance Calendar</h2>
+          <h2 class="mb-0">Mark Maintenance Dates</h2>
           <span class="ms-3 fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
@@ -49,38 +49,18 @@
             {{ machine.name }}
           </option>
         </select>
-        <router-link
-          to="/machine/create-maintenance-calendar"
-          class="btn btn-primary btn-sm ms-2"
-        >
-          Create Maintenance Plan
-        </router-link>
       </div>
     </div>
     <!-- Rest of your component -->
     <div style="margin-top: 50px">
       <FullCalendar :options="calendarOptions" />
     </div>
-    <MaintenancePlanDetailsModal
-      :show="showPlanDetailsModal"
-      :selectedEvent="selectedEvent"
-      :clickedEvent="clickedEvent"
-      @close-modal="closePlanDetailsModal"
-      @maintenance-plan-deleted="populateCalendarNew"
-      @maintenance-activity-deleted="populateCalendarNew"
-    />
-    <CreateMaintenancePlanModal
-      :show="showCreateMaintenancePlanModal"
-      :maintenanceActivityTypes="maintenance_activity_types"
-      @close-modal="closeCreateMaintenancePlanModal"
-      :maintenance-plan-info="maintenancePlanInfo"
-      @maintenance-plan-created-by-clicking="populateCalendarNew"
-    />
+
     <EditableNoteModal
-      :show="showEditableModal"
+      :show="showModal"
       :selectedEvent="selectedEvent"
       :clickedEvent="clickedEvent"
-      @close-modal="closeEditableNoteModal"
+      @close-modal="closeModal"
       :modalTitle="modalTitle"
       @event-color-updated="handleEventColorUpdated"
       @date-marked-maintenance-activity-created="populateCalendarNew"
@@ -89,58 +69,38 @@
     />
   </div>
 </template>
-
 <script>
 import FullCalendar from "@fullcalendar/vue3";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-// import multiMonthPlugin from "@fullcalendar/multimonth";
-// import { Calendar } from "@fullcalendar/core";
 import axios from "axios";
-import MaintenancePlanDetailsModal from "../../components/machine_maintenance/MaintenancePlanDetailsModal.vue";
-import CreateMaintenancePlanModal from "../../components/machine_maintenance/CreateMaintenancePlanModal.vue";
 import EditableNoteModal from "../../components/machine_maintenance/EditableNoteModal.vue";
 
 export default {
   components: {
     FullCalendar,
-    MaintenancePlanDetailsModal,
-    CreateMaintenancePlanModal,
     EditableNoteModal,
-    // make the <FullCalendar> tag available
   },
-
   data() {
     return {
       calendarOptions: {
-        // plugins: [multiMonthPlugin],
-        // initialView: "multiMonthYear",
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: "dayGridMonth",
         events: [],
-        eventClick: this.handleEventClick,
-        dateClick: this.handleDateClick,
-        // selectable: true,
-
-        // select: this.handleDateSelect,
+        dateClick: this.handleEventClick,
       },
-
+      maintenance_plans: {},
       lines: [],
-
       selectedLine: "",
       selectedMachine: "",
+      selectedDate: null,
       selectedEvent: {},
-      showPlanDetailsModal: false,
-      showCreateMaintenancePlanModal: false,
-      maintenance_plans: {},
-      maintenance_activity_types: [],
-      maintenancePlanInfo: {},
-      showEditableModal: false,
+      showModal: false,
     };
   },
-
   methods: {
     getData() {
+      console.log("info of logged in user", this.$store.state.user);
       axios
         .get("machine-maintenance/get-machine-data/")
         .then((response) => {
@@ -170,17 +130,14 @@ export default {
           console.error("Error fetching maintenance dates:", error);
         });
     },
-
     populateCalendar() {
       // Convert maintenance plans array into an array of event objects
-      console.log(" inside populate calendar");
+      console.log(" isnide poplate calendar");
       const events = this.maintenance_plans.map((plan) => {
         let title = ""; // Default event title
         let color = ""; // Default event color
         let note = ""; // Default note
         let created_by_email = ""; // Default created_by email
-        let created_by_firstName = "";
-        let created_at_info = "";
 
         if (plan.maintenance_activity_type) {
           title = plan.maintenance_activity_type.code;
@@ -197,21 +154,14 @@ export default {
             .join("\n");
 
           // Get created_by email from the first maintenance activity
-          if (
-            plan.maintenance_activities[0].created_by &&
-            plan.maintenance_activities[0].created_at
-          ) {
+          if (plan.maintenance_activities[0].created_by) {
             created_by_email = plan.maintenance_activities[0].created_by.email;
-            created_by_firstName =
-              plan.maintenance_activities[0].created_by.first_name;
-            created_at_info = plan.maintenance_activities[0].created_at;
           }
         } else {
           color = "orange"; // Set event color to orange if maintenance activities are empty
           // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
           if (plan.created_by) {
             created_by_email = plan.created_by.email;
-            created_by_firstName = plan.created_by.first_name;
           }
         }
 
@@ -220,82 +170,59 @@ export default {
           title: title,
           start: plan.maintenance_date,
           color: color,
-
           extendedProps: { note: note },
           created_by_userMail: created_by_email,
-          created_by_name: created_by_firstName,
-          created_at: created_at_info,
         };
       });
 
       // Update the calendar options with the events
       this.calendarOptions.events = events;
     },
-    // handleEventClick(info) {
-    //   if (info.event.extendedProps && info.event.extendedProps.note) {
-    //     alert(info.event.extendedProps.note); // Display note in an alert
-    //   } else {
-    //     alert("No note available for this event.");
-    //   }
-    // },
 
     handleEventClick(info) {
-      console.log("event clicked");
+      console.log("inside event click");
       console.log("info:", info);
       console.log("info.dateStr:", info.dateStr);
+      const clickedDate = new Date(info.dateStr);
+      const currentDate = new Date(); // Get current date
 
+      // Check if the clicked date is not today
+      if (
+        clickedDate.getDate() !== currentDate.getDate() ||
+        clickedDate.getMonth() !== currentDate.getMonth() ||
+        clickedDate.getFullYear() !== currentDate.getFullYear()
+      ) {
+        // Show alert that you can only modify events for today
+        window.alert("You can only modify events for today.");
+        return;
+      }
+
+      // Find the clicked event
       const clickedEvent = this.calendarOptions.events.find(
         (event) => event.start === info.dateStr
       );
-      // const clickedEvent = info.event;
-      console.log("dsdsdsd", clickedEvent);
 
-      console.log("th=is is the clicked event", clickedEvent);
-
+      // If event found
       if (clickedEvent) {
-        this.selectedEvent = clickedEvent;
-
         console.log("this is clicked event=", clickedEvent);
-        this.toggleModal(clickedEvent);
-      }
-    },
-    handleDateClick(info) {
-      if (info && info.dateStr) {
-        console.log("Inside Date click, Selected Date:", info.dateStr);
 
-        // Find the event for the clicked date
-        const existingEvent = this.calendarOptions.events.find(
-          (event) => event.start === info.dateStr
-        );
-
-        // If an event exists for the clicked date, display a message
-        if (existingEvent) {
-          console.log("existing event for this date", existingEvent);
-          // alert(`A maintenance plan already exists for ${info.dateStr}.`);
-
-          if (existingEvent.color === "orange") {
-            this.modifyEvent(existingEvent);
-          } else if (existingEvent.color === "green") {
-            this.selectedEvent = existingEvent;
-            console.log(
-              "this is selected event passed as prop ",
-              this.selectedEvent
+        if (clickedEvent.color === "orange") {
+          // Allow modification for the first time
+          this.modifyEvent(clickedEvent);
+        } else if (clickedEvent.color === "green") {
+          // Check if the user who clicked the event is the creator of the maintenance activity
+          if (
+            this.$store.state.user.email === clickedEvent.created_by_userMail
+          ) {
+            // Allow modification if the user is the creator
+            this.modifyEvent(clickedEvent);
+          } else {
+            // Show alert that only the creator can modify the event
+            window.alert(
+              "Only the creator of the maintenance activity can modify it."
             );
-
-            this.togglePlanDetailsModal();
           }
-        } else {
-          // If there is no event for the clicked date, open a modal to create a new maintenance plan
-          const maintenancePlanInfo = {
-            selectedMachine: this.selectedMachine,
-            selectedDate: info.dateStr,
-          };
-          this.maintenancePlanInfo = maintenancePlanInfo;
-
-          this.toggleCreateMaintenancePlanModal();
         }
-      } else {
-        console.error("info or info.dateStr is undefined");
       }
     },
 
@@ -310,72 +237,94 @@ export default {
         // First time modification, no note exists
         this.selectedEvent = clickedEvent;
         // Set modal title
-        this.toggleEditableModal(clickedEvent);
+        this.toggleModal(clickedEvent);
       } else if (
         clickedEvent.color === "green" &&
         clickedEvent.extendedProps.note !== null
       ) {
         this.selectedEvent = clickedEvent;
 
-        this.toggleEditableModal(clickedEvent);
+        this.toggleModal(clickedEvent);
       }
     },
-    toggleEditableModal(clickedEvent) {
+    toggleModal(clickedEvent) {
       const modalTitle =
         clickedEvent.color === "orange" && !clickedEvent.extendedProps.note
           ? "Add Note"
           : "Edit Note";
 
-      this.showEditableModal = !this.showEditableModal;
+      this.showModal = !this.showModal;
       this.modalTitle = modalTitle;
     },
-
-    // confirmCreateMaintenancePlan(info) {
-    //   const confirmed = confirm(
-    //     `Create a maintenance plan for ${info.dateStr}?`
-    //   );
-    //   if (confirmed) {
-    //     // Create maintenance plan
-    //     const maintenancePlan = {
-    //       maintenance_date: info.date,
-    //       machine: this.selectMachine,
-
-    //       // Add other properties as needed
-    //     };
-    //     this.createMaintenancePlan(maintenancePlan);
-    //   }
-    // },
-    createMaintenancePlan(maintenancePlan) {
-      // Handle the creation of maintenance plan
-      // You can send a request to the server to create the maintenance plan
-      console.log("Creating maintenance plan:", maintenancePlan);
-    },
-
-    closeCreateMaintenancePlanModal() {
-      this.showCreateMaintenancePlanModal = false;
-    },
-
-    closePlanDetailsModal() {
+    closeModal() {
       console.log("inside close modal parent");
-      this.showPlanDetailsModal = false;
+      this.showModal = false;
 
       // Set showModal to false to hide the modal
-    },
-    closeEditableNoteModal() {
-      this.showEditableModal = false;
     },
     populateCalendarNew(data) {
       this.maintenance_plans = data;
       this.populateCalendar();
     },
 
-    toggleCreateMaintenancePlanModal() {
-      this.showCreateMaintenancePlanModal =
-        !this.showCreateMaintenancePlanModal;
+    handleEventColorUpdated(updatedEventData) {
+      console.log("inside event color update", updatedEventData);
+      // Check if this.events is defined and not null
+      const events = this.calendarOptions.events;
+      //   if (!this.events) {
+      //     console.error("this.events is not defined or null");
+      //     return;
+      //   }
+
+      const eventToUpdate = events.find(
+        (event) => event.id === updatedEventData.eventId
+      );
+      if (eventToUpdate) {
+        console.log("print eventToUpdate", eventToUpdate);
+        eventToUpdate.color = updatedEventData.newColor;
+        if (updatedEventData.createdNote !== undefined) {
+          eventToUpdate.extendedProps.note = updatedEventData.createdNote;
+        }
+      } else {
+        console.error("Event not found in events array");
+      }
     },
 
-    togglePlanDetailsModal() {
-      this.showPlanDetailsModal = !this.showPlanDetailsModal;
+    MarkDate() {
+      // Make API call using Axios
+      console.log("create maintenance activity called");
+      axios
+        .post(
+          "/machine-maintenance/create-or-delete-maintenance-activity",
+          this.selectedEvent
+        )
+        .then((response) => {
+          console.log("Response:", response.data);
+          // Handle success response here
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Handle error here
+        });
+    },
+
+    unmarkDate(clickedEvent) {
+      // Make API call to delete maintenance activity using Axios
+      console.log("delete maintenance activity called");
+      axios
+        .delete("/machine-maintenance/create-or-delete-maintenance-activity", {
+          data: this.selectedEvent,
+        })
+        .then((response) => {
+          console.log("Maintenance activity deleted:", response.data);
+          clickedEvent.color = "orange";
+          this.selectedEvent = null; // Clear selected event
+          // Handle success response here
+        })
+        .catch((error) => {
+          console.error("Error deleting maintenance activity:", error);
+          // Handle error here
+        });
     },
 
     selectLine() {
@@ -396,6 +345,48 @@ export default {
         this.fetchMaintenanceDates(this.selectedMachine.id);
       }
     },
+    // modifyEvent(clickedEvent) {
+    //   // Check if the event is already green and a note exists
+    //   if (clickedEvent.color === "green" && clickedEvent.extendedProps.note) {
+    //     this.selectedEvent = clickedEvent;
+
+    //     this.toggleModal();
+
+    //     // Show the existing note to the user
+    //     // window.alert("Existing note: " + clickedEvent.extendedProps.note);
+
+    //     // Ask the user if they want to modify the existing note
+    //     // const confirmModifyExistingNote = confirm(
+    //     //   "Do you want to modify the existing note?"
+    //     // );
+    //     // if (!confirmModifyExistingNote) {
+    //     //   return; // Exit function if the user chooses not to modify the existing note
+    //     // }
+    //   }
+
+    //   // Prompt for additional note
+    //   //   const note = prompt(
+    //   //     "Enter additional note for this maintenance activity on " +
+    //   //       clickedEvent.start +
+    //   //       ":"
+    //   //   );
+
+    //   // Check if the prompt was cancelled
+    //   //   if (note === null) {
+    //   //     return; // Exit function if the prompt was cancelled
+    //   //   }
+
+    //   // Select the event
+    //   //   clickedEvent.color = "green";
+    //   //   clickedEvent.extendedProps.note = note.trim(); // Allow empty note
+    //   //   this.selectedEvent = {
+    //   //     maintenancePlanId: clickedEvent.id,
+    //   //     start: clickedEvent.start,
+    //   //     note: clickedEvent.extendedProps.note,
+    //   //   };
+    //   //   console.log("selected event", this.selectedEvent);
+    //   //   this.MarkDate(); // Call MarkDate function for non-green events
+    // },
   },
 
   mounted() {
@@ -404,11 +395,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-// .full-calendar-event {
-//   background-color: #007bff; /* Blue color for the event marker */
-//   color: #fff; /* White text color */
-//   padding: 4px 8px; /* Padding around the text */
-//   border-radius: 50%; /* Rounded shape */
-// }
-</style>
+<style lang="scss" scoped></style>

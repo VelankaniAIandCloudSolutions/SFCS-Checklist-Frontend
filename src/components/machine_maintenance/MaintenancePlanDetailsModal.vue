@@ -31,7 +31,7 @@
               <p class="mb-2"><strong>Maintenance Date:</strong></p>
               <p>{{ formattedDate }}</p>
               <p class="mb-2"><strong>Performed By:</strong></p>
-              <p>{{ selectedEvent.extendedProps.created_by_name }}</p>
+              <p>{{ selectedEvent.created_by_name }}</p>
             </div>
             <div class="col-md-6">
               <p class="mb-2"><strong>Maintenance Time:</strong></p>
@@ -44,12 +44,14 @@
 
         <!-- Modal footer -->
         <div class="modal-footer">
+          <button class="btn btn-danger" @click="confirmDeleteMaintenancePlan">
+            Delete Maintenance Plan
+          </button>
           <button
-            class="btn btn-danger"
-            :disabled="modalTitle === 'Add Note'"
-            @click="confirmDelete"
+            class="btn btn-warning"
+            @click="confirmDeleteMaintenanceActivity"
           >
-            Delete
+            Delete Maintenance Activity
           </button>
           <button class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
@@ -80,10 +82,10 @@ export default {
   },
   computed: {
     formattedDate() {
-      return this.extractDate(this.selectedEvent.extendedProps.created_at);
+      return this.extractDate(this.selectedEvent.created_at);
     },
     formattedTime() {
-      return this.extractTime(this.selectedEvent.extendedProps.created_at);
+      return this.extractTime(this.selectedEvent.created_at);
     },
   },
   methods: {
@@ -105,7 +107,7 @@ export default {
         minute: "2-digit",
       });
     },
-    confirmDelete() {
+    confirmDeleteMaintenancePlan() {
       if (
         window.confirm("Are you sure you want to delete this maintenance plan?")
       ) {
@@ -142,6 +144,49 @@ export default {
           // Display error notification
           this.$notify({
             title: "Error deleing Maintenance Plan",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        });
+    },
+
+    confirmDeleteMaintenanceActivity() {
+      if (
+        window.confirm("Are you sure you want to delete this maintenance plan?")
+      ) {
+        this.deleteMaintenanceActivity();
+      }
+    },
+    async deleteMaintenanceActivity() {
+      axios
+        .delete(
+          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.id}`
+        )
+        .then((response) => {
+          // Handle successful deletion response
+          if (response.status === 200 || response.status === 204) {
+            // Deletion was successful
+            this.$emit(
+              "maintenance-activity-deleted",
+              response.data.maintenance_plans
+            );
+
+            this.closeModal();
+
+            // Display success notification for deletion
+            this.$notify({
+              title: "Date Unmarked and Maintenance Activity Deleted",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting note:", error);
+          // Handle error
+          // Display error notification
+          this.$notify({
+            title: "Error deleing Maintenance Activity",
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });

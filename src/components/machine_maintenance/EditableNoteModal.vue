@@ -23,9 +23,9 @@
           <button
             class="btn btn-danger"
             :disabled="modalTitle === 'Add Note'"
-            @click="confirmDelete"
+            @click="confirmDeleteMaintenanceActivity"
           >
-            Delete
+            Delete Maintenance Activity
           </button>
           <button class="btn btn-primary" @click="saveChanges">
             Save Changes
@@ -80,16 +80,16 @@ export default {
     },
   },
   methods: {
-    confirmDelete() {
+    confirmDeleteMaintenanceActivity() {
       if (
         window.confirm(
           "Are you sure you want to delete this maintenance activity?"
         )
       ) {
-        this.deleteNote();
+        this.deleteMaintenanceActivity();
       }
     },
-    async deleteNote() {
+    async deleteMaintenanceActivity() {
       axios
         .delete(
           `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.id}`

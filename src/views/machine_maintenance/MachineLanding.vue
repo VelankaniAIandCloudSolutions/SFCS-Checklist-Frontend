@@ -62,11 +62,12 @@
       <FullCalendar :options="calendarOptions" />
     </div>
     <MaintenancePlanDetailsModal
-      :show="showModal"
+      :show="showPlanDetailsModal"
       :selectedEvent="selectedEvent"
       :clickedEvent="clickedEvent"
-      @close-modal="closeModal"
+      @close-modal="closePlanDetailsModal"
       @maintenance-plan-deleted="populateCalendarNew"
+      @maintenance-activity-deleted="populateCalendarNew"
     />
     <CreateMaintenancePlanModal
       :show="showCreateMaintenancePlanModal"
@@ -74,6 +75,17 @@
       @close-modal="closeCreateMaintenancePlanModal"
       :maintenance-plan-info="maintenancePlanInfo"
       @maintenance-plan-created-by-clicking="populateCalendarNew"
+    />
+    <EditableNoteModal
+      :show="showEditableModal"
+      :selectedEvent="selectedEvent"
+      :clickedEvent="clickedEvent"
+      @close-modal="closeEditableNoteModal"
+      :modalTitle="modalTitle"
+      @event-color-updated="handleEventColorUpdated"
+      @date-marked-maintenance-activity-created="populateCalendarNew"
+      @maintenance-activity-note-updated="populateCalendarNew"
+      @maintenance-activity-deleted="populateCalendarNew"
     />
   </div>
 </template>
@@ -87,12 +99,14 @@ import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import MaintenancePlanDetailsModal from "../../components/machine_maintenance/MaintenancePlanDetailsModal.vue";
 import CreateMaintenancePlanModal from "../../components/machine_maintenance/CreateMaintenancePlanModal.vue";
+import EditableNoteModal from "../../components/machine_maintenance/EditableNoteModal.vue";
 
 export default {
   components: {
     FullCalendar,
     MaintenancePlanDetailsModal,
     CreateMaintenancePlanModal,
+    EditableNoteModal,
     // make the <FullCalendar> tag available
   },
 
@@ -116,11 +130,12 @@ export default {
       selectedLine: "",
       selectedMachine: "",
       selectedEvent: {},
-      showModal: false,
+      showPlanDetailsModal: false,
       showCreateMaintenancePlanModal: false,
       maintenance_plans: {},
       maintenance_activity_types: [],
       maintenancePlanInfo: {},
+      showEditableModal: false,
     };
   },
 
@@ -229,10 +244,11 @@ export default {
       console.log("info:", info);
       console.log("info.dateStr:", info.dateStr);
 
-      // const clickedEvent = this.calendarOptions.events.find(
-      //   (event) => event.start === info.dateStr
-      // );
-      const clickedEvent = info.event;
+      const clickedEvent = this.calendarOptions.events.find(
+        (event) => event.start === info.dateStr
+      );
+      // const clickedEvent = info.event;
+      console.log("dsdsdsd", clickedEvent);
 
       console.log("th=is is the clicked event", clickedEvent);
 
@@ -244,27 +260,76 @@ export default {
       }
     },
     handleDateClick(info) {
-      console.log("Inside Date click, Selected Date:", info.dateStr);
+      if (info && info.dateStr) {
+        console.log("Inside Date click, Selected Date:", info.dateStr);
 
-      // Find the event for the clicked date
-      const existingEvent = this.calendarOptions.events.find(
-        (event) => event.start === info.dateStr
-      );
+        // Find the event for the clicked date
+        const existingEvent = this.calendarOptions.events.find(
+          (event) => event.start === info.dateStr
+        );
 
-      // If an event exists for the clicked date, display a message
-      if (existingEvent) {
-        alert(`A maintenance plan already exists for ${info.dateStr}.`);
+        // If an event exists for the clicked date, display a message
+        if (existingEvent) {
+          console.log("existing event for this date", existingEvent);
+          // alert(`A maintenance plan already exists for ${info.dateStr}.`);
+
+          if (existingEvent.color === "orange") {
+            this.modifyEvent(existingEvent);
+          } else if (existingEvent.color === "green") {
+            this.selectedEvent = existingEvent;
+            console.log(
+              "this is selected event passed as prop ",
+              this.selectedEvent
+            );
+
+            this.togglePlanDetailsModal();
+          }
+        } else {
+          // If there is no event for the clicked date, open a modal to create a new maintenance plan
+          const maintenancePlanInfo = {
+            selectedMachine: this.selectedMachine,
+            selectedDate: info.dateStr,
+          };
+          this.maintenancePlanInfo = maintenancePlanInfo;
+
+          this.toggleCreateMaintenancePlanModal();
+        }
       } else {
-        // If there is no event for the clicked date, open a modal to create a new maintenance plan
-        const maintenancePlanInfo = {
-          selectedMachine: this.selectedMachine,
-          selectedDate: info.dateStr,
-        };
-        this.maintenancePlanInfo = maintenancePlanInfo;
-
-        this.toggleCreateMaintenancePlanModal();
+        console.error("info or info.dateStr is undefined");
       }
     },
+
+    modifyEvent(clickedEvent) {
+      // Check if the event is already green and a note exists
+
+      //   if(clickedEvent.color==="green")
+      if (
+        clickedEvent.color === "orange" &&
+        clickedEvent.extendedProps.note === ""
+      ) {
+        // First time modification, no note exists
+        this.selectedEvent = clickedEvent;
+        // Set modal title
+        this.toggleEditableModal(clickedEvent);
+      } else if (
+        clickedEvent.color === "green" &&
+        clickedEvent.extendedProps.note !== null
+      ) {
+        this.selectedEvent = clickedEvent;
+
+        this.toggleEditableModal(clickedEvent);
+      }
+    },
+    toggleEditableModal(clickedEvent) {
+      const modalTitle =
+        clickedEvent.color === "orange" && !clickedEvent.extendedProps.note
+          ? "Add Note"
+          : "Edit Note";
+
+      this.showEditableModal = !this.showEditableModal;
+      this.modalTitle = modalTitle;
+    },
+
     // confirmCreateMaintenancePlan(info) {
     //   const confirmed = confirm(
     //     `Create a maintenance plan for ${info.dateStr}?`
@@ -290,11 +355,14 @@ export default {
       this.showCreateMaintenancePlanModal = false;
     },
 
-    closeModal() {
+    closePlanDetailsModal() {
       console.log("inside close modal parent");
-      this.showModal = false;
+      this.showPlanDetailsModal = false;
 
       // Set showModal to false to hide the modal
+    },
+    closeEditableNoteModal() {
+      this.showEditableModal = false;
     },
     populateCalendarNew(data) {
       this.maintenance_plans = data;
@@ -306,8 +374,8 @@ export default {
         !this.showCreateMaintenancePlanModal;
     },
 
-    toggleModal() {
-      this.showModal = !this.showModal;
+    togglePlanDetailsModal() {
+      this.showPlanDetailsModal = !this.showPlanDetailsModal;
     },
 
     selectLine() {

@@ -50,10 +50,10 @@
           <!-- Other information can be passed as props -->
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" @click="closeModal">Close</button>
           <button class="btn btn-primary" @click="createMaintenancePlan">
             Create
           </button>
+          <button class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
       </div>
     </div>

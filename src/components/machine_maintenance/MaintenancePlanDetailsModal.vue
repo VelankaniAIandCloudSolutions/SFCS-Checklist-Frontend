@@ -31,7 +31,7 @@
               <p class="mb-2"><strong>Maintenance Date:</strong></p>
               <p>{{ formattedDate }}</p>
               <p class="mb-2"><strong>Performed By:</strong></p>
-              <p>{{ selectedEvent.created_by_name }}</p>
+              <p>{{ selectedEvent.extendedProps.created_by_name }}</p>
             </div>
             <div class="col-md-6">
               <p class="mb-2"><strong>Maintenance Time:</strong></p>
@@ -82,10 +82,10 @@ export default {
   },
   computed: {
     formattedDate() {
-      return this.extractDate(this.selectedEvent.created_at);
+      return this.extractDate(this.selectedEvent.extendedProps.created_at);
     },
     formattedTime() {
-      return this.extractTime(this.selectedEvent.created_at);
+      return this.extractTime(this.selectedEvent.extendedProps.created_at);
     },
   },
   methods: {
@@ -117,7 +117,7 @@ export default {
     async deleteMaintenancePlan() {
       axios
         .delete(
-          `/machine-maintenance/delete-maintenance-plan/${this.selectedEvent.id}`
+          `/machine-maintenance/delete-maintenance-plan/${this.selectedEvent.extendedProps.id}`
         )
         .then((response) => {
           // Handle successful deletion response
@@ -152,7 +152,9 @@ export default {
 
     confirmDeleteMaintenanceActivity() {
       if (
-        window.confirm("Are you sure you want to delete this maintenance plan?")
+        window.confirm(
+          "Are you sure you want to delete this maintenance activity?"
+        )
       ) {
         this.deleteMaintenanceActivity();
       }
@@ -160,7 +162,7 @@ export default {
     async deleteMaintenanceActivity() {
       axios
         .delete(
-          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.id}`
+          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}`
         )
         .then((response) => {
           // Handle successful deletion response

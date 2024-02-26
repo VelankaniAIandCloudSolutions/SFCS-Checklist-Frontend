@@ -120,6 +120,7 @@ export default {
         events: [],
         eventClick: this.handleEventClick,
         dateClick: this.handleDateClick,
+        // dateClick: this.handleDateClick,
         // selectable: true,
 
         // select: this.handleDateSelect,
@@ -171,9 +172,71 @@ export default {
         });
     },
 
+    // populateCalendar() {
+    //   // Convert maintenance plans array into an array of event objects
+    //   console.log(" inside populate calendar");
+    //   const events = this.maintenance_plans.map((plan) => {
+    //     let title = ""; // Default event title
+    //     let color = ""; // Default event color
+    //     let note = ""; // Default note
+    //     let created_by_email = ""; // Default created_by email
+    //     let created_by_firstName = "";
+    //     let created_at_info = "";
+
+    //     if (plan.maintenance_activity_type) {
+    //       title = plan.maintenance_activity_type.code;
+    //     }
+
+    //     // Determine event color based on the presence of maintenance activities
+    //     if (
+    //       plan.maintenance_activities &&
+    //       plan.maintenance_activities.length > 0
+    //     ) {
+    //       color = "green"; // Set event color to green if maintenance activities present
+    //       note = plan.maintenance_activities
+    //         .map((activity) => activity.note)
+    //         .join("\n");
+
+    //       // Get created_by email from the first maintenance activity
+    //       if (
+    //         plan.maintenance_activities[0].created_by &&
+    //         plan.maintenance_activities[0].created_at
+    //       ) {
+    //         created_by_email = plan.maintenance_activities[0].created_by.email;
+    //         created_by_firstName =
+    //           plan.maintenance_activities[0].created_by.first_name;
+    //         created_at_info = plan.maintenance_activities[0].created_at;
+    //       }
+    //     } else {
+    //       color = "orange"; // Set event color to orange if maintenance activities are empty
+    //       // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
+    //       if (plan.created_by) {
+    //         created_by_email = plan.created_by.email;
+    //         created_by_firstName = plan.created_by.first_name;
+    //       }
+    //     }
+
+    //     return {
+    //       id: plan.id,
+    //       title: title,
+    //       start: plan.maintenance_date,
+    //       color: color,
+
+    //       extendedProps: { note: note },
+    //       created_by_userMail: created_by_email,
+    //       created_by_name: created_by_firstName,
+    //       created_at: created_at_info,
+    //     };
+    //   });
+
+    //   // Update the calendar options with the events
+    //   this.calendarOptions.events = events;
+    // },
     populateCalendar() {
       // Convert maintenance plans array into an array of event objects
-      console.log(" inside populate calendar");
+      console.log("Inside populate calendar");
+      const today = new Date();
+      console.log(today);
       const events = this.maintenance_plans.map((plan) => {
         let title = ""; // Default event title
         let color = ""; // Default event color
@@ -207,24 +270,38 @@ export default {
             created_at_info = plan.maintenance_activities[0].created_at;
           }
         } else {
-          color = "orange"; // Set event color to orange if maintenance activities are empty
+          const maintenanceDate = new Date(plan.maintenance_date);
+          maintenanceDate.setHours(0, 0, 0, 0);
+          today.setHours(0, 0, 0, 0);
+          console.log("inside else");
+          if (maintenanceDate < today) {
+            color = "red";
+          } else {
+            color = "orange";
+          }
+          // Set event color to orange if maintenance activities are empty
           // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
           if (plan.created_by) {
             created_by_email = plan.created_by.email;
             created_by_firstName = plan.created_by.first_name;
+            created_at_info = plan.created_at;
           }
         }
 
         return {
-          id: plan.id,
           title: title,
           start: plan.maintenance_date,
           color: color,
 
-          extendedProps: { note: note },
-          created_by_userMail: created_by_email,
-          created_by_name: created_by_firstName,
-          created_at: created_at_info,
+          extendedProps: {
+            id: plan.id,
+            note: note,
+            color: color,
+            maintenance_plan_date: plan.maintenance_date,
+            created_by_userMail: created_by_email,
+            created_by_name: created_by_firstName,
+            created_at: created_at_info,
+          },
         };
       });
 
@@ -239,64 +316,147 @@ export default {
     //   }
     // },
 
+    // handleEventClick(info) {
+    //   console.log("event clicked");
+    //   console.log("info:", info);
+    //   console.log("info.event:", info.event);
+
+    //   // const clickedEvent = this.calendarOptions.events.find(
+    //   //   (event) => event.start === info.dateStr
+    //   // );
+    //   const clickedEvent = info.event.def;
+    //   console.log("dsdsdsd", clickedEvent);
+
+    //   console.log("th=is is the clicked event", clickedEvent);
+
+    //   if (clickedEvent) {
+    //     this.selectedEvent = clickedEvent;
+
+    //     console.log("this is clicked event=", clickedEvent);
+    //     this.toggleModal(clickedEvent);
+    //   }
+    // },
     handleEventClick(info) {
       console.log("event clicked");
       console.log("info:", info);
-      console.log("info.dateStr:", info.dateStr);
+      console.log("info.event:", info.event);
 
-      const clickedEvent = this.calendarOptions.events.find(
-        (event) => event.start === info.dateStr
+      console.log(info.event.id);
+
+      const clickedEventStartDate = info.event.start;
+
+      console.log("clicked event start date", clickedEventStartDate);
+
+      // Convert clicked event start date to a date string without time component
+      // const formattedClickedEventStartDate = clickedEventStartDate
+      //   .toISOString()
+      //   .split("T")[0];
+      const formattedClickedEventStartDate =
+        clickedEventStartDate.toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+        });
+      const dateOnly = formattedClickedEventStartDate.split(",")[0]; // Extracting the date part
+
+      const [day, month, year] = dateOnly
+        .split("/")
+        .map((part) => part.padStart(2, "0")); // Splitting the date parts and adding leading zeros if necessary
+      const formattedDate = `${year}-${month}-${day}`; // Rearranging and joining parts
+      console.log(formattedDate);
+
+      const eventsOnSameDate = this.calendarOptions.events.filter((event) => {
+        // Extract the date part without time component from the event's start date
+        const eventStartDate = event.start;
+
+        // Compare the dates without time component
+        return eventStartDate === formattedDate;
+      });
+
+      console.log("events on same date", eventsOnSameDate);
+
+      const existingEvent = eventsOnSameDate.find(
+        (event) => event.extendedProps.id === info.event.extendedProps.id
       );
-      // const clickedEvent = info.event;
-      console.log("dsdsdsd", clickedEvent);
+      console.log("existingEvent", existingEvent);
+      if (existingEvent) {
+        console.log("existing event for this date", existingEvent);
+        // alert(`A maintenance plan already exists for ${info.dateStr}.`);
 
-      console.log("th=is is the clicked event", clickedEvent);
+        if (
+          existingEvent.extendedProps.color === "orange" ||
+          existingEvent.extendedProps.color === "red"
+        ) {
+          this.modifyEvent(existingEvent);
+        } else if (existingEvent.color === "green") {
+          this.selectedEvent = existingEvent;
+          console.log(
+            "this is selected event passed as prop ",
+            this.selectedEvent
+          );
 
-      if (clickedEvent) {
-        this.selectedEvent = clickedEvent;
-
-        console.log("this is clicked event=", clickedEvent);
-        this.toggleModal(clickedEvent);
-      }
-    },
-    handleDateClick(info) {
-      if (info && info.dateStr) {
-        console.log("Inside Date click, Selected Date:", info.dateStr);
-
-        // Find the event for the clicked date
-        const existingEvent = this.calendarOptions.events.find(
-          (event) => event.start === info.dateStr
-        );
-
-        // If an event exists for the clicked date, display a message
-        if (existingEvent) {
-          console.log("existing event for this date", existingEvent);
-          // alert(`A maintenance plan already exists for ${info.dateStr}.`);
-
-          if (existingEvent.color === "orange") {
-            this.modifyEvent(existingEvent);
-          } else if (existingEvent.color === "green") {
-            this.selectedEvent = existingEvent;
-            console.log(
-              "this is selected event passed as prop ",
-              this.selectedEvent
-            );
-
-            this.togglePlanDetailsModal();
-          }
-        } else {
-          // If there is no event for the clicked date, open a modal to create a new maintenance plan
-          const maintenancePlanInfo = {
-            selectedMachine: this.selectedMachine,
-            selectedDate: info.dateStr,
-          };
-          this.maintenancePlanInfo = maintenancePlanInfo;
-
-          this.toggleCreateMaintenancePlanModal();
+          this.togglePlanDetailsModal();
         }
       } else {
-        console.error("info or info.dateStr is undefined");
+        // If there is no event for the clicked date, open a modal to create a new maintenance plan
+        const maintenancePlanInfo = {
+          selectedMachine: this.selectedMachine,
+          selectedDate: info.dateStr,
+        };
+        this.maintenancePlanInfo = maintenancePlanInfo;
+
+        this.toggleCreateMaintenancePlanModal();
       }
+
+      // Perform further actions with the clicked event as needed
+    },
+
+    // handleDateClick(info) {
+    //   if (info && info.dateStr) {
+    //     console.log("Inside Date click, Selected Date:", info.dateStr);
+
+    //     // Find the event for the clicked date
+    //     const existingEvent = this.calendarOptions.events.find(
+    //       (event) => event.start === info.dateStr
+    //     );
+
+    //     // If an event exists for the clicked date, display a message
+    //     if (existingEvent) {
+    //       console.log("existing event for this date", existingEvent);
+    //       // alert(`A maintenance plan already exists for ${info.dateStr}.`);
+
+    //       if (existingEvent.color === "orange") {
+    //         this.modifyEvent(existingEvent);
+    //       } else if (existingEvent.color === "green") {
+    //         this.selectedEvent = existingEvent;
+    //         console.log(
+    //           "this is selected event passed as prop ",
+    //           this.selectedEvent
+    //         );
+
+    //         this.togglePlanDetailsModal();
+    //       }
+    //     } else {
+    //       // If there is no event for the clicked date, open a modal to create a new maintenance plan
+    //       console.log("inside creating plan by manually marking dates");
+    //       const maintenancePlanInfo = {
+    //         selectedMachine: this.selectedMachine,
+    //         selectedDate: info.dateStr,
+    //       };
+    //       this.maintenancePlanInfo = maintenancePlanInfo;
+
+    //       this.toggleCreateMaintenancePlanModal();
+    //     }
+    //   } else {
+    //     console.error("info or info.dateStr is undefined");
+    //   }
+    // },
+    handleDateClick(info) {
+      console.log("inside creating plan by manually marking dates");
+      const maintenancePlanInfo = {
+        selectedMachine: this.selectedMachine,
+        selectedDate: info.dateStr,
+      };
+      this.maintenancePlanInfo = maintenancePlanInfo;
+      this.toggleCreateMaintenancePlanModal();
     },
 
     modifyEvent(clickedEvent) {
@@ -304,7 +464,8 @@ export default {
 
       //   if(clickedEvent.color==="green")
       if (
-        clickedEvent.color === "orange" &&
+        (clickedEvent.extendedProps.color === "orange" ||
+          clickedEvent.extendedProps.color === "red") &&
         clickedEvent.extendedProps.note === ""
       ) {
         // First time modification, no note exists
@@ -312,7 +473,7 @@ export default {
         // Set modal title
         this.toggleEditableModal(clickedEvent);
       } else if (
-        clickedEvent.color === "green" &&
+        clickedEvent.extendedProps.color === "green" &&
         clickedEvent.extendedProps.note !== null
       ) {
         this.selectedEvent = clickedEvent;
@@ -322,7 +483,9 @@ export default {
     },
     toggleEditableModal(clickedEvent) {
       const modalTitle =
-        clickedEvent.color === "orange" && !clickedEvent.extendedProps.note
+        (clickedEvent.extendedProps.color === "orange" ||
+          clickedEvent.extendedProps.color === "red") &&
+        !clickedEvent.extendedProps.note
           ? "Add Note"
           : "Edit Note";
 

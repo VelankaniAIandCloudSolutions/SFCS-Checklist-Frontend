@@ -92,7 +92,7 @@ export default {
     async deleteMaintenanceActivity() {
       axios
         .delete(
-          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.id}`
+          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}`
         )
         .then((response) => {
           // Handle successful deletion response
@@ -187,9 +187,12 @@ export default {
         this.selectedEvent
       );
 
-      if (this.selectedEvent.color === "orange") {
+      if (
+        this.selectedEvent.extendedProps.color === "orange" ||
+        this.selectedEvent.extendedProps.color == "red"
+      ) {
         // If the event is orange, it means it's a new note
-        const { id } = this.selectedEvent;
+        const id = this.selectedEvent.extendedProps.id;
         const note = this.note;
 
         axios
@@ -235,7 +238,7 @@ export default {
 
         axios
           .put(
-            `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.id}/`,
+            `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}/`,
             {
               note: this.note,
             }

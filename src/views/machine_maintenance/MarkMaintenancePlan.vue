@@ -181,6 +181,7 @@ export default {
     populateCalendar() {
       // Convert maintenance plans array into an array of event objects
       console.log("Inside populate calendar");
+      const today = new Date();
       const events = this.maintenance_plans.map((plan) => {
         let title = ""; // Default event title
         let color = ""; // Default event color
@@ -214,7 +215,16 @@ export default {
             created_at_info = plan.maintenance_activities[0].created_at;
           }
         } else {
-          color = "orange"; // Set event color to orange if maintenance activities are empty
+          const maintenanceDate = new Date(plan.maintenance_date);
+          maintenanceDate.setHours(0, 0, 0, 0);
+          today.setHours(0, 0, 0, 0);
+          console.log("inside else");
+          if (maintenanceDate < today) {
+            color = "red";
+          } else {
+            color = "orange";
+          }
+          // Set event color to orange if maintenance activities are empty
           // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
           if (plan.created_by) {
             created_by_email = plan.created_by.email;
@@ -309,10 +319,10 @@ export default {
       if (clickedEvent) {
         console.log("this is clicked event=", clickedEvent);
 
-        if (clickedEvent.color === "orange") {
+        if (clickedEvent.extendedProps.color === "orange") {
           // Allow modification for the first time
           this.modifyEvent(clickedEvent);
-        } else if (clickedEvent.color === "green") {
+        } else if (clickedEvent.extendedProps.color === "green") {
           // Check if the user who clicked the event is the creator of the maintenance activity
           if (
             this.$store.state.user.email ===

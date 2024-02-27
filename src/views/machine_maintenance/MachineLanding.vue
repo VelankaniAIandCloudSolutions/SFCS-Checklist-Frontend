@@ -147,7 +147,11 @@ export default {
     EditableNoteModal,
     // make the <FullCalendar> tag available
   },
-
+  // computed:{
+  //   filteredMachines(){
+  //     return this.selectedLine.machines
+  //   }
+  // },
   data() {
     return {
       calendarOptions: {
@@ -175,6 +179,7 @@ export default {
       maintenance_activity_types: [],
       maintenancePlanInfo: {},
       showEditableModal: false,
+      filteredMachines: [],
     };
   },
 
@@ -581,8 +586,12 @@ export default {
 
     selectLine() {
       // Filter machines based on the selected line
+      console.log("inside select line");
+      console.log("Selected Line ID:=", this.selectedLine);
+
       if (this.selectedLine) {
         this.filteredMachines = this.selectedLine.machines;
+        console.log(this.filteredMachines);
       } else {
         this.filteredMachines = []; // Reset the filtered machines if no line is selected
       }

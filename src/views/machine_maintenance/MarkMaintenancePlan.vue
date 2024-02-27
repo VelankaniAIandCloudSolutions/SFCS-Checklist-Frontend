@@ -52,8 +52,44 @@
       </div>
     </div>
     <!-- Rest of your component -->
-    <div style="margin-top: 50px">
-      <FullCalendar :options="calendarOptions" />
+    <div class="card card-outline card-primary mt-5">
+      <div class="card-header">
+        <h3 class="card-title" style="font-weight: bold; font-size: 1.2em">
+          Legend:
+        </h3>
+        <div class="card-tools">
+          <!-- Buttons, labels, and many other things can be placed here! -->
+          <!-- Here is a label for example -->
+          <!-- <span class="badge badge-primary">Label</span> -->
+        </div>
+        <!-- /.card-tools -->
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <!-- Legends Container -->
+        <div class="legends-container">
+          <div class="legend-item">
+            <div class="legend-color red"></div>
+            <div class="legend-label">Maintenance Activity Due</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color yellow"></div>
+            <div class="legend-label">Maintenance Activity Scheduled</div>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color green"></div>
+            <div class="legend-label">Maintenance Activity Performed</div>
+          </div>
+        </div>
+
+        <!-- FullCalendar Component -->
+        <div style="margin-top: 50px">
+          <FullCalendar :options="calendarOptions" />
+        </div>
+      </div>
+      <!-- /.card-body -->
+
+      <!-- /.card-footer -->
     </div>
 
     <EditableNoteModal
@@ -510,4 +546,39 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+// .full-calendar-event {
+//   background-color: #007bff; /* Blue color for the event marker */
+//   color: #fff; /* White text color */
+//   padding: 4px 8px; /* Padding around the text */
+//   border-radius: 50%; /* Rounded shape */
+// }
+
+/* CSS for legends */
+.legends-container {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.red {
+  background-color: red;
+}
+.yellow {
+  background-color: orange;
+}
+.green {
+  background-color: green;
+}
+</style>

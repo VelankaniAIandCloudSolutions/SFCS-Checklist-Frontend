@@ -13,6 +13,8 @@
       @selectionChanged="onSelectionChanged"
       @gridReady="onGridReady"
       @firstDataRendered="onFirstDataRendered"
+      @afterFilterChanged="onAfterFilterChanged"
+      @headerCheckboxSelectionChanged="onHeaderCheckboxChanged"
     >
     </ag-grid-vue>
   </div>
@@ -59,7 +61,7 @@ export default {
           headerName: "Machine Name",
           width: 375,
         },
-        { field: "line.name", headerName: "Line", width: 375 },
+        { field: "line.name", headerName: "Lines", width: 375 },
       ],
 
       defaultColDef: {
@@ -118,6 +120,23 @@ export default {
         const node = gridApi.getRowNode(item.id); // Assuming each item in selectedMachinesArray has an 'id' property
         if (node) {
           node.setSelected(true); // Select the row
+        }
+      });
+    },
+
+    onHeaderCheckboxChanged(event) {
+      const filteredRows = this.gridApi.getModel().rowsToDisplay;
+      const selectedLine = this.gridApi
+        .getFilterInstance("line.name")
+        .getFilterModel().filter; // Get the filtered line
+
+      filteredRows.forEach((rowNode) => {
+        const rowData = rowNode.data;
+        if (
+          !rowNode.group &&
+          (!selectedLine || rowData.line.name === selectedLine)
+        ) {
+          rowNode.setSelected(event.target.checked);
         }
       });
     },

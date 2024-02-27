@@ -180,13 +180,14 @@ export default {
     //     });
     // },
     async saveChanges() {
-      console.log("this is the note", this.note);
+      console.log("this is the note =", this.note);
 
       if (!this.note.trim()) {
         // Show an error message or throw an error
         // For example, you can show a notification or throw an error
         this.$notify({
-          title: "Error: Note Field Cannot be empty",
+          title:
+            "Error: Note Field Cannot be empty, please provide a valid note.",
           type: "bg-danger-subtle text-danger",
           duration: "5000",
         });

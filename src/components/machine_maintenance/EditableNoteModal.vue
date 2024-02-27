@@ -180,6 +180,18 @@ export default {
     //     });
     // },
     async saveChanges() {
+      console.log("this is the note", this.note);
+
+      if (!this.note.trim()) {
+        // Show an error message or throw an error
+        // For example, you can show a notification or throw an error
+        this.$notify({
+          title: "Error: Note Field Cannot be empty",
+          type: "bg-danger-subtle text-danger",
+          duration: "5000",
+        });
+        return; // Exit the method if the note is empty
+      }
       console.log("first time maitnenace activity date markign creation api");
 
       console.log(

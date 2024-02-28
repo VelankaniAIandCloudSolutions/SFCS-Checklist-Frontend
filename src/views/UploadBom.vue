@@ -155,7 +155,7 @@
     </section>
 
     <!-- File Input for Excel -->
-    <div class="card p-3 mb-4">
+    <!-- <div class="card p-3 mb-4">
       <label for="fileInput" class="form-label">
         <i class="fas fa-cloud-upload-alt mr-2"></i>
         Choose BOM Excel file
@@ -173,7 +173,48 @@
           uploadedFileName || "Select file"
         }}</label>
       </div>
+    </div> -->
+
+    <div class="card p-3 mb-4">
+      <label for="bomFileInput" class="form-label">
+        <i class="fas fa-cloud-upload-alt mr-2"></i>
+        Choose BOM Excel file
+      </label>
+      <div class="custom-file">
+        <input
+          type="file"
+          class="custom-file-input"
+          id="bomFileInput"
+          @change="handleFileUpload($event, 'bom')"
+          accept=".xls, .xlsx"
+          required
+        />
+        <label class="custom-file-label" for="bomFileInput">{{
+          uploadedFileNameBOM || "Select file"
+        }}</label>
+      </div>
+      <div style="margin-bottom: 10px"></div>
+
+      <label for="pcbFileInput" class="form-label">
+        <i class="fas fa-cloud-upload-alt mr-2"></i>
+        Choose PCB BBT Test Report
+      </label>
+      <div class="custom-file">
+        <input
+          type="file"
+          class="custom-file-input"
+          id="pcbFileInput"
+          @change="handleFileUpload($event, 'pcb')"
+          accept=".xls, .xlsx,.pdf"
+          required
+        />
+        <label class="custom-file-label" for="pcbFileInput">{{
+          uploadedFileNamePCB || "Select file"
+        }}</label>
+      </div>
     </div>
+
+    <div style="margin-bottom: 10px"></div>
 
     <!-- Upload Button -->
     <div class="card p-3">
@@ -215,6 +256,10 @@ export default {
       productRevNo: "",
       uploadedFileName: null,
       uploadedFile: null,
+      uploadedFileNameBOM: "", // For BOM file name display
+      uploadedFileNamePCB: "", // For PCB file name display
+      uploadedFileBOM: null, // For storing BOM file
+      uploadedFilePCB: null, // For storing PCB file
       selectedProject: null, // Holds the selected project ID
       selectedProduct: null,
       projects: [],
@@ -445,8 +490,9 @@ export default {
       formData.append("bom_type", this.bomType);
       formData.append("bom_rev_no", this.bomRevNo);
       formData.append("issue_date", this.issueDate);
-      formData.append("bom_file", this.uploadedFile);
+      formData.append("bom_file", this.uploadedFileBOM);
       formData.append("bom_rev_change_note", this.bom_rev_change_note);
+      formData.append("pcb_file", this.uploadedFilePCB);
       console.log("FormData:", formData);
 
       try {
@@ -636,13 +682,37 @@ export default {
         this.$store.commit("setIsLoading", false);
       }
     },
-    handleFileUpload(event) {
+    // handleFileUpload(event) {
+    //   const file = event.target.files[0];
+
+    //   if (file) {
+    //     console.log("Uploaded file:", file);
+    //     this.uploadedFileName = file.name;
+    //     this.uploadedFile = file; // Store the file directly, no need to read content
+    //   }
+    // },
+    handleFileUpload(event, fileType) {
       const file = event.target.files[0];
 
       if (file) {
         console.log("Uploaded file:", file);
-        this.uploadedFileName = file.name;
-        this.uploadedFile = file; // Store the file directly, no need to read content
+        if (fileType === "bom") {
+          console.log("BOM file uploaded:", file.name);
+          this.uploadedFileNameBOM = file.name;
+          this.uploadedFileBOM = file;
+        } else if (fileType === "pcb") {
+          console.log("PCB file uploaded:", file.name);
+          this.uploadedFileNamePCB = file.name;
+          this.uploadedFilePCB = file;
+        }
+
+        // Print information about both files
+        if (this.uploadedFileBOM) {
+          console.log("Uploaded BOM file:", this.uploadedFileBOM);
+        }
+        if (this.uploadedFilePCB) {
+          console.log("Uploaded PCB file:", this.uploadedFilePCB);
+        }
       }
     },
 
@@ -659,7 +729,10 @@ export default {
       formData.append("bom_type", this.bomType);
       formData.append("bom_rev_no", this.bomRevNo);
       formData.append("issue_date", this.issueDate);
-      formData.append("bom_file", this.uploadedFile);
+      // formData.append("bom_file", this.uploadedFile);
+      formData.append("bom_file", this.uploadedFileBOM);
+      formData.append("pcb_file", this.uploadedFilePCB);
+
       formData.append("bom_rev_change_note", bomRevChangeNote);
 
       console.log("FormData:", formData);

@@ -220,7 +220,7 @@ export default {
         .catch((error) => {
           console.log("error:", error);
           this.$notify({
-            title: "An error occured, please try again later",
+            title: error.response.data.error,
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
@@ -243,7 +243,7 @@ export default {
             } else {
               this.$notify({
                 title:
-                  "No active checklist found for this bom, please generate a new checklist",
+                  "No active checklist found for this bom, please generate a new checklist.",
                 type: "bg-danger-subtle text-danger",
                 duration: "5000",
               });
@@ -261,7 +261,7 @@ export default {
         .catch((error) => {
           console.log("error:", error);
           this.$notify({
-            title: "An error occured, please try again later",
+            title: "An error occurred, please try again later",
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });

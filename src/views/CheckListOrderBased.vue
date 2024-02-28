@@ -204,7 +204,7 @@ export default {
         if (this.isExisting) {
           this.$notify({
             title:
-              "There is already an active ongoing checklist for this order...",
+              "There is already an active ongoing checklist for this order, please end that checklist by viewing the ongoing checklist to generate a new one.",
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
@@ -215,7 +215,7 @@ export default {
       } catch (error) {
         console.log("error:", error);
         this.$notify({
-          title: "An error occurred, please try again later",
+          title: error.response.data,
           type: "bg-danger-subtle text-danger",
           duration: "5000",
         });

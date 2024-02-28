@@ -175,12 +175,32 @@
             type="file"
             class="custom-file-input"
             id="fileInput"
-            @change="handleFileUpload"
+            @change="handleFileUpload($event, 'bom')"
             accept=".xls, .xlsx"
             required
           />
           <label class="custom-file-label" for="fileInput">{{
-            uploadedFileName || "Select file"
+            uploadedFileNameBOM || "Select file"
+          }}</label>
+        </div>
+
+        <div style="margin-bottom: 10px"></div>
+
+        <label for="pcbFileInput" class="form-label">
+          <i class="fas fa-cloud-upload-alt mr-2"></i>
+          Choose PCB BBT Test Report
+        </label>
+        <div class="custom-file">
+          <input
+            type="file"
+            class="custom-file-input"
+            id="pcbFileInput"
+            @change="handleFileUpload($event, 'pcb')"
+            accept=".xls, .xlsx,.pdf"
+            required
+          />
+          <label class="custom-file-label" for="pcbFileInput">{{
+            uploadedFileNamePCB || "Select file"
           }}</label>
         </div>
       </div>
@@ -315,8 +335,13 @@ export default {
       bomRevNo: null,
       isValidBomRevNo: true,
       bomType: null,
-      uploadedFileName: null,
-      uploadedFile: null,
+      uploadedFileName: null, // older bom
+      uploadedFile: null, // older bom
+      uploadedFileNameBOM: "", // For BOM file name display
+      uploadedFileNamePCB: "", // For PCB file name display
+      uploadedFileBOM: null, // For storing BOM file
+      uploadedFilePCB: null, // For storing PCB file
+
       isLoading: false,
       bom_rev_change_note: "",
       isCustomModalVisible: false,
@@ -427,13 +452,37 @@ export default {
       this.setIsLoading(false);
     },
 
-    handleFileUpload(event) {
+    // handleFileUpload(event) {
+    //   const file = event.target.files[0];
+
+    //   if (file) {
+    //     console.log("Uploaded file:", file);
+    //     this.uploadedFileName = file.name;
+    //     this.uploadedFile = file; // Store the file directly, no need to read content
+    //   }
+    // },
+    handleFileUpload(event, fileType) {
       const file = event.target.files[0];
 
       if (file) {
         console.log("Uploaded file:", file);
-        this.uploadedFileName = file.name;
-        this.uploadedFile = file; // Store the file directly, no need to read content
+        if (fileType === "bom") {
+          console.log("BOM file uploaded:", file.name);
+          this.uploadedFileNameBOM = file.name;
+          this.uploadedFileBOM = file;
+        } else if (fileType === "pcb") {
+          console.log("PCB file uploaded:", file.name);
+          this.uploadedFileNamePCB = file.name;
+          this.uploadedFilePCB = file;
+        }
+
+        // Print information about both files
+        if (this.uploadedFileBOM) {
+          console.log("Uploaded BOM file:", this.uploadedFileBOM);
+        }
+        if (this.uploadedFilePCB) {
+          console.log("Uploaded PCB file:", this.uploadedFilePCB);
+        }
       }
     },
 
@@ -542,6 +591,7 @@ export default {
       formData.append("issue_date", this.issueDate);
       formData.append("batch_quantity", this.order.batchQuantity);
       formData.append("bom_file", this.uploadedFile);
+      formData.append("pcb_file", this.uploadedFilePCB);
 
       try {
         const responseCases = await axios.post(

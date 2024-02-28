@@ -36,7 +36,10 @@
               </li>
             </ol>
           </nav>
-          <button class="btn btn-primary ml-auto" @click="downloadBOM">
+          <button class="btn-sm btn-warning ml-auto" @click="downloadPCBReport">
+            Open PCB Report
+          </button>
+          <button class="btn-sm btn-primary ml-3" @click="downloadBOM">
             Download BOM
           </button>
         </div>
@@ -141,7 +144,45 @@ export default {
         console.error("Error downloading BOM:", error);
       }
     },
+
+    downloadPCBReport() {
+      try {
+        const pcbFileUrl = this.bom.pcb_file_url;
+        const downloadLink = document.createElement("a");
+
+        downloadLink.href = pcbFileUrl;
+        downloadLink.target = "_blank"; // Open in a new tab
+        // Optionally, you can remove the download attribute
+        // downloadLink.download = this.bom.pcb_file_name;
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      } catch (error) {
+        console.error("Error opening PCB report in a new tab:", error);
+      }
+    },
+
+    // downloadPCBReport() {
+    //   try {
+    //     const pcbFileUrl = this.bom.pcb_file_url;
+    //     fetch(pcbFileUrl)
+    //       .then((response) => response.blob())
+    //       .then((blob) => {
+    //         const url = URL.createObjectURL(blob);
+    //         const a = document.createElement("a");
+    //         a.href = url;
+    //         a.download = this.bom.pcb_file_name;
+    //         document.body.appendChild(a);
+    //         a.click();
+    //         document.body.removeChild(a);
+    //       });
+    //   } catch (error) {
+    //     console.error("Error downloading PCB report:", error);
+    //   }
+    // },
   },
+
   mounted() {
     // Fetch data when the component is created
     this.fetchData();

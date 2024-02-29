@@ -368,50 +368,40 @@ export default {
     // },
 
     viewGeneratedChecklists() {
-      if (this.clickedRowId) {
-        // Make an API call to fetch generated checklists for the selected row
-        console.log("isnside view geenrated checklsits", this.clickedRowId);
-        this.$store.commit("setIsLoading", true);
-        axios
-          .get(`store/generated-checklists/${this.clickedRowId}/`)
-          .then((response) => {
-            // Check if there are any generated checklists available
-            const generatedChecklists = response.data;
-            console.log("generated checklists", generatedChecklists);
+      // Make an API call to fetch generated checklists for the selected row
+      console.log("isnside view geenrated checklsits", this.clickedRowId);
+      this.$store.commit("setIsLoading", true);
+      axios
+        .get(`store/generated-checklists/${this.clickedRowId}/`)
+        .then((response) => {
+          // Check if there are any generated checklists available
+          const generatedChecklists = response.data;
+          console.log("generated checklists", generatedChecklists);
 
-            if (generatedChecklists && generatedChecklists.length > 0) {
-              // If generated checklists are available, redirect to the page to view them
-              this.$store.commit("setIsLoading", false);
-
-              this.$router.push(`/generated-checklists/${this.clickedRowId}`);
-            } else {
-              // If no generated checklists are available, show an error message
-              this.$notify({
-                title: "No checklists are generated for this order.",
-                type: "bg-danger-subtle text-danger",
-                duration: "5000",
-              });
-              this.$store.commit("setIsLoading", false);
-            }
-          })
-          .catch((error) => {
-            console.error("Error fetching generated checklists:", error);
-            // Handle error
+          if (generatedChecklists && generatedChecklists.length > 0) {
+            // If generated checklists are available, redirect to the page to view them
+            this.$store.commit("setIsLoading", false);
+            this.$router.push(`/generated-checklists/${this.clickedRowId}`);
+          } else {
+            // If no generated checklists are available, show an error message
             this.$notify({
-              title: "An error occurred while fetching generated checklists.",
+              title: "No checklists are generated for this order.",
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });
             this.$store.commit("setIsLoading", false);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching generated checklists:", error);
+          // Handle error
+          this.$notify({
+            title: "An error occurred while fetching generated checklists.",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
           });
-      } else {
-        // Show an error message if no row is selected
-        this.$notify({
-          title: "Please select a row to view generated checklists.",
-          type: "bg-danger-subtle text-danger",
-          duration: "5000",
+          this.$store.commit("setIsLoading", false);
         });
-      }
     },
   },
   mounted() {

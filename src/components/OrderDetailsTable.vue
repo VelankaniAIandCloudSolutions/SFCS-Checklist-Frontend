@@ -7,7 +7,7 @@
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
-      :rowSelection="'multiple'"
+      :rowSelection="'single'"
       @rowClicked="onRowClicked"
       @selectionChanged="onSelectionChanged"
     >

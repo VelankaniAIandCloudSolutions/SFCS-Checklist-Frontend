@@ -229,7 +229,10 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <router-link to="/machine" class="nav-link">
+                  <router-link
+                    to="/machine/calendar-yearly-view"
+                    class="nav-link"
+                  >
                     <i class="fas fa-calendar-alt nav-icon"></i>
                     <p>Maintenance Plan</p>
                   </router-link>

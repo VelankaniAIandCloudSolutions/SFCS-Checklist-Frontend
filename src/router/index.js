@@ -24,10 +24,10 @@ import CheckListOrderBased from "../views/CheckListOrderBased.vue";
 import IqcLanding from "../views/IqcLanding.vue";
 import IqcForChecklist from "../views/IqcForChecklist.vue";
 import ProjectPricing from "../views/ProjectPricing.vue";
-import MachineLanding from "../views/machine_maintenance/MachineLanding.vue";
+import CalendarMonthlyView from "../views/machine_maintenance/CalendarMonthlyView.vue";
 import CreateMaintenanceCalendar from "../views/machine_maintenance/CreateMaintenanceCalendar.vue";
 import MarkMaintenancePlan from "../views/machine_maintenance/MarkMaintenancePlan.vue";
-
+import CalendarYearlyView from "../views/machine_maintenance/CalendarYearlyView.vue";
 const routes = [
   {
     path: "/",
@@ -173,11 +173,7 @@ const routes = [
     name: "ProjectPricing",
     component: ProjectPricing,
   },
-  {
-    path: "/machine",
-    name: "MachineMaintenance",
-    component: MachineLanding,
-  },
+
   {
     path: "/machine/create-maintenance-calendar",
     name: "CreateMaintenanceCalendar",
@@ -187,6 +183,21 @@ const routes = [
     path: "/machine/mark-maintenance-plan",
     name: "MarkMaintenancePlan",
     component: MarkMaintenancePlan,
+  },
+
+  {
+    path: "/machine/calendar-yearly-view",
+    name: "CalendarYearlyView",
+    component: CalendarYearlyView,
+  },
+  {
+    path: "/calendar-monthly-view",
+    name: "CalendarMonthlyView",
+    component: CalendarMonthlyView,
+    props: (route) => ({
+      lineId: route.query.lineId,
+      machineId: route.query.machineId,
+    }),
   },
 ];
 

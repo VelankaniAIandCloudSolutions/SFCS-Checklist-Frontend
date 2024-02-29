@@ -35,7 +35,12 @@
       <div class="col-md-6 d-flex justify-content-end mt-4">
         <select v-model="selectedLine" @change="selectLine">
           <option disabled value="">Select Line</option>
-          <option v-for="line in lines" :key="line.id" :value="line">
+          <option
+            v-for="line in lines"
+            :key="line.id"
+            :value="line"
+            :selected="line.id === preselectedLineId"
+          >
             {{ line.name }}
           </option>
         </select>
@@ -45,6 +50,7 @@
             v-for="machine in filteredMachines"
             :key="machine.id"
             :value="machine"
+            :selected="machine.id === preselectedMachineId"
           >
             {{ machine.name }}
           </option>
@@ -140,6 +146,8 @@ import CreateMaintenancePlanModal from "../../components/machine_maintenance/Cre
 import EditableNoteModal from "../../components/machine_maintenance/EditableNoteModal.vue";
 
 export default {
+  props: ["lineId", "machineId"],
+
   components: {
     FullCalendar,
     MaintenancePlanDetailsModal,
@@ -184,12 +192,42 @@ export default {
   },
 
   methods: {
-    getData() {
-      axios
+    async getData() {
+      await axios
         .get("machine-maintenance/get-machine-data/")
         .then((response) => {
           console.log(response.data);
           this.lines = response.data.lines;
+
+          // Receive the query parameters from the URL
+          const { lineId, machineId } = this.$route.query;
+          console.log(lineId);
+          console.log(machineId);
+          // If both lineId and machineId are provided, select the corresponding line and machine
+          if (lineId && machineId) {
+            console.log("lines in if", this.lines);
+            // Find the selected line based on lineId
+            this.selectedLine = response.data.lines.find(
+              (line) => line.id == lineId
+            );
+            this.selectLine();
+            console.log("Selected Line:", this.selectedLine);
+
+            // Find the selected machine based on machineId
+            if (this.selectedLine) {
+              this.selectedMachine = this.selectedLine.machines.find(
+                (machine) => machine.id == machineId
+              );
+              console.log("Selected Machine:", this.selectedMachine);
+
+              // If the selected machine is valid, fetch maintenance dates
+              if (this.selectedMachine) {
+                // this.fetchMaintenanceDates(this.selectedMachine.id);
+                this.selectMachine();
+              }
+            }
+          }
+
           this.maintenance_activity_types =
             response.data.maintenance_activity_types;
         })
@@ -608,8 +646,37 @@ export default {
     },
   },
 
+  // mounted() {
+  //   this.getData(); // Fetch data from the server
+  //   // Receive the query parameters from the URL
+  //   const { lineId, machineId } = this.$route.query;
+
+  //   console.log("line id for marent", lineId);
+  //   // Assign them to variables
+  //   this.preselectedLineId = lineId;
+  //   this.preselectedMachineId = machineId;
+
+  //   // // Set the initial selected line and machine based on props
+
+  // },
+  // mounted() {
+  //   // Fetch data from the server
+  //   const { lineId, machineId } = this.$route.query;
+  //   // Assign them to variables
+  //   this.preselectedLineId = lineId;
+  //   this.preselectedMachineId = machineId;
+  //   console.log("this is the line id from yearly", lineId);
+  //   console.log("this is the machiine id from yearly", machineId);
+
+  //   this.getData();
+  // },
+
   mounted() {
+    // Fetch data from the server
     this.getData();
+    // window.history.pushState({}, document.title, window.location.pathname);
+    // console.log("this is the line id from yearly", lineId);
+    // console.log("this is the machiine id from yearly", machineId);
   },
 };
 </script>

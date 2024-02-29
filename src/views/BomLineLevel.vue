@@ -144,16 +144,19 @@ export default {
         console.error("Error downloading BOM:", error);
       }
     },
-
     downloadPCBReport() {
       try {
         const pcbFileUrl = this.bom.pcb_file_url;
+        if (!pcbFileUrl) {
+          // If PCB file URL is not present, show a pop-up message
+          alert("PCB report is not available, as it was not attached.");
+          return;
+        }
+
         const downloadLink = document.createElement("a");
 
         downloadLink.href = pcbFileUrl;
         downloadLink.target = "_blank"; // Open in a new tab
-        // Optionally, you can remove the download attribute
-        // downloadLink.download = this.bom.pcb_file_name;
 
         document.body.appendChild(downloadLink);
         downloadLink.click();

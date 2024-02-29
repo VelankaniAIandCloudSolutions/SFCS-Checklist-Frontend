@@ -44,7 +44,9 @@
       <div class="row mb-3">
         <!-- Project Name -->
         <div class="col-md-6">
-          <label for="projectDropdown" class="form-label">Select Project</label>
+          <label for="projectDropdown" class="form-label"
+            >Select Project <span class="text-danger">*</span></label
+          >
 
           <select
             class="form-select"
@@ -65,7 +67,9 @@
         </div>
         <!-- Product Code -->
         <div class="col-md-6">
-          <label for="productCode" class="form-label">Product </label>
+          <label for="productCode" class="form-label"
+            >Product <span class="text-danger">*</span></label
+          >
           <select
             class="form-select"
             id="productCode"
@@ -98,7 +102,9 @@
         </div>
         <!-- BOM REV No -->
         <div class="col-md-6">
-          <label for="bomRevNo" class="form-label">BOM REV No</label>
+          <label for="bomRevNo" class="form-label"
+            >BOM REV No <span class="text-danger">*</span></label
+          >
           <input
             type="text"
             class="form-control"
@@ -131,7 +137,9 @@
         </div> -->
 
         <div class="col-md-6">
-          <label for="issueDate" class="form-label">Issue Date</label>
+          <label for="issueDate" class="form-label"
+            >Issue Date <span class="text-danger">*</span></label
+          >
           <input
             type="date"
             class="form-control"
@@ -178,7 +186,7 @@
     <div class="card p-3 mb-4">
       <label for="bomFileInput" class="form-label">
         <i class="fas fa-cloud-upload-alt mr-2"></i>
-        Choose BOM Excel file
+        Choose BOM Excel file <span class="text-danger">*</span>
       </label>
       <div class="custom-file">
         <input

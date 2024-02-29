@@ -369,7 +369,7 @@ export default {
 
     viewGeneratedChecklists() {
       // Make an API call to fetch generated checklists for the selected row
-      console.log("isnside view geenrated checklsits", this.clickedRowId);
+      console.log("inside view generated checklists", this.clickedRowId);
       this.$store.commit("setIsLoading", true);
       axios
         .get(`store/generated-checklists/${this.clickedRowId}/`)

@@ -222,7 +222,7 @@
               class="form-check-label"
               for="is_machine_maintenance_supervisor_team"
             >
-              Is Machine Maintenance Supervisor</label
+              Is Machine Maintenance Supervisor Team</label
             >
           </div>
         </div>

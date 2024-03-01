@@ -613,7 +613,7 @@ export default {
             type: "bg-success-subtle text-success",
             duration: "5000",
           });
-          this.$router.push("/machine");
+          this.$router.push("/machine/calendar-yearly-view");
           this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {

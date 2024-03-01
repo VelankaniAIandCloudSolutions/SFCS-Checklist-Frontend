@@ -317,6 +317,17 @@ export default {
       const formattedDate = `${year}-${month}-${day}`; // Rearranging and joining parts
       console.log(formattedDate);
 
+      if (
+        this.$store.state.user.is_superuser ||
+        this.$store.state.user.is_machine_maintenance_supervisor_team
+      ) {
+        // Bypass the date comparison logic and allow modification directly
+        // Your logic here for modification
+
+        this.modifyEvent(info.event); // Assuming modifyEvent is a function you use for modifying events
+        return;
+      }
+
       const clickedDate = new Date(formattedDate);
 
       const currentDate = new Date(); // Get current date
@@ -362,7 +373,9 @@ export default {
           // Check if the user who clicked the event is the creator of the maintenance activity
           if (
             this.$store.state.user.email ===
-            clickedEvent.extendedProps.created_by_userMail
+              clickedEvent.extendedProps.created_by_userMail ||
+            this.$store.state.user.is_superuser ||
+            this.$store.state.user.is_machine_maintenance_supervisor_team
           ) {
             // Allow modification if the user is the creator
             this.modifyEvent(clickedEvent);
@@ -381,7 +394,8 @@ export default {
 
       //   if(clickedEvent.color==="green")
       if (
-        clickedEvent.extendedProps.color === "orange" &&
+        (clickedEvent.extendedProps.color === "orange" ||
+          clickedEvent.extendedProps.color === "red") &&
         clickedEvent.extendedProps.note === ""
       ) {
         // First time modification, no note exists

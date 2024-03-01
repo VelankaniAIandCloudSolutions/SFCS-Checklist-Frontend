@@ -15,6 +15,8 @@ const store = createStore({
       is_superuser: false,
       is_store_team: false,
       is_design_team: false,
+      is_machine_maintenance_supervisor_team: false,
+      is_machine_maintenance_staff_team: false,
     },
     isLoading: false,
   },
@@ -37,6 +39,10 @@ const store = createStore({
           state.user.is_superuser = userDetails.is_superuser;
           state.user.is_store_team = userDetails.is_store_team;
           state.user.is_design_team = userDetails.is_design_team;
+          state.user.is_machine_maintenance_supervisor_team =
+            userDetails.is_machine_maintenance_supervisor_team;
+          state.user.is_machine_maintenance_staff_team =
+            userDetails.is_machine_maintenance_staff_team;
         }
       } else {
         state.user.token = "";
@@ -60,6 +66,11 @@ const store = createStore({
       state.user.is_superuser = userDetails.is_superuser; // Assuming the API response has an 'is_superuser' field
       state.user.is_store_team = userDetails.is_store_team; // Assuming the API response has an 'is_store_team' field
       state.user.is_design_team = userDetails.is_design_team; // Assuming the API response has an 'is_design_team' field
+      state.user.is_machine_maintenance_supervisor_team =
+        userDetails.is_machine_maintenance_supervisor_team;
+      state.user.is_machine_maintenance_staff_team =
+        userDetails.is_machine_maintenance_staff_team; // Assuming the API response has an 'is_machine_maintenance_staff_team' field
+      // Assuming the API response has an 'is_machine_maintenance_supervisor_team' field
     },
 
     setIsLoading(state, status) {
@@ -75,6 +86,8 @@ const store = createStore({
       state.user.is_superuser = false;
       state.user.is_store_team = false;
       state.user.is_design_team = false;
+      state.user.is_machine_maintenance_supervisor_team = false;
+      state.user.is_machine_maintenance_staff_team = false;
       // state.user.state.user.profile = {};
       state.user.isAuthenticated = false;
       localStorage.removeItem("token");

@@ -209,6 +209,40 @@
             >
           </div>
         </div>
+        <div class="col">
+          <div class="form-check">
+            <input
+              v-model="newUser.is_machine_maintenance_supervisor_team"
+              :disabled="newUser.is_superuser"
+              type="checkbox"
+              class="form-check-input"
+              id="is_design_team"
+            />
+            <label
+              class="form-check-label"
+              for="is_machine_maintenance_supervisor_team"
+            >
+              Is Machine Maintenance Supervisor</label
+            >
+          </div>
+        </div>
+        <div class="col">
+          <div class="form-check">
+            <input
+              v-model="newUser.is_machine_maintenance_staff_team"
+              :disabled="newUser.is_superuser"
+              type="checkbox"
+              class="form-check-input"
+              id="is_design_team"
+            />
+            <label
+              class="form-check-label"
+              for="is_machine_maintenance_staff_team"
+            >
+              Is Machine Maintenance Staff Team</label
+            >
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -231,6 +265,8 @@ export default {
         is_staff: false,
         is_store_team: false,
         is_design_team: false,
+        is_machine_maintenance_supervisor_team: false,
+        is_machine_maintenance_staff_team: false,
         // Add more fields as needed
       },
       formSubmitted: false,
@@ -245,6 +281,8 @@ export default {
         this.newUser.is_staff = true;
         this.newUser.is_store_team = true;
         this.newUser.is_design_team = true;
+        this.newUser.is_machine_maintenance_supervisor_team = true;
+        this.newUser.is_machine_maintenance_staff_team = true;
       }
     },
     createUser() {

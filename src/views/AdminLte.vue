@@ -218,7 +218,11 @@
 
             <li
               class="nav-item text-left"
-              v-if="$store.state.user.is_superuser"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_machine_maintenance_supervisor_team ||
+                $store.state.user.is_machine_maintenance_staff_team
+              "
             >
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-cogs"></i>
@@ -228,7 +232,13 @@
                 </p>
               </a>
               <ul class="nav nav-treeview">
-                <li class="nav-item">
+                <li
+                  class="nav-item"
+                  v-if="
+                    $store.state.user.is_superuser ||
+                    $store.state.user.is_machine_maintenance_supervisor_team
+                  "
+                >
                   <router-link
                     to="/machine/calendar-yearly-view"
                     class="nav-link"

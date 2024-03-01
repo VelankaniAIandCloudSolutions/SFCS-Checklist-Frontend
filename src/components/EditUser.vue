@@ -194,6 +194,39 @@
             </div>
           </div>
         </div>
+
+        <div class="mb-3 row">
+          <div class="col">
+            <div class="form-check">
+              <input
+                v-model="editedUser.is_machine_maintenance_supervisor_team"
+                :disabled="editedUser.is_superuser"
+                type="checkbox"
+                class="form-check-input"
+                id="is_machine_maintenance_supervisor_team"
+              />
+              <label class="form-check-label" for="is_store_team"
+                ><i class="fas fa-user-shield me-1"></i> Is Machine Maintenance
+                Supervisor</label
+              >
+            </div>
+          </div>
+          <div class="col">
+            <div class="form-check">
+              <input
+                v-model="editedUser.is_machine_maintenance_staff_team"
+                :disabled="editedUser.is_superuser"
+                type="checkbox"
+                class="form-check-input"
+                id="is_machine_maintenance_staff_team"
+              />
+              <label class="form-check-label" for="is_design_team"
+                ><i class="fas fa-user-cog me-1"></i> Is Machine Maintenance
+                Staff Team
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -216,6 +249,8 @@ export default {
         is_staff: false,
         is_store_team: false,
         is_design_team: false,
+        is_machine_maintenance_supervisor_team: false,
+        is_machine_maintenance_staff_team: false,
         // Add more fields as needed
       },
     };
@@ -246,6 +281,8 @@ export default {
         this.editedUser.is_staff = true;
         this.editedUser.is_store_team = true;
         this.editedUser.is_design_team = true;
+        this.editedUser.is_machine_maintenance_supervisor_team = true;
+        this.editedUser.is_machine_maintenance_staff_team = true;
       }
     },
     updateUser() {

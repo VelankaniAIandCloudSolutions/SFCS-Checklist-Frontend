@@ -21,12 +21,14 @@
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
               <li class="breadcrumb-item">
-                <a href="/"><i class="fas fa-home me-2"></i>Home</a>
+                <a href="/machine/calendar-yearly-view"
+                  ><i class="far fa-calendar me-2"></i>Yearly View</a
+                >
               </li>
-              <!-- <li class="breadcrumb-item active" aria-current="page">
-                <i class="fas fa-shopping-cart me-1"></i>
-                Orders
-              </li> -->
+              <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-calendar me-2"></i>
+                Monthly View
+              </li>
             </ol>
           </nav>
         </div>

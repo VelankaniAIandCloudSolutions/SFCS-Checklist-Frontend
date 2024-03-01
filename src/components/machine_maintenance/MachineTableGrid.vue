@@ -58,6 +58,7 @@ export default {
           field: "name",
           headerCheckboxSelection: true,
           checkboxSelection: true,
+          headerCheckboxSelectionFilteredOnly: true,
           headerName: "Machine Name",
           width: 375,
         },

@@ -54,7 +54,10 @@ export default {
         },
 
         { field: "bom.product.name", headerName: "Product" },
-        { field: "batch_quantity", headerName: "Batch Quantity" },
+        { field: "created_by.first_name", headerName: "Created By:" },
+        { field: "created_at", headerName: "Created At:" },
+        { field: "updated_by.first_name", headerName: "Updated By:" },
+        { field: "updated_at", headerName: "Updated At:" },
 
         {
           field: "bom.bom_file_name",

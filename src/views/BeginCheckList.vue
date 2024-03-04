@@ -847,7 +847,7 @@ export default {
             duration: "5000",
           });
           this.checklist = response.data.checklist;
-          this.checklistItems = this.checklist.checklist_items;
+          //this.checklistItems = this.checklist.checklist_items;
           this.isChecklistPassed = this.checklist.is_passed;
           this.activeBom = this.checklist.bom;
           if (

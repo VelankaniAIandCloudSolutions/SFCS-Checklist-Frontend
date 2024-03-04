@@ -15,6 +15,42 @@
       @grid-ready="onGridReady"
     >
     </ag-grid-vue>
+
+    <!-- Button trigger modal -->
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">...</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -81,6 +117,21 @@ export default {
           //       console.error("API Error:", error);
           //     });
           // },
+        },
+        {
+          headerName: "Present Quantity",
+          field: "present_quantity",
+          cellRenderer: (params) => {
+            return `
+    <div class="present-quantity-cell d-flex align-items-center">
+      <span class="me-5">${params.value}</span>
+      <button class="btn btn-sm btn-outline-primary edit-button"     
+      data-bs-toggle="modal"
+      data-bs-target="#exampleModal"      @click="openEditModal(params)">
+        <i class="far fa-edit"></i>
+      </button>
+    </div>`;
+          },
         },
         {
           headerName: "Required Quantity",

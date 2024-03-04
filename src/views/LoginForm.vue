@@ -131,7 +131,7 @@ body {
   position: relative;
   min-height: 100vh;
   max-width: 100% !important;
-  background-color: #dedee8;
+  background-color: #eaeafc;
   overflow: hidden;
   display: grid;
   place-items: center;

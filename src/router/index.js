@@ -28,6 +28,8 @@ import CalendarMonthlyView from "../views/machine_maintenance/CalendarMonthlyVie
 import CreateMaintenanceCalendar from "../views/machine_maintenance/CreateMaintenanceCalendar.vue";
 import MarkMaintenancePlan from "../views/machine_maintenance/MarkMaintenancePlan.vue";
 import CalendarYearlyView from "../views/machine_maintenance/CalendarYearlyView.vue";
+import ReportGeneration from "../views/machine_maintenance/ReportGeneration.vue";
+
 const routes = [
   {
     path: "/",
@@ -189,6 +191,11 @@ const routes = [
     path: "/machine/calendar-yearly-view",
     name: "CalendarYearlyView",
     component: CalendarYearlyView,
+  },
+  {
+    path: "/machine/report-generation",
+    name: "ReportGeneration",
+    component: ReportGeneration,
   },
   {
     path: "/calendar-monthly-view",

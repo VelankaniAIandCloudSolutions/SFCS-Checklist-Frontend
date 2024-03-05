@@ -144,7 +144,10 @@
           </div>
         </div>
       </section>
-      <ReportGenerationGrid :maintenance_activities="maintenance_activities" />
+      <ReportGenerationGrid
+        v-if="maintenanceActivitiesApiCallSuccess"
+        :maintenance_plans="maintenance_plans"
+      />
     </div>
   </div>
 </template>
@@ -171,7 +174,7 @@ export default {
       maintenance_activity_types: [],
       selectedMachinesArray: [],
       date: [],
-      maintenance_activities: [],
+      maintenance_plans: [],
       maintenanceActivitiesApiCallSuccess: false,
     };
   },
@@ -271,7 +274,7 @@ export default {
       // Make a GET request to your API endpoint
       axios
         .get(
-          "machine-maintenance/get-maintenance-activities-for-report-generation/",
+          "machine-maintenance/get-maintenance-plans-for-report-generation/",
           {
             params: {
               month: this.selectedMonth,
@@ -283,7 +286,7 @@ export default {
           // Log the response data
           console.log("Response from API:", response.data);
 
-          this.maintenance_activities = response.data.maintenance_activities;
+          this.maintenance_plans = response.data.maintenance_plans;
           this.maintenanceActivitiesApiCallSuccess = true;
 
           // Further processing of response data can be done here

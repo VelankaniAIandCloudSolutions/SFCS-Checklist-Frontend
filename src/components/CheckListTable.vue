@@ -15,6 +15,75 @@
       @grid-ready="onGridReady"
     >
     </ag-grid-vue>
+
+    <!-- Button trigger modal -->
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1
+              class="modal-title fs-5 font-weight-bold"
+              id="exampleModalLabel"
+            >
+              Change The Present Quantity
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="editedQuantity" class="form-label"
+                >Present Quantity</label
+              >
+              <textarea
+                id="editedQuantity"
+                class="form-control"
+                v-model="activeRow.present_quantity"
+              ></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="reasonForChange" class="form-label"
+                >Reason For Change</label
+              >
+              <textarea
+                id="reasonForChange"
+                class="form-control"
+                v-model="reasonForChange"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="updatePresentQuantity"
+              data-bs-dismiss="modal"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -22,6 +91,7 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
+import axios from "axios";
 
 export default {
   props: {
@@ -34,7 +104,9 @@ export default {
     AgGridVue,
   },
   data() {
+    // console.log("Reason for change initialized:", this.reasonForChange);
     return {
+      reasonForChange: "",
       gridApi: null,
       isGridReady: false, // Flag to track grid readiness
       colDefs: [
@@ -61,27 +133,35 @@ export default {
         {
           headerName: "Present Quantity",
           field: "present_quantity",
-          // editable: true,
-          // onCellValueChanged: async function (params) {
-          //   // Handle the value change here
-          //   console.log("New value:", params.newValue);
-          //   console.log("Row data:", params.data);
+          cellRenderer: (params) => {
+            const button = document.createElement("button");
+            button.classList.add(
+              "btn",
+              "btn-sm",
+              "btn-outline-primary",
+              "edit-button"
+            );
+            button.innerHTML = '<i class="far fa-edit"></i>';
+            button.dataset.bsToggle = "modal"; // Set data-bs-toggle attribute
+            button.dataset.bsTarget = "#exampleModal"; // Set data-bs-target attribute
+            button.addEventListener("click", () => {
+              this.setActiveRow(params);
+            });
 
-          //   // Make an API call to update the backend
-          //   // Example using Vue.js axios for the API call
+            const container = document.createElement("div");
+            container.classList.add(
+              "present-quantity-cell",
+              "d-flex",
+              "align-items-center"
+            );
+            container.innerHTML = `
+      <span class="me-5">${params.value}</span>`;
+            container.appendChild(button);
 
-          //   await axios
-          //     .put(`store/update-checklist-item/${params.data.id}/`, {
-          //       present_quantity: params.newValue,
-          //     })
-          //     .then((response) => {
-          //       console.log("API Response:", response.data);
-          //     })
-          //     .catch((error) => {
-          //       console.error("API Error:", error);
-          //     });
-          // },
+            return container;
+          },
         },
+
         {
           headerName: "Required Quantity",
           field: "required_quantity",
@@ -133,6 +213,8 @@ export default {
         domLayout: "autoHeight",
       },
       selectedRows: [],
+      activeRow: {},
+      editedQuantity: "", // Textarea model for edited quantity
     };
   },
   mounted() {},
@@ -150,11 +232,18 @@ export default {
     //   // Refresh the grid
     //   // this.gridApi.setRowData(this.rowData);
     // },
+    setActiveRow(params) {
+      console.log("isnide setActiveRow");
+      console.log("thsi si aprams data", params.data);
+      this.activeRow = params.data; // Set the active row
+    },
+
     statusCellRenderer(params) {
       return params.value ? "✔" : "✘"; // Replace with your logic
     },
     onRowClicked(params) {
       // Emit an event with the clicked row data
+      // this.editedQuantity = params.data.present_quantity;
       this.$emit("rowClicked", params.data);
     },
     onRowSelected(params) {
@@ -181,6 +270,36 @@ export default {
       // Store the grid API reference when the grid is ready
       this.gridApi = params.api;
       this.isGridReady = true; // Set the flag to true when the grid is ready
+    },
+    updatePresentQuantity() {
+      // Make API call to update present quantity
+      console.log("id of checklsit tiem clicked", this.activeRow.id);
+      console.log("quanitty", this.activeRow.present_quantity);
+      console.log("reason for change", this.reasonForChange);
+
+      axios
+        .put(`store/update-checklist-item/${this.activeRow.id}/`, {
+          present_quantity: this.activeRow.present_quantity,
+          reason_for_change: this.reasonForChange,
+        })
+        .then((response) => {
+          console.log("Present quantity updated successfully:", response.data);
+          this.$notify({
+            title: "Present quantity updated successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+          // Hide the modal after successful update
+          // Optionally, you can emit an event or perform any necessary actions here
+        })
+        .catch((error) => {
+          console.error("Error updating present quantity:", error);
+          this.$notify({
+            title: "Error Updating present Quantity",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+        });
     },
   },
 };

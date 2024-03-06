@@ -239,6 +239,18 @@
                     $store.state.user.is_machine_maintenance_supervisor_team
                   "
                 >
+                  <router-link to="/machine/report-generation" class="nav-link">
+                    <i class="fas fa-file-excel nav-icon"></i>
+                    <p>Report Generation</p>
+                  </router-link>
+                </li>
+                <li
+                  class="nav-item"
+                  v-if="
+                    $store.state.user.is_superuser ||
+                    $store.state.user.is_machine_maintenance_supervisor_team
+                  "
+                >
                   <router-link
                     to="/machine/calendar-yearly-view"
                     class="nav-link"

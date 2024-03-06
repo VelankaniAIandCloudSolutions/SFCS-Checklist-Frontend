@@ -202,8 +202,8 @@
     </div>
 
     <!-- <div>
-      <textarea @input="handleScannerInput" rows="10" cols="30"></textarea>
-    </div> -->
+        <textarea @input="handleScannerInput" rows="10" cols="30"></textarea>
+      </div> -->
 
     <div class="accordion" id="accordionPanelsStayOpenExample">
       <div class="accordion-item">
@@ -602,28 +602,140 @@ export default {
         // Initialize other types as needed
       },
       scannedEntries: [],
+      ws: null,
     };
   },
 
   mounted() {
     this.getChecklistBeginning();
-    this.pollingInterval = setInterval(() => {
-      if (!this.isChecklistPassed) {
-        this.getChecklist();
-      } else {
-        clearInterval(this.pollingInterval);
-        this.$notify({
-          title: "BOM Check Passed",
-          type: "bg-success-subtle text-success",
-          duration: "5000",
-        });
-      }
-    }, 5000);
-  },
-  beforeUnmount() {
-    clearInterval(this.pollingInterval);
-  },
+    // this.pollingInterval = setInterval(() => {
+    //   if (!this.isChecklistPassed) {
+    //     this.getChecklist();
+    //   } else {
+    //     clearInterval(this.pollingInterval);
+    //     this.$notify({
+    //       title: "BOM Check Passed",
+    //       type: "bg-success-subtle text-success",
+    //       duration: "5000",
+    //     });
+    //   }
+    // }, 5000);
+    this.ws = new WebSocket(`ws://192.168.3.95:8000/ws/checklist/`);
 
+    // Event listener for WebSocket connection opened
+    this.ws.addEventListener("open", () => {
+      console.log("WebSocket connection opened");
+    });
+
+    // Event listener for WebSocket messages received
+    this.ws.addEventListener("message", (event) => {
+      // Parse the received message
+      console.log("thi ssi event.data raw ", event.data);
+      const data = JSON.parse(event.data);
+      console.log("event.data after parsing", data);
+      console.log("Received active checklist:", data.active_checklist);
+
+      this.checklist = data.active_checklist;
+      this.checklistItems = this.checklist.checklist_items;
+      console.log("chehcklist items hereeeeee", this.checklistItems);
+      const rawMaterialItems = this.filterChecklistItemsByType("Raw Material");
+      const pcbItems = this.filterChecklistItemsByType("PCB");
+      const solderPasteItems = this.filterChecklistItemsByType("Solder Paste");
+      const solderBarItems = this.filterChecklistItemsByType("Solder Bar");
+      const solderFluxItems = this.filterChecklistItemsByType("Solder Flux");
+      const IpaItems = this.filterChecklistItemsByType("IPA");
+      const stencilItems = this.filterChecklistItemsByType("Solder Wire");
+      const smtPalletItems = this.filterChecklistItemsByType("SMT Pallet");
+      const wavePalletItems = this.filterChecklistItemsByType("Wave Pallet");
+      const labelItems = this.filterChecklistItemsByType(
+        "PCB Serial Number Label"
+      );
+      this.isChecklistPassed = this.checklist.is_passed;
+      this.activeBom = this.checklist.bom;
+      this.filteredChecklistItems = {
+        "Raw Material": rawMaterialItems,
+        PCB: pcbItems,
+        "Solder Paste": solderPasteItems,
+        "Solder Bar": solderBarItems,
+        "Solder Flux": solderFluxItems,
+        IPA: IpaItems,
+        "Solder Wire": stencilItems,
+        "SMT Pallet": smtPalletItems,
+        "Wave Pallet": wavePalletItems,
+        "PCB Serial Number Label": labelItems,
+        // Add more types                                                                                                                    as needed
+      };
+      console.log("filered checklsit items", this.filteredChecklistItems);
+      this.isRawMaterialSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "Raw Material"
+      );
+
+      this.isPcbSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "PCB"
+      );
+      this.isSolderPasteSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "Solder Paste"
+      );
+      this.isSolderBarSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "Solder Bar"
+      );
+      console.log("checking solder bar", this.isSolderBarSufficient);
+      this.isSolderFluxSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "Solder Flux"
+      );
+      this.isIpaSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "IPA"
+      );
+      this.isSolderWireSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "Solder Wire"
+      );
+      this.isSMTPalletSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "SMT Pallet"
+      );
+      this.isWavePalletSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "Wave Pallet"
+      );
+      this.isLabelSufficient = this.isItemsSufficient(
+        this.filteredChecklistItems,
+        "PCB Serial Number Label"
+      );
+
+      if (
+        this.checklist.status == "Completed" ||
+        this.checklist.status == "Failed"
+      ) {
+        this.isChecklistEnded = true;
+      }
+      if (this.checklist.qr_code_link) {
+        this.generatedQRCode = this.checklist.qr_code_link;
+      }
+
+      // Update your Vue component data based on the received checklist items
+      // For example:
+      // this.checklistItems = data.checklist_items;
+    });
+
+    // Event listener for WebSocket connection closed
+    this.ws.addEventListener("close", () => {
+      console.log("WebSocket connection closed");
+    });
+  },
+  // beforeUnmount() {
+  //   clearInterval(this.pollingInterval);
+  // },
+  beforeUnmount() {
+    // Close WebSocket connection when the component is unmounted
+    this.ws.close();
+  },
   methods: {
     async getChecklistBeginning() {
       this.$store.commit("setIsLoading", true);
@@ -866,7 +978,7 @@ export default {
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
-          clearInterval(this.pollingInterval);
+          // clearInterval(this.pollingInterval);
           this.$store.commit("setIsLoading", false);
         });
     },

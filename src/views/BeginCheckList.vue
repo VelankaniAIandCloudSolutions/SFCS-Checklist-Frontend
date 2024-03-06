@@ -602,28 +602,56 @@ export default {
         // Initialize other types as needed
       },
       scannedEntries: [],
+      ws: null,
     };
   },
 
   mounted() {
-    this.getChecklistBeginning();
-    this.pollingInterval = setInterval(() => {
-      if (!this.isChecklistPassed) {
-        this.getChecklist();
-      } else {
-        clearInterval(this.pollingInterval);
-        this.$notify({
-          title: "BOM Check Passed",
-          type: "bg-success-subtle text-success",
-          duration: "5000",
-        });
-      }
-    }, 5000);
-  },
-  beforeUnmount() {
-    clearInterval(this.pollingInterval);
-  },
+    // this.getChecklistBeginning();
+    // this.pollingInterval = setInterval(() => {
+    //   if (!this.isChecklistPassed) {
+    //     this.getChecklist();
+    //   } else {
+    //     clearInterval(this.pollingInterval);
+    //     this.$notify({
+    //       title: "BOM Check Passed",
+    //       type: "bg-success-subtle text-success",
+    //       duration: "5000",
+    //     });
+    //   }
+    // }, 5000);
+    this.ws = new WebSocket(
+      `ws://localhost:8000/ws/checklist/?id=${this.$route.params.id}`
+    );
 
+    // Event listener for WebSocket connection opened
+    this.ws.addEventListener("open", () => {
+      console.log("WebSocket connection opened");
+    });
+
+    // Event listener for WebSocket messages received
+    this.ws.addEventListener("message", (event) => {
+      // Parse the received message
+      const data = JSON.parse(event.data);
+      console.log("Received checklist items:", data.checklist_items);
+
+      // Update your Vue component data based on the received checklist items
+      // For example:
+      // this.checklistItems = data.checklist_items;
+    });
+
+    // Event listener for WebSocket connection closed
+    this.ws.addEventListener("close", () => {
+      console.log("WebSocket connection closed");
+    });
+  },
+  // beforeUnmount() {
+  //   clearInterval(this.pollingInterval);
+  // },
+  beforeUnmount() {
+    // Close WebSocket connection when the component is unmounted
+    this.ws.close();
+  },
   methods: {
     async getChecklistBeginning() {
       this.$store.commit("setIsLoading", true);

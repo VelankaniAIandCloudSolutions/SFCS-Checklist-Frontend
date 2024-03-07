@@ -39,7 +39,7 @@
       <div class="col-md-6 mt-4">
         <div class="container">
           <div class="d-flex justify-content-end">
-            <button
+            <!-- <button
               type="button"
               data-bs-toggle="modal"
               data-bs-target="#generateLabelModal"
@@ -57,6 +57,18 @@
               v-else
             >
               Generate Label
+            </button>  -->
+
+            <button
+              type="button"
+              :class="{
+                'btn-warning': isChecklistOngoing,
+                'btn-success': !isChecklistOngoing,
+              }"
+              @click="toggleChecklistStatus"
+              class="btn me-2"
+            >
+              {{ isChecklistOngoing ? "Pause Checklist" : "Resume Checklist" }}
             </button>
             <button class="btn btn-primary me-2" @click="downloadBOM">
               Download BOM
@@ -603,6 +615,7 @@ export default {
       },
       scannedEntries: [],
       ws: null,
+      isChecklistOngoing: true,
     };
   },
 
@@ -845,6 +858,62 @@ export default {
           this.$store.commit("setIsLoading", false);
         });
     },
+
+    toggleChecklistStatus() {
+      // Send a request to toggle the checklist status
+      this.$store.commit("setIsLoading", true);
+      console.log("this is the checklist id", this.checklist.id);
+      axios
+        .post(`/store/toggle-checklist-settings/${this.checklist.id}/`)
+        .then((response) => {
+          // Handle success response
+          console.log(response.data.message);
+
+          // Update isChecklistOngoing based on the response message
+          if (
+            response.data.message === "Checklist has been paused successfully."
+          ) {
+            this.isChecklistOngoing = false;
+            this.$notify({
+              title: response.data.message,
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          } else if (
+            response.data.message === "Checklist has been resumed successfully."
+          ) {
+            this.isChecklistOngoing = true;
+            this.$notify({
+              title: response.data.message,
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          }
+          // 404 checklist setting is not there only
+          else if (response.status === 404) {
+            this.$notify({
+              title: "Checklist is not present",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          }
+
+          // Optionally, update your UI or perform any other actions
+          this.$store.commit("setIsLoading", false);
+        })
+        .catch((error) => {
+          // Handle error response
+          console.error("An error occurred:", error.response.data);
+          // Display an error message to the user
+          this.$notify({
+            title: error.response.data.error,
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        });
+    },
+
     async getChecklist() {
       await axios
         .get(`store/get-active-checklist/${this.$route.params.id}/`)
@@ -951,6 +1020,7 @@ export default {
       this.$store.commit("setIsLoading", true);
       clearInterval(this.pollingInterval);
 
+      console.log("this is the checklsit id", this.checklist.id);
       await axios
         .get(`store/end-checklist/${this.checklist.id}/`)
         .then((response) => {

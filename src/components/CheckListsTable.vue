@@ -102,7 +102,7 @@ export default {
       return button;
     },
     onViewClick(data) {
-      if (data.status === "In Progress") {
+      if (data.status === "In Progress" || data.status === "Paused") {
         this.$router.push(`/begin-checklist/${data.bom.id}`);
       } else {
         this.$router.push(`/checklist-details/${data.id}`);

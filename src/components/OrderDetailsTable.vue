@@ -40,6 +40,11 @@ export default {
           checkboxSelection: true,
         },
         {
+          field: "batch_quantity",
+          headerName: "Batch Quantity",
+        },
+
+        {
           field: "bom.id",
           headerName: "BOM ID ",
           hide: true,

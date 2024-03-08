@@ -60,7 +60,7 @@
               <textarea
                 id="reasonForChange"
                 class="form-control"
-                v-model="reasonForChange"
+                v-model="activeRow.present_quantity_change_note"
               ></textarea>
             </div>
           </div>
@@ -77,6 +77,7 @@
               class="btn btn-primary"
               @click="updatePresentQuantity"
               data-bs-dismiss="modal"
+              :disabled="!activeRow.present_quantity_change_note"
             >
               Save changes
             </button>
@@ -102,6 +103,21 @@ export default {
   },
   components: {
     AgGridVue,
+  },
+  watch: {
+    // Watch for changes in the 'checklistItems' prop
+    checklistItems: function (newData, oldData) {
+      console.log("watch called");
+      console.log("new", newData);
+      // Check if the new data is different from the old data
+      if (newData !== oldData) {
+        // Set the grid data to the new data
+        this.gridApi.setRowData(newData);
+
+        // Refresh the grid to reflect the changes
+        this.gridApi.refreshCells({ force: true });
+      }
+    },
   },
   data() {
     // console.log("Reason for change initialized:", this.reasonForChange);
@@ -273,30 +289,38 @@ export default {
     },
     updatePresentQuantity() {
       // Make API call to update present quantity
-      console.log("id of checklsit tiem clicked", this.activeRow.id);
-      console.log("quanitty", this.activeRow.present_quantity);
+      console.log("id of checklist item clicked", this.activeRow.id);
+      console.log("quantity", this.activeRow.present_quantity);
       console.log("reason for change", this.reasonForChange);
 
       axios
         .put(`store/update-checklist-item/${this.activeRow.id}/`, {
           present_quantity: this.activeRow.present_quantity,
-          reason_for_change: this.reasonForChange,
+          reason_for_change: this.activeRow.present_quantity_change_note,
         })
         .then((response) => {
           console.log("Present quantity updated successfully:", response.data);
+
+          this.$emit("checklistItemUpdated", response.data);
+
           this.$notify({
             title: "Present quantity updated successfully",
             type: "bg-success-subtle text-success",
             duration: "5000",
           });
+
           // Hide the modal after successful update
           // Optionally, you can emit an event or perform any necessary actions here
         })
         .catch((error) => {
-          console.error("Error updating present quantity:", error);
+          console.error(
+            "Error updating present quantity:",
+            error.response.data.message
+          );
+
           this.$notify({
-            title: "Error Updating present Quantity",
-            type: "bg-success-subtle text-success",
+            title: error.response.data.message,
+            type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
         });

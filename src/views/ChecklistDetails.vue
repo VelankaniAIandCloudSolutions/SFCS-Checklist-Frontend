@@ -18,11 +18,30 @@
         <div class="d-flex align-items-center">
           <h2 class="mb-0">Checklist Details</h2>
           <span class="ms-3 fs-4 text-muted me-3">|</span>
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-transparent m-0 p-0 justify-content-end">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <nav aria-label="breadcrumb" class="flex-grow-1">
+            <ol class="breadcrumb bg-transparent m-0 p-0 d-flex flex-wrap">
+              <li class="breadcrumb-item">
+                <router-link to="/checklist">
+                  <i class="fas fa-list-alt me-1"></i>
+                  Checklist
+                </router-link>
+              </li>
+              <li class="breadcrumb-item">
+                <a
+                  v-if="
+                    this.checklist &&
+                    this.checklist.bom &&
+                    this.checklist.bom.id
+                  "
+                  :href="'/generated-checklists/' + this.checklist.bom.id"
+                >
+                  <i class="fas fa-list-alt me-1"></i>
+                  Generated Checklists
+                </a>
+              </li>
               <li class="breadcrumb-item active" aria-current="page">
-                Checklist
+                <i class="fa-solid fa-list-check me-1"></i>
+                Checklist Details
               </li>
             </ol>
           </nav>
@@ -31,25 +50,8 @@
       <div class="col-md-6 mt-4 d-flex justify-content-end">
         <div class="container">
           <div class="d-flex justify-content-end">
-            <!-- <button
-              type="button"
-              data-bs-toggle="modal"
-              data-bs-target="#generateLabelModal"
-              class="btn btn-success me-2"
-              v-if="generatedQRCode"
-            >
-              View Generated Label
-            </button>
             <button
-              type="button"
-              data-bs-toggle="modal"
-              data-bs-target="#generateLabelModal"
-              class="btn btn-success me-2"
-              v-else
-            >
-              Generate Label
-            </button> -->
-            <button
+              v-if="this.checklist && this.checklist.status === 'Paused'"
               type="button"
               class="btn btn-success me-2"
               @click="resumeChecklist"

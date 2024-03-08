@@ -245,6 +245,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Raw Material']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -278,7 +279,10 @@
           aria-labelledby="panelsStayOpen-headingTwo"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['PCB']" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['PCB']"
+              @checklistItemUpdated="updateChecklistItem"
+            />
           </div>
         </div>
       </div>
@@ -313,6 +317,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Paste']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -348,6 +353,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Bar']"
+              @checklistItemUpdated="updateChecklistItem"
             />>
           </div>
         </div>
@@ -383,6 +389,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Flux']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -416,7 +423,10 @@
           aria-labelledby="panelsStayOpen-headingSix"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['IPA']" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['IPA']"
+              @checklistItemUpdated="updateChecklistItem"
+            />
           </div>
         </div>
       </div>
@@ -451,6 +461,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Wire']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -486,6 +497,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['SMT Pallet']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -521,6 +533,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Wave Pallet']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -558,6 +571,7 @@
               :checklistItems="
                 filteredChecklistItems['PCB Serial Number Label']
               "
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -1185,6 +1199,29 @@ export default {
       } catch (error) {
         console.error("Error downloading BOM:", error);
       }
+    },
+    updateChecklistItem(updatedItems) {
+      this.getChecklist();
+      console.log(updatedItems);
+      // this.checklistItems = updatedItems;
+      // const index = this.checklistItems.findIndex(
+      //   (item) => item.id === updatedItem.id
+      // );
+
+      // console.log("Index of item to update:", index);
+
+      // if (index !== -1) {
+      //   // Remove the old item from the array
+      //   this.checklistItems.splice(index, 1);
+
+      //   // Insert the updated item at the beginning of the array
+      //   this.checklistItems.unshift(updatedItem);
+
+      //   // Log the update status
+      //   console.log("Item updated successfully");
+      // } else {
+      //   console.log("Item not found");
+      // }
     },
 
     // handleScannerInput(event) {

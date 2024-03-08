@@ -11,6 +11,7 @@
       <b> Loading... </b>
     </div>
   </div>
+
   <div v-else class="container">
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
@@ -69,9 +70,65 @@
       @rowSelected="handleRowSelected"
       @rowDeselected="handleRowDeselected"
     /> -->
+
+    <div v-if="activeChecklist" class="card card-outline card-primary mt-5">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 20px">Active Checklist:</h3>
+        <div class="card-tools">
+          <router-link
+            :to="
+              '/begin-checklist/' +
+              (this.activeChecklist && this.activeChecklist.bom
+                ? this.activeChecklist.bom.id
+                : '')
+            "
+          >
+            <button class="btn-sm btn-primary">View Checklist</button>
+          </router-link>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3">
+            <strong>Checklist ID:</strong>
+            {{ this.activeChecklist ? this.activeChecklist.id : "N/A" }}
+          </div>
+          <div class="col-md-3">
+            <strong>Batch Quantity:</strong>
+            {{
+              this.activeChecklist ? this.activeChecklist.batch_quantity : "N/A"
+            }}
+          </div>
+          <div class="col-md-3">
+            <strong>Project Name:</strong>
+            {{
+              this.activeChecklist &&
+              this.activeChecklist.bom &&
+              this.activeChecklist.bom.product &&
+              this.activeChecklist.bom.product.project
+                ? this.activeChecklist.bom.product.project.name
+                : "N/A"
+            }}
+          </div>
+          <div class="col-md-3">
+            <strong>Product Name:</strong>
+            {{
+              this.activeChecklist &&
+              this.activeChecklist.bom &&
+              this.activeChecklist.bom.product
+                ? this.activeChecklist.bom.product.name
+                : "N/A"
+            }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- /.card -->
     <OrderDetailsTable
       style="margin-top: 20px"
       :orders="orders"
+      :checklists="checklists"
       @rowClicked="handleRowClicked"
       @rowSelected="handleRowSelected"
       @rowDeselected="handleRowDeselected"
@@ -151,6 +208,8 @@ export default {
       isActive: false,
       batch_quantity: 1,
       generateChecklists: [],
+      checklists: [],
+      activeChecklist: null,
     };
   },
   methods: {
@@ -159,8 +218,11 @@ export default {
         // Fetch BOM data from your API endpoint
         this.$store.commit("setIsLoading", true);
         const response = await axios.get("store/get-orders/");
+        console.log(response.data);
         this.orders = response.data.orders;
-        console.log(response.data.orders);
+        this.activeChecklist = response.data.active_checklist;
+        console.log("this is active checklsit", this.activeChecklist);
+
         this.$store.commit("setIsLoading", false);
       } catch (error) {
         console.error("Error fetching BOM data:", error);

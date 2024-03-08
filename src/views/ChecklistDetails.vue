@@ -18,11 +18,30 @@
         <div class="d-flex align-items-center">
           <h2 class="mb-0">Checklist Details</h2>
           <span class="ms-3 fs-4 text-muted me-3">|</span>
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-transparent m-0 p-0 justify-content-end">
-              <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <nav aria-label="breadcrumb" class="flex-grow-1">
+            <ol class="breadcrumb bg-transparent m-0 p-0 d-flex flex-wrap">
+              <li class="breadcrumb-item">
+                <router-link to="/checklist">
+                  <i class="fas fa-list-alt me-1"></i>
+                  Checklist
+                </router-link>
+              </li>
+              <li class="breadcrumb-item">
+                <a
+                  v-if="
+                    this.checklist &&
+                    this.checklist.bom &&
+                    this.checklist.bom.id
+                  "
+                  :href="'/generated-checklists/' + this.checklist.bom.id"
+                >
+                  <i class="fas fa-list-alt me-1"></i>
+                  Generated Checklists
+                </a>
+              </li>
               <li class="breadcrumb-item active" aria-current="page">
-                Checklist
+                <i class="fa-solid fa-list-check me-1"></i>
+                Checklist Details
               </li>
             </ol>
           </nav>
@@ -32,22 +51,12 @@
         <div class="container">
           <div class="d-flex justify-content-end">
             <button
+              v-if="this.checklist && this.checklist.status === 'Paused'"
               type="button"
-              data-bs-toggle="modal"
-              data-bs-target="#generateLabelModal"
               class="btn btn-success me-2"
-              v-if="generatedQRCode"
+              @click="resumeChecklist"
             >
-              View Generated Label
-            </button>
-            <button
-              type="button"
-              data-bs-toggle="modal"
-              data-bs-target="#generateLabelModal"
-              class="btn btn-success me-2"
-              v-else
-            >
-              Generate Label
+              Resume Checklist
             </button>
           </div>
         </div>
@@ -147,12 +156,17 @@
             aria-expanded="true"
             aria-controls="panelsStayOpen-collapseOne"
           >
-            Raw Material Check
-            <div v-if="isRawMaterialSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            Raw Material
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isRawMaterialSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -179,11 +193,16 @@
             aria-controls="panelsStayOpen-collapseTwo"
           >
             PCB Check
-            <div v-if="isPcbSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isPcbSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -208,11 +227,16 @@
             aria-controls="panelsStayOpen-collapseThree"
           >
             Solder Paste
-            <div v-if="isSolderPasteSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isSolderPasteSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -239,11 +263,16 @@
             aria-controls="panelsStayOpen-collapseFour"
           >
             Solder Bar
-            <div v-if="isSolderBarSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isSolderBarSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -270,15 +299,22 @@
             aria-controls="panelsStayOpen-collapseFive"
           >
             Solder Flux
-            <div v-if="isSolderFluxSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isSolderFluxSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
         <div
+          data-bs-toggle="modal"
+          data-bs-target="#generateLabelModal"
           id="panelsStayOpen-collapseFive"
           class="accordion-collapse collapse"
           aria-labelledby="panelsStayOpen-headingFive"
@@ -301,11 +337,16 @@
             aria-controls="panelsStayOpen-collapseSix"
           >
             IPA
-            <div v-if="isIpaSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isIpaSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -330,11 +371,16 @@
             aria-controls="panelsStayOpen-collapseSeven"
           >
             Solder Wire
-            <div v-if="isSolderWireSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isSolderWireSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -361,11 +407,16 @@
             aria-controls="panelsStayOpen-collapseEight"
           >
             SMT Pallet
-            <div v-if="isSMTPalletSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isSMTPalletSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -392,11 +443,16 @@
             aria-controls="panelsStayOpen-collapseNine"
           >
             Wave Pallet
-            <div v-if="isWavePalletSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isWavePalletSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -423,11 +479,16 @@
             aria-controls="panelsStayOpen-collapseTen"
           >
             PCB Serial Number Label
-            <div v-if="isLabelSufficient == false">
-              <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+            <div v-if="this.checklist.status == 'Paused'">
+              <i class="fas fa-pause-circle fs-4 ms-2"></i>
             </div>
             <div v-else>
-              <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              <div v-if="isLabelSufficient == false">
+                <i class="bi bi-x-circle-fill fs-4 ms-2"></i>
+              </div>
+              <div v-else>
+                <i class="bi bi-check-circle-fill fs-4 ms-2"></i>
+              </div>
             </div>
           </button>
         </h2>
@@ -504,7 +565,7 @@ export default {
           console.log("yehh", response.data);
           this.checklist = response.data.checklist;
           this.checklistItems = this.checklist.checklist_items;
-          console.log("chehcklist items hereeeeee", this.checklistItems);
+          console.log("chehcklist hereeeeee", this.checklist);
           console.log("chehcklist items hereeeeee", this.checklistItems);
           const rawMaterialItems =
             this.filterChecklistItemsByType("Raw Material");
@@ -671,6 +732,51 @@ export default {
         printWindow.document.write(printableContent.innerHTML);
         printWindow.print();
       }
+    },
+    resumeChecklist() {
+      // Send a request to resume the checklist
+      this.$store.commit("setIsLoading", true);
+      console.log("this is the checklist id", this.checklist.id);
+      axios
+        .post(`/store/resume-checklist/${this.checklist.id}/`)
+        .then((response) => {
+          // Handle success response
+          console.log(response.data.message);
+
+          // Check if the response contains a success message
+          if (response.status === 200) {
+            // Redirect to checklist-details page with checklist id
+            this.$router.push(`/begin-checklist/${this.checklist.bom.id}`);
+
+            // Display success message
+            this.$notify({
+              title: response.data.message,
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          } else {
+            // Display error message
+            this.$notify({
+              title: response.data.error,
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          }
+
+          // Optionally, update your UI or perform any other actions
+          this.$store.commit("setIsLoading", false);
+        })
+        .catch((error) => {
+          // Handle error response
+          console.error("An error occurred:", error.response.data);
+          // Display an error message to the user
+          this.$notify({
+            title: error.response.data.error,
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        });
     },
   },
 };

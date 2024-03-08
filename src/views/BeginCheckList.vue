@@ -39,7 +39,7 @@
       <div class="col-md-6 mt-4">
         <div class="container">
           <div class="d-flex justify-content-end">
-            <button
+            <!-- <button
               type="button"
               data-bs-toggle="modal"
               data-bs-target="#generateLabelModal"
@@ -57,6 +57,14 @@
               v-else
             >
               Generate Label
+            </button>  -->
+
+            <button
+              type="button"
+              class="btn btn-warning btn-pause-checklist me-2"
+              @click="pauseChecklist"
+            >
+              Pause Checklist
             </button>
             <button class="btn btn-primary me-2" @click="downloadBOM">
               Download BOM
@@ -237,6 +245,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Raw Material']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -270,7 +279,10 @@
           aria-labelledby="panelsStayOpen-headingTwo"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['PCB']" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['PCB']"
+              @checklistItemUpdated="updateChecklistItem"
+            />
           </div>
         </div>
       </div>
@@ -305,6 +317,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Paste']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -340,6 +353,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Bar']"
+              @checklistItemUpdated="updateChecklistItem"
             />>
           </div>
         </div>
@@ -375,6 +389,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Flux']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -408,7 +423,10 @@
           aria-labelledby="panelsStayOpen-headingSix"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['IPA']" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['IPA']"
+              @checklistItemUpdated="updateChecklistItem"
+            />
           </div>
         </div>
       </div>
@@ -443,6 +461,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Wire']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -478,6 +497,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['SMT Pallet']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -513,6 +533,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Wave Pallet']"
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -550,6 +571,7 @@
               :checklistItems="
                 filteredChecklistItems['PCB Serial Number Label']
               "
+              @checklistItemUpdated="updateChecklistItem"
             />
           </div>
         </div>
@@ -603,6 +625,7 @@ export default {
       },
       scannedEntries: [],
       ws: null,
+      isChecklistOngoing: true,
     };
   },
 
@@ -843,6 +866,105 @@ export default {
           this.$store.commit("setIsLoading", false);
         });
     },
+
+    // toggleChecklistStatus() {
+    //   // Send a request to toggle the checklist status
+    //   this.$store.commit("setIsLoading", true);
+    //   console.log("this is the checklist id", this.checklist.id);
+    //   axios
+    //     .post(`/store/toggle-checklist-settings/${this.checklist.id}/`)
+    //     .then((response) => {
+    //       // Handle success response
+    //       console.log(response.data.message);
+
+    //       // Update isChecklistOngoing based on the response message
+    //       if (
+    //         response.data.message === "Checklist has been paused successfully."
+    //       ) {
+    //         this.isChecklistOngoing = false;
+    //         this.$notify({
+    //           title: response.data.message,
+    //           type: "bg-success-subtle text-success",
+    //           duration: "5000",
+    //         });
+    //       } else if (
+    //         response.data.message === "Checklist has been resumed successfully."
+    //       ) {
+    //         this.isChecklistOngoing = true;
+    //         this.$notify({
+    //           title: response.data.message,
+    //           type: "bg-success-subtle text-success",
+    //           duration: "5000",
+    //         });
+    //       }
+    //       // 404 checklist setting is not there only
+    //       else if (response.status === 404) {
+    //         this.$notify({
+    //           title: "Checklist is not present",
+    //           type: "bg-danger-subtle text-danger",
+    //           duration: "5000",
+    //         });
+    //       }
+
+    //       // Optionally, update your UI or perform any other actions
+    //       this.$store.commit("setIsLoading", false);
+    //     })
+    //     .catch((error) => {
+    //       // Handle error response
+    //       console.error("An error occurred:", error.response.data);
+    //       // Display an error message to the user
+    //       this.$notify({
+    //         title: error.response.data.error,
+    //         type: "bg-danger-subtle text-danger",
+    //         duration: "5000",
+    //       });
+    //       this.$store.commit("setIsLoading", false);
+    //     });
+    // },
+    pauseChecklist() {
+      // Send a request to pause the checklist
+      this.$store.commit("setIsLoading", true);
+      console.log("this is the checklist id", this.checklist.id);
+      axios
+        .post(`/store/pause-checklist/${this.checklist.id}/`)
+        .then((response) => {
+          // Handle success response
+          console.log(response.data.message);
+          this.$router.push(`/checklist-details/${this.checklist.id}`);
+
+          // Check if the response contains a success message
+          if (response.status === 200) {
+            // Display success message
+            this.$notify({
+              title: response.data.message,
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          } else {
+            // Display error message
+            this.$notify({
+              title: response.data.error,
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          }
+
+          // Optionally, update your UI or perform any other actions
+          this.$store.commit("setIsLoading", false);
+        })
+        .catch((error) => {
+          // Handle error response
+          console.error("An error occurred:", error.response.data);
+          // Display an error message to the user
+          this.$notify({
+            title: error.response.data.error,
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          this.$store.commit("setIsLoading", false);
+        });
+    },
+
     async getChecklist() {
       await axios
         .get(`store/get-active-checklist/${this.$route.params.id}/`)
@@ -949,6 +1071,7 @@ export default {
       this.$store.commit("setIsLoading", true);
       clearInterval(this.pollingInterval);
 
+      console.log("this is the checklsit id", this.checklist.id);
       await axios
         .get(`store/end-checklist/${this.checklist.id}/`)
         .then((response) => {
@@ -1074,6 +1197,29 @@ export default {
       } catch (error) {
         console.error("Error downloading BOM:", error);
       }
+    },
+    updateChecklistItem(updatedItems) {
+      this.getChecklist();
+      console.log(updatedItems);
+      // this.checklistItems = updatedItems;
+      // const index = this.checklistItems.findIndex(
+      //   (item) => item.id === updatedItem.id
+      // );
+
+      // console.log("Index of item to update:", index);
+
+      // if (index !== -1) {
+      //   // Remove the old item from the array
+      //   this.checklistItems.splice(index, 1);
+
+      //   // Insert the updated item at the beginning of the array
+      //   this.checklistItems.unshift(updatedItem);
+
+      //   // Log the update status
+      //   console.log("Item updated successfully");
+      // } else {
+      //   console.log("Item not found");
+      // }
     },
 
     // handleScannerInput(event) {

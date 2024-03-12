@@ -144,10 +144,28 @@
           </div>
         </div>
       </section>
-      <ReportGenerationGrid
-        v-if="maintenanceActivitiesApiCallSuccess"
-        :maintenance_plans="maintenance_plans"
-      />
+
+      <div class="container text-center">
+        <div v-if="$store.state.isLoading">
+          <div
+            class="spinner-border mt-5"
+            style="width: 4rem; height: 4rem"
+            role="status"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div>
+            <b>Loading...</b>
+          </div>
+        </div>
+
+        <div v-else>
+          <ReportGenerationGrid
+            v-if="maintenanceActivitiesApiCallSuccess"
+            :maintenance_plans="maintenance_plans"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -270,6 +288,7 @@ export default {
         (machine) => machine.id
       );
       console.log("this is the selected machine ids", selectedMachineIds);
+      this.$store.commit("setIsLoading", true);
 
       // Make a GET request to your API endpoint
       axios
@@ -288,12 +307,14 @@ export default {
 
           this.maintenance_plans = response.data.maintenance_plans;
           this.maintenanceActivitiesApiCallSuccess = true;
+          this.$store.commit("setIsLoading", false);
 
           // Further processing of response data can be done here
         })
         .catch((error) => {
           // Handle any errors
           console.error("Error:", error);
+          this.$store.commit("setIsLoading", false);
         });
     },
 

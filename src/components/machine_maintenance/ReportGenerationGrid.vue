@@ -1,8 +1,36 @@
 <template>
-  <div>
+  <div class="d-flex flex-column" style="height: 600px">
+    <!-- Dropdown for export options -->
+    <div class="dropdown align-self-end" style="margin-bottom: 10px">
+      <button
+        class="btn-sm btn-primary dropdown-toggle"
+        type="button"
+        id="exportDropdown"
+        @click="toggleDropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Export
+      </button>
+      <div
+        class="dropdown-menu"
+        :class="{ show: isDropdownOpen }"
+        aria-labelledby="exportDropdown"
+        style="z-index: 1000"
+      >
+        <button @click="exportToCsv" class="dropdown-item" type="button">
+          Export to CSV
+        </button>
+        <button @click="exportToExcel" class="dropdown-item" type="button">
+          Export to Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Ag-Grid -->
     <ag-grid-vue
       ref="agGrid"
-      style="height: 500px"
+      style="flex-grow: 1"
       class="ag-theme-quartz"
       :rowData="maintenance_plans"
       :defaultColDef="defaultColDef"
@@ -11,15 +39,14 @@
       rowSelection="multiple"
     >
     </ag-grid-vue>
-    <button @click="exportToCsv">Export to CSV</button>
-    <button @click="exportToExcel">Export to Excel</button>
   </div>
 </template>
-
 <script>
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
+import * as XLSX from "xlsx";
+
 // import utils from "xlsx";
 // import * as XLSX from "xlsx";
 
@@ -37,6 +64,8 @@ export default {
 
   data() {
     return {
+      isDropdownOpen: false,
+
       colDefs: [
         {
           headerName: "Id",
@@ -68,12 +97,6 @@ export default {
         },
 
         {
-          headerName: "Maintenance Activity Performed:",
-          field: "maintenance_date",
-          cellRenderer: this.customActivityRenderer,
-        },
-
-        {
           headerName: "Maintenance Activity Performed By:",
           field: "maintenance_activities",
           cellRenderer: this.customActivityPerformedByRenderer,
@@ -93,6 +116,9 @@ export default {
     };
   },
   methods: {
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
     customMachineLineNameRenderer(params) {
       const machineName = params.data.machine.name; // Assuming machine name is directly accessible
       const lineName = params.data.machine.line.name; // Assuming line name is nested under 'line' property
@@ -203,37 +229,84 @@ export default {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      this.toggleDropdown();
     },
+    exportToExcel() {
+      // Retrieve the column definitions from Ag-Grid
+      const columnDefs = this.$refs.agGrid.api.getColumnDefs();
 
-    // exportToCsv() {
-    //   const params = {
-    //     fileName: "maintenance_plans.csv",
-    //   };
-    //   this.$refs.agGrid.api.exportDataAsCsv(params);
-    // },
-    // exportToExcel() {
-    //   const params = {
-    //     fileName: "maintenance_plans.xlsx",
-    //   };
-    //   this.$refs.agGrid.api.exportDataAsExcel(params);
-    // },
+      // Extract column names
+      const columnNames = columnDefs.map((colDef) => colDef.headerName);
 
-    // exportToExcel() {
-    //   const params = {
-    //     fileName: "maintenance_plans.xlsx",
-    //   };
-    //   const rowData = this.maintenance_plans;
+      // Retrieve the raw row data from the Ag-Grid instance
+      const rowData = this.$refs.agGrid.api
+        .getModel()
+        .rowsToDisplay.map((row) => row.data);
 
-    //   // Convert data to Excel format
-    //   const worksheet = xlsxUtils.json_to_sheet(rowData);
-    //   const workbook = xlsxUtils.book_new();
-    //   xlsxUtils.book_append_sheet(workbook, worksheet, "Sheet1");
+      // Transform the data to match the rendering logic of your custom cell renderers
+      const transformedData = rowData.map((row) => ({
+        id: row.id,
+        maintenance_date: row.maintenance_date,
+        machine_line_name: this.customMachineLineNameRenderer({ data: row }),
+        maintenance_activity_type: row.maintenance_activity_type.name,
+        maintenance_activity_performed: this.customActivityRenderer({
+          data: row,
+        }),
+        maintenance_activity_performed_by:
+          this.customActivityPerformedByRenderer({
+            value: row.maintenance_activities,
+          }),
+        date_time_performed: this.customDateTimePerformedRenderer({
+          value: row.maintenance_activities,
+        }),
+        activity_note: this.customActivityNoteRenderer({
+          value: row.maintenance_activities,
+        }),
+      }));
 
-    //   // Save the workbook as a file
-    //   xlsxUtils.writeFile(workbook, `${params.fileName}`);
-    // },
+      // Replace HTML content with text values for "Done" and "Not Done"
+      transformedData.forEach((row) => {
+        if (
+          row.maintenance_activity_performed ===
+          '<span style="color: green">&#10004;</span>'
+        ) {
+          row.maintenance_activity_performed = "Done";
+        } else if (
+          row.maintenance_activity_performed ===
+          '<span style="color: red">&#10008;</span>'
+        ) {
+          row.maintenance_activity_performed = "Not Done";
+        }
+      });
+
+      // Include column names as the first row
+      const excelData = [
+        columnNames,
+        ...transformedData.map((row) => Object.values(row)),
+      ];
+
+      // Convert data to Excel format
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.aoa_to_sheet(excelData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Maintenance Plans");
+
+      // Save the workbook as a file
+      XLSX.writeFile(workbook, "maintenance_plans.xlsx");
+
+      // Close the dropdown after exporting
+      this.toggleDropdown();
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.dropdown-item:hover {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.1
+  ); /* Adjust the background color as needed */
+}
+</style>

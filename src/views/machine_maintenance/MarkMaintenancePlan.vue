@@ -96,8 +96,10 @@
       :show="showModal"
       :selectedEvent="selectedEvent"
       :clickedEvent="clickedEvent"
+      :selectedLineId="selectedLineId"
       @close-modal="closeModal"
       :modalTitle="modalTitle"
+      :clickedFormattedDate="formattedDate"
       @event-color-updated="handleEventColorUpdated"
       @date-marked-maintenance-activity-created="populateCalendarNew"
       @maintenance-activity-note-updated="populateCalendarNew"
@@ -128,6 +130,7 @@ export default {
       maintenance_plans: {},
       lines: [],
       selectedLine: "",
+      selectedLineId: null,
       selectedMachine: "",
       selectedDate: null,
       selectedEvent: {},
@@ -315,7 +318,7 @@ export default {
         .split("/")
         .map((part) => part.padStart(2, "0")); // Splitting the date parts and adding leading zeros if necessary
       const formattedDate = `${year}-${month}-${day}`; // Rearranging and joining parts
-      console.log(formattedDate);
+      console.log("formatted-date", formattedDate);
 
       if (
         this.$store.state.user.is_superuser ||
@@ -495,6 +498,11 @@ export default {
     selectLine() {
       // Filter machines based on the selected line
       if (this.selectedLine) {
+        console.log("this is the sleected line", this.selectedLine);
+
+        const selectedLineId = this.selectedLine.id;
+        this.selectedLineId = selectedLineId;
+        console.log("selected lien id", this.selectedLineId);
         this.filteredMachines = this.selectedLine.machines;
       } else {
         this.filteredMachines = []; // Reset the filtered machines if no line is selected

@@ -18,6 +18,17 @@
         </div>
         <div class="modal-body">
           <textarea v-model="note" class="form-control" rows="4"></textarea>
+          <!-- <div class="form-check mt-4">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="applyToAll"
+              v-model="applyToAllMachines"
+            />
+            <label class="form-check-label" for="applyToAll">
+              Apply to all machines of the line
+            </label>
+          </div> -->
         </div>
         <div class="modal-footer">
           <button
@@ -60,10 +71,19 @@ export default {
       type: String,
       required: true,
     },
+    selectedLineId: {
+      type: Number,
+      required: true,
+    },
+    clickedFormattedDate: {
+      type: String, // Define the type as String
+      required: true,
+    },
   },
   data() {
     return {
       note: "",
+      applyToAllMachines: false,
     };
   },
   watch: {
@@ -125,60 +145,10 @@ export default {
         });
     },
 
-    // async saveChanges() {
-    //   axios
-    //     .put(
-    //       `/machine-maintenance/update-or-delete-maintenance-activity-note/${this.selectedEvent.maintenancePlanId}`,
-    //       {
-    //         note: this.note,
-    //       }
-    //     )
-    //     .then((response) => {
-    //       // Handle successful update response
-    //       if (response.status === 200 || response.status === 204) {
-    //         // Update was successful
-    //         this.closeModal();
-    //         // Display success notification for update
-    //         this.$notify({
-    //           title: "Note Updated Successfully",
-    //           type: "bg-success-subtle text-success",
-    //           duration: "5000",
-    //         });
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error updating note:", error);
-    //       // Handle error
-    //       // Display error notification
-    //       this.$notify({
-    //         title: "Error updating note",
-    //         type: "bg-danger-subtle text-danger",
-    //         duration: "5000",
-    //       });
-    //     });
-    // },
-
     closeModal() {
       this.$emit("close-modal");
     },
 
-    // MarkDate() {
-    //   // Make API call using Axios
-    //   console.log("create maintenance activity called");
-    //   axios
-    //     .post(
-    //       "/machine-maintenance/create-or-delete-maintenance-activity",
-    //       this.selectedEvent
-    //     )
-    //     .then((response) => {
-    //       console.log("Response:", response.data);
-    //       // Handle success response here
-    //     })
-    //     .catch((error) => {
-    //       console.error("Error:", error);
-    //       // Handle error here
-    //     });
-    // },
     async saveChanges() {
       console.log("this is the note =", this.note);
 
@@ -193,6 +163,8 @@ export default {
         });
         return; // Exit the method if the note is empty
       }
+
+      // const applyToAll = this.applyToAllMachines ? true : false;
       console.log("first time maitnenace activity date markign creation api");
 
       console.log(
@@ -207,21 +179,19 @@ export default {
         // If the event is orange, it means it's a new note
         const id = this.selectedEvent.extendedProps.id;
         const note = this.note;
+        const selectedLineId = this.selectedLineId;
+        const clickedFormattedDate = this.clickedFormattedDate;
 
         axios
           .post("/machine-maintenance/create-maintenance-activity", {
             id: id,
             note: note,
+            selectedLineId: selectedLineId,
+            clickedFormattedDate: clickedFormattedDate,
           })
           .then((response) => {
             console.log("Response:", response.data);
-            // Emit an event to notify the parent component (calendar) about the color change
-            // this.$emit("event-color-updated", {
-            //   eventId: this.selectedEvent.id,
-            //   newColor: "green",
-            //   createdNote: note,
-            // });
-            // Handle success response here
+
             this.$emit(
               "date-marked-maintenance-activity-created",
               response.data.maintenance_plans

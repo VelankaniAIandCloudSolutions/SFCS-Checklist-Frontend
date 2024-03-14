@@ -9,7 +9,7 @@
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
               <li class="breadcrumb-item active" aria-current="page">
-                <i class="fas fa-calendar-alt me-2"></i>Calendar
+                <i class="fas fa-chart-bar me-2"></i>Report
               </li>
             </ol>
           </nav>

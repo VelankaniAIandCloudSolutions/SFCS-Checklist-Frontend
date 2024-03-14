@@ -20,10 +20,8 @@
           <span class="ms-3 fs-4 text-muted">|</span>
           <nav aria-label="breadcrumb" class="d-inline-block ms-3">
             <ol class="breadcrumb bg-transparent m-0 p-0">
-              <li class="breadcrumb-item">
-                <router-link to="/machine">
-                  <i class="fas fa-calendar-alt me-2"></i>Calendar
-                </router-link>
+              <li class="breadcrumb-item" aria-current="page">
+                <i class="fas fa-calendar-alt me-2"></i>Calendar
               </li>
             </ol>
           </nav>

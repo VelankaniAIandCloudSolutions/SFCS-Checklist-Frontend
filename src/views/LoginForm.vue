@@ -99,8 +99,8 @@ export default {
 
             this.$notify({
               title: "Login failed. Please check your credentials.",
-              type: "alert-danger", // Bootstrap class for danger/error
-              duration: 5000,
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
             });
             console.error("Login failed:", error.response.data);
             this.errors.push("Login failed. Please check your credentials.");

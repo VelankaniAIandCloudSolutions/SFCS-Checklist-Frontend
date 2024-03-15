@@ -152,17 +152,17 @@ export default {
     async saveChanges() {
       console.log("this is the note =", this.note);
 
-      if (!this.note.trim()) {
-        // Show an error message or throw an error
-        // For example, you can show a notification or throw an error
-        this.$notify({
-          title:
-            "Error: Note Field Cannot be empty, please provide a valid note.",
-          type: "bg-danger-subtle text-danger",
-          duration: "5000",
-        });
-        return; // Exit the method if the note is empty
-      }
+      // if (!this.note.trim()) {
+      //   // Show an error message or throw an error
+      //   // For example, you can show a notification or throw an error
+      //   this.$notify({
+      //     title:
+      //       "Error: Note Field Cannot be empty, please provide a valid note.",
+      //     type: "bg-danger-subtle text-danger",
+      //     duration: "5000",
+      //   });
+      //   return; // Exit the method if the note is empty
+      // }
 
       // const applyToAll = this.applyToAllMachines ? true : false;
       console.log("first time maitnenace activity date markign creation api");
@@ -178,81 +178,89 @@ export default {
       ) {
         // If the event is orange, it means it's a new note
         const id = this.selectedEvent.extendedProps.id;
+        // const clickedMaintenancePlanDate =
+        this.selectedEvent.extendedProps.maintenance_plan_date;
         const note = this.note;
         const selectedLineId = this.selectedLineId;
-        const clickedFormattedDate = this.clickedFormattedDate;
+        // const clickedFormattedDate = this.clickedFormattedDate;
 
-        axios
-          .post("/machine-maintenance/create-maintenance-activity", {
-            id: id,
-            note: note,
-            selectedLineId: selectedLineId,
-            clickedFormattedDate: clickedFormattedDate,
-          })
-          .then((response) => {
-            console.log("Response:", response.data);
+        console.log(" maintenance plan ID:", id);
+        // console.log("Clicked Date:", clickedMaintenancePlanDate);
+        console.log("Note:", note);
+        console.log("Selected Line ID:", selectedLineId);
+        // console.log("Clicked Formatted Date:", clickedFormattedDate);
 
-            this.$emit(
-              "date-marked-maintenance-activity-created",
-              response.data.maintenance_plans
-            );
-            this.closeModal();
+        // axios
+        //   .post("/machine-maintenance/create-maintenance-activity", {
+        //     id: id,
+        //     note: note,
+        //     clickedMaintenancePlanDate:  clickedMaintenancePlanDate,
+        //     clicked_maintenance_date:clicked_maintenance_date;
+        //   })
+        //   .then((response) => {
+        //     console.log("Response:", response.data);
 
-            // Display success notification for creation
-            this.$notify({
-              title: "Maintenance Activity Created Successfully with the note",
-              type: "bg-success-subtle text-success",
-              duration: "5000",
-            });
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            // Handle error here
-            // Display error notification
-            this.$notify({
-              title: "Error creating note",
-              type: "bg-danger-subtle text-danger",
-              duration: "5000",
-            });
-          });
-      } else if (this.selectedEvent.color === "green") {
-        // If the event is green, it means it's an existing note
-        console.log("put api called to update the activity note");
+        //     this.$emit(
+        //       "date-marked-maintenance-activity-created",
+        //       response.data.maintenance_plans
+        //     );
+        //     this.closeModal();
 
-        axios
-          .put(
-            `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}/`,
-            {
-              note: this.note,
-            }
-          )
-          .then((response) => {
-            // Handle successful update response
-            if (response.status === 200 || response.status === 204) {
-              // Update was successful
-              this.$emit(
-                "maintenance-activity-note-updated",
-                response.data.maintenance_plans
-              );
-              this.closeModal();
-              // Display success notification for update
-              this.$notify({
-                title: "Note Updated Successfully",
-                type: "bg-success-subtle text-success",
-                duration: "5000",
-              });
-            }
-          })
-          .catch((error) => {
-            console.error("Error updating note:", error);
-            // Handle error
-            // Display error notification
-            this.$notify({
-              title: "Error updating note",
-              type: "bg-danger-subtle text-danger",
-              duration: "5000",
-            });
-          });
+        //     // Display success notification for creation
+        //     this.$notify({
+        //       title: "Maintenance Activity Created Successfully with the note",
+        //       type: "bg-success-subtle text-success",
+        //       duration: "5000",
+        //     });
+        //   })
+        //   .catch((error) => {
+        //     console.error("Error:", error);
+        //     // Handle error here
+        //     // Display error notification
+        //     this.$notify({
+        //       title: "Error creating note",
+        //       type: "bg-danger-subtle text-danger",
+        //       duration: "5000",
+        //     });
+        //   });
+        // } else if (this.selectedEvent.color === "green") {
+        //   // If the event is green, it means it's an existing note
+        //   console.log("put api called to update the activity note");
+
+        //   axios
+        //     .put(
+        //       `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}/`,
+        //       {
+        //         note: this.note,
+        //       }
+        //     )
+        //     .then((response) => {
+        //       // Handle successful update response
+        //       if (response.status === 200 || response.status === 204) {
+        //         // Update was successful
+        //         this.$emit(
+        //           "maintenance-activity-note-updated",
+        //           response.data.maintenance_plans
+        //         );
+        //         this.closeModal();
+        //         // Display success notification for update
+        //         this.$notify({
+        //           title: "Note Updated Successfully",
+        //           type: "bg-success-subtle text-success",
+        //           duration: "5000",
+        //         });
+        //       }
+        //     })
+        //     .catch((error) => {
+        //       console.error("Error updating note:", error);
+        //       // Handle error
+        //       // Display error notification
+        //       this.$notify({
+        //         title: "Error updating note",
+        //         type: "bg-danger-subtle text-danger",
+        //         duration: "5000",
+        //       });
+        //     });
       }
     },
   },

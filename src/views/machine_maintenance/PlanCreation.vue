@@ -137,7 +137,11 @@
                     <label for="lineSelect" class="form-label">
                       <i class="fas fa-chart-line"></i> Select Line
                     </label>
-                    <select class="form-select" v-model="selectedLine">
+                    <select
+                      class="form-select"
+                      v-model="selectedLine"
+                      @change="selectLineNew"
+                    >
                       <option value="" disabled>Select Line</option>
                       <option
                         v-for="line in lines"
@@ -255,6 +259,7 @@
       :clickedEvent="clickedEvent"
       @close-modal="closeEditableNoteModal"
       :modalTitle="modalTitle"
+      :selectedLineId="selectedLine"
       @event-color-updated="handleEventColorUpdated"
       @date-marked-maintenance-activity-created="populateCalendarNew"
       @maintenance-activity-note-updated="populateCalendarNew"
@@ -383,7 +388,10 @@ export default {
       console.log("data being passed from front-end", formData);
 
       axios
-        .post("/machine-maintenance/create-maintenance-plan/", formData)
+        .post(
+          "/machine-maintenance/create-maintenance-plan-for-all-machines-of-a-line/",
+          formData
+        )
         .then((response) => {
           // Print the response message
           console.log(response.data.message);
@@ -406,11 +414,28 @@ export default {
           this.$store.commit("setIsLoading", false);
         });
     },
-    fetchMaintenanceDates(machineId) {
-      console.log("id of the machine selected", machineId);
+    // fetchMaintenanceDates(machineId) {
+    //   console.log("id of the machine selected", machineId);
+    //   axios
+    //     .post("machine-maintenance/get-maintenance-plan/", {
+    //       machine_id: machineId,
+    //     })
+    //     .then((response) => {
+    //       // console.log("this is response data", response.data);
+
+    //       this.maintenance_plans = response.data.maintenance_plans;
+    //       console.log("this is maintenance_plans ", this.maintenance_plans);
+    //       this.populateCalendar();
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error fetching maintenance dates:", error);
+    //     });
+    // },
+    fetchMaintenanceDatesNew(lineId) {
+      console.log("id of the line selected", lineId);
       axios
-        .post("machine-maintenance/get-maintenance-plan/", {
-          machine_id: machineId,
+        .post("machine-maintenance/get-maintenance-plan-new-line-wise/", {
+          line_id: lineId,
         })
         .then((response) => {
           // console.log("this is response data", response.data);
@@ -806,6 +831,15 @@ export default {
       }
       // Reset selected machine
       this.selectedMachine = null;
+    },
+
+    selectLineNew() {
+      console.log("inside select line");
+      console.log("Selected Line ID:=", this.selectedLine);
+
+      if (this.selectedLine) {
+        this.fetchMaintenanceDatesNew(this.selectedLine);
+      }
     },
 
     selectMachine() {

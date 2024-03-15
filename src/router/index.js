@@ -30,6 +30,7 @@ import CreateMaintenanceCalendar from "../views/machine_maintenance/CreateMainte
 import MarkMaintenancePlan from "../views/machine_maintenance/MarkMaintenancePlan.vue";
 import CalendarYearlyView from "../views/machine_maintenance/CalendarYearlyView.vue";
 import ReportGeneration from "../views/machine_maintenance/ReportGeneration.vue";
+import PlanCreation from "@/views/machine_maintenance/PlanCreation.vue";
 
 const routes = [
   {
@@ -212,6 +213,12 @@ const routes = [
       lineId: route.query.lineId,
       machineId: route.query.machineId,
     }),
+  },
+
+  {
+    path: "/machine/plan-creation",
+    name: "PlanCreation",
+    component: PlanCreation,
   },
 ];
 

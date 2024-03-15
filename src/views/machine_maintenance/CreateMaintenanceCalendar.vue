@@ -599,7 +599,7 @@ export default {
 
     createPlan() {
       this.$store.commit("setIsLoading", true);
-      console.log("this is the selected mahcine", this.selectedMachinesArray);
+      console.log("this is the selected machine", this.selectedMachinesArray);
       const selectedMachineIds = this.selectedMachinesArray.map(
         (machine) => machine.id
       );

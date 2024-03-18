@@ -249,6 +249,7 @@
     <CreateMaintenancePlanModal
       :show="showCreateMaintenancePlanModal"
       :maintenanceActivityTypes="maintenance_activity_types"
+      :selectedLineId="selectedLine"
       @close-modal="closeCreateMaintenancePlanModal"
       :maintenance-plan-info="maintenancePlanInfo"
       @maintenance-plan-created-by-clicking="populateCalendarNew"
@@ -260,7 +261,9 @@
       @close-modal="closeEditableNoteModal"
       :modalTitle="modalTitle"
       :selectedLineId="selectedLine"
+      :selectedTypeId="selectedType"
       @event-color-updated="handleEventColorUpdated"
+      @maintenance-plan-deleted="populateCalendarNew"
       @date-marked-maintenance-activity-created="populateCalendarNew"
       @maintenance-activity-note-updated="populateCalendarNew"
       @maintenance-activity-deleted="populateCalendarNew"

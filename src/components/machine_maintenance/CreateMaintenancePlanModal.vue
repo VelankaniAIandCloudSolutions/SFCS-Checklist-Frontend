@@ -79,6 +79,10 @@ export default {
       type: Object,
       required: true,
     },
+    selectedLineId: {
+      type: Number,
+      required: true,
+    },
     maintenanceActivityTypes: {
       type: Array,
       required: true,
@@ -108,12 +112,14 @@ export default {
       // Get selected date string
 
       // Convert the selected date string to a datetime.date object
+      const selectedLineId = this.selectedLineId;
 
       // Create the form data object
       const formData = {
         description: this.description,
         selectedActivityType: this.selectedActivityType,
         machineId: this.maintenancePlanInfo.selectedMachine.id,
+        line_id: selectedLineId,
         selectedDate: this.maintenancePlanInfo.selectedDate,
       };
 
@@ -123,7 +129,7 @@ export default {
       // Call the API to create the maintenance plan
       axios
         .post(
-          "/machine-maintenance/create-maintenance-plan-by-clicking/",
+          "/machine-maintenance/create-maintenance-plan-by-clicking-new-for-all-machines-of-a-line/",
           formData
         )
         .then((response) => {
@@ -136,6 +142,7 @@ export default {
             type: "bg-success-subtle text-success",
             duration: "5000",
           });
+
           this.$emit(
             "maintenance-plan-created-by-clicking",
             response.data.maintenance_plans
@@ -150,6 +157,7 @@ export default {
             type: "bg-danger-subtle text-danger",
             duration: "5000",
           });
+
           // Display error notification or perform other error handling
         });
     },

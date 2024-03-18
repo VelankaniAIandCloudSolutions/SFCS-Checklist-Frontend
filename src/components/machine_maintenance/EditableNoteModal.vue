@@ -9,7 +9,7 @@
     role="dialog"
     style="display: block"
   >
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title" id="myModalLabel">
@@ -31,6 +31,12 @@
           </div> -->
         </div>
         <div class="modal-footer">
+          <button
+            class="btn btn-warning"
+            @click="confirmDeleteMaintenancePlanLineWise"
+          >
+            Delete Maintenance Plan
+          </button>
           <button
             class="btn btn-danger"
             :disabled="modalTitle === 'Add Note'"
@@ -75,6 +81,14 @@ export default {
       type: Number,
       required: true,
     },
+    selectedTypeId: {
+      type: Number,
+      required: true,
+    },
+    maintenancePlanInfo: {
+      type: Object,
+      required: true,
+    },
     clickedFormattedDate: {
       type: String, // Define the type as String
       required: true,
@@ -100,6 +114,64 @@ export default {
     },
   },
   methods: {
+    confirmDeleteMaintenancePlanLineWise() {
+      if (
+        window.confirm(
+          "Are you sure you want to delete this  maintenance Plan for all the machines of this line?"
+        )
+      ) {
+        this.deleteMaintenancePlanLineWise();
+      }
+    },
+
+    async deleteMaintenancePlanLineWise() {
+      const selectedLineId = this.selectedLineId;
+      // const selectedTypeId = this.selectedTypeId;
+
+      // Create the form data object
+      const formData = {
+        line_id: selectedLineId,
+        selectedDate: this.selectedEvent.extendedProps.maintenance_plan_date,
+        selectedActivityTypeCode: this.selectedEvent.title,
+      };
+
+      console.log("thsi is the form data", formData);
+      axios
+        .post(
+          "/machine-maintenance/delete-maintenance-plan-line-wise/",
+          formData
+        )
+        .then((response) => {
+          // Handle successful deletion response
+          if (response.status === 200 || response.status === 204) {
+            // Deletion was successful
+            this.$emit(
+              "maintenance-plan-deleted",
+              response.data.maintenance_plans
+            );
+
+            this.closeModal();
+
+            // Display success notification for deletion
+            this.$notify({
+              title: " Maintenance Plan Deleted Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting note:", error);
+          // Handle error
+          // Display error notification
+          this.$notify({
+            title: "Error deleing Maintenance Plan",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+        });
+    },
+
     confirmDeleteMaintenanceActivity() {
       if (
         window.confirm(

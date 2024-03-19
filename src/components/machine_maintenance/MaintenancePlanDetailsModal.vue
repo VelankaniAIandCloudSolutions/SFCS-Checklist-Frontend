@@ -40,6 +40,21 @@
               <p>{{ selectedEvent.extendedProps.note }}</p>
             </div>
           </div>
+          <!-- Maintenance Activity Status Row -->
+          <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+              <p class="mb-2"><strong>Maintenance Activity Status:</strong></p>
+              <span
+                v-if="selectedEvent.extendedProps.maintenance_activity_done"
+                class="status-icon text-success"
+              >
+                <i class="fas fa-check-circle fa-3x"></i>
+              </span>
+              <span v-else class="status-icon text-danger">
+                <i class="fas fa-times-circle fa-3x"></i>
+              </span>
+            </div>
+          </div>
         </div>
 
         <!-- Modal footer -->

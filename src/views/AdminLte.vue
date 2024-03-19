@@ -239,11 +239,12 @@
                     $store.state.user.is_machine_maintenance_supervisor_team
                   "
                 >
-                  <router-link to="/machine/report-generation" class="nav-link">
-                    <i class="fas fa-file-excel nav-icon"></i>
-                    <p>Report Generation</p>
+                  <router-link to="/machine/plan-creation" class="nav-link">
+                    <i class="fa fa-calendar-alt nav-icon"></i>
+                    <p>Plan Creation</p>
                   </router-link>
                 </li>
+
                 <li
                   class="nav-item"
                   v-if="
@@ -256,7 +257,7 @@
                     class="nav-link"
                   >
                     <i class="fas fa-calendar-alt nav-icon"></i>
-                    <p>Maintenance Plan</p>
+                    <p>Supervisor Plan</p>
                   </router-link>
                 </li>
                 <li class="nav-item">
@@ -265,7 +266,19 @@
                     class="nav-link"
                   >
                     <i class="fas fa-calendar-xmark nav-icon"></i>
-                    <p>Mark Maintenance</p>
+                    <p>Mark Worker Maintenance</p>
+                  </router-link>
+                </li>
+                <li
+                  class="nav-item"
+                  v-if="
+                    $store.state.user.is_superuser ||
+                    $store.state.user.is_machine_maintenance_supervisor_team
+                  "
+                >
+                  <router-link to="/machine/report-generation" class="nav-link">
+                    <i class="fas fa-file-excel nav-icon"></i>
+                    <p>Report Generation</p>
                   </router-link>
                 </li>
               </ul>

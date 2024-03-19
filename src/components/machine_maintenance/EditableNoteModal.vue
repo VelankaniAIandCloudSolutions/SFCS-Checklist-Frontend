@@ -16,22 +16,48 @@
             <strong style="color: #333">{{ modalTitle }}</strong>
           </h4>
         </div>
-        <div class="modal-body">
-          <textarea v-model="note" class="form-control" rows="4"></textarea>
-          <!-- <div class="form-check mt-4">
+        <div class="modal-body-lg">
+          <div class="form-check">
             <input
               class="form-check-input"
-              type="checkbox"
-              id="applyToAll"
-              v-model="applyToAllMachines"
+              type="radio"
+              id="maintenanceCompleted"
+              :value="true"
+              v-model="maintenanceActivityStatus"
             />
-            <label class="form-check-label" for="applyToAll">
-              Apply to all machines of the line
+            <label class="form-check-label" for="maintenanceCompleted">
+              <b style="font-size: 1.1em">Maintenance Activity Completed</b>
             </label>
-          </div> -->
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              id="maintenanceNotCompleted"
+              :value="false"
+              v-model="maintenanceActivityStatus"
+            />
+            <label class="form-check-label" for="maintenanceNotCompleted">
+              <b style="font-size: 1.1em">Maintenance Activity Not Completed</b>
+            </label>
+          </div>
+          <div style="margin-top: 20px"></div>
+
+          <!-- Remarks textarea -->
+          <label for="remarks">Remarks:</label>
+          <textarea
+            v-model="note"
+            class="form-control"
+            id="remarks"
+            rows="4"
+          ></textarea>
         </div>
         <div class="modal-footer">
           <button
+            v-if="
+              this.$store.state.user.is_superuser ||
+              this.$store.state.user.is_machine_maintenance_supervisor_team
+            "
             class="btn btn-warning"
             @click="confirmDeleteMaintenancePlanLineWise"
           >
@@ -93,19 +119,44 @@ export default {
       type: String, // Define the type as String
       required: true,
     },
+    selectedMachineId: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
       note: "",
       applyToAllMachines: false,
+      maintenanceActivityStatus: "",
     };
   },
+  // watch: {
+  //   selectedEvent: {
+  //     handler(newVal) {
+  //       if (newVal && newVal.extendedProps && newVal.extendedProps.note) {
+  //         this.note = newVal.extendedProps.note;
+  //       } else {
+  //         this.note = "";
+  //       }
+  //     },
+  //     deep: true,
+  //     immediate: true,
+  //   },
+  // },
   watch: {
     selectedEvent: {
       handler(newVal) {
-        if (newVal && newVal.extendedProps && newVal.extendedProps.note) {
-          this.note = newVal.extendedProps.note;
+        if (newVal && newVal.extendedProps) {
+          // Check if the selectedEvent has extendedProps
+          // If yes, update the maintenanceActivityStatus based on the value of 'maintenance_activity_completed'
+          this.maintenanceActivityStatus =
+            newVal.extendedProps.maintenance_activity_completed;
+          // Update the note based on the value of 'note' in extendedProps
+          this.note = newVal.extendedProps.note || "";
         } else {
+          // If not, reset maintenanceActivityStatus and note
+          this.maintenanceActivityStatus = "";
           this.note = "";
         }
       },
@@ -184,7 +235,7 @@ export default {
     async deleteMaintenanceActivity() {
       axios
         .delete(
-          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}`
+          `/machine-maintenance/update-or-delete-maintenance-activity-new/${this.selectedEvent.extendedProps.id}`
         )
         .then((response) => {
           // Handle successful deletion response
@@ -249,11 +300,14 @@ export default {
         this.selectedEvent.extendedProps.color == "red"
       ) {
         // If the event is orange, it means it's a new note
-        const id = this.selectedEvent.extendedProps.id;
+
+        const id = this.selectedEvent.extendedProps.id; // this is the  maintenance_plan_id
         // const clickedMaintenancePlanDate =
-        this.selectedEvent.extendedProps.maintenance_plan_date;
+        // this.selectedEvent.extendedProps.maintenance_plan_date;
         const note = this.note;
         const selectedLineId = this.selectedLineId;
+        const selectedMachineId = this.selectedMachineId;
+
         // const clickedFormattedDate = this.clickedFormattedDate;
 
         console.log(" maintenance plan ID:", id);
@@ -261,78 +315,91 @@ export default {
         console.log("Note:", note);
         console.log("Selected Line ID:", selectedLineId);
         // console.log("Clicked Formatted Date:", clickedFormattedDate);
+        console.log("Data to be sent in POST request:", {
+          id: id,
+          note: note,
+          maintenance_activity_status: this.maintenanceActivityStatus,
+          line_id: selectedLineId,
+          machine_id: selectedMachineId,
+        });
 
-        // axios
-        //   .post("/machine-maintenance/create-maintenance-activity", {
-        //     id: id,
-        //     note: note,
-        //     clickedMaintenancePlanDate:  clickedMaintenancePlanDate,
-        //     clicked_maintenance_date:clicked_maintenance_date;
-        //   })
-        //   .then((response) => {
-        //     console.log("Response:", response.data);
+        axios
+          .post("/machine-maintenance/create-maintenance-activity-new/", {
+            id: id,
+            note: note,
+            maintenance_activity_status: this.maintenanceActivityStatus,
+            line_id: selectedLineId,
+            machine_id: selectedMachineId,
 
-        //     this.$emit(
-        //       "date-marked-maintenance-activity-created",
-        //       response.data.maintenance_plans
-        //     );
-        //     this.closeModal();
+            // clickedMaintenancePlanDate: clickedMaintenancePlanDate,
+            // clicked_maintenance_date: clicked_maintenance_date,
+          })
+          .then((response) => {
+            console.log("Response:", response.data);
 
-        //     // Display success notification for creation
-        //     this.$notify({
-        //       title: "Maintenance Activity Created Successfully with the note",
-        //       type: "bg-success-subtle text-success",
-        //       duration: "5000",
-        //     });
-        //   })
-        //   .catch((error) => {
-        //     console.error("Error:", error);
-        //     // Handle error here
-        //     // Display error notification
-        //     this.$notify({
-        //       title: "Error creating note",
-        //       type: "bg-danger-subtle text-danger",
-        //       duration: "5000",
-        //     });
-        //   });
-        // } else if (this.selectedEvent.color === "green") {
-        //   // If the event is green, it means it's an existing note
-        //   console.log("put api called to update the activity note");
+            this.$emit(
+              "date-marked-maintenance-activity-created",
+              response.data.maintenance_plans
+            );
+            this.closeModal();
 
-        //   axios
-        //     .put(
-        //       `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}/`,
-        //       {
-        //         note: this.note,
-        //       }
-        //     )
-        //     .then((response) => {
-        //       // Handle successful update response
-        //       if (response.status === 200 || response.status === 204) {
-        //         // Update was successful
-        //         this.$emit(
-        //           "maintenance-activity-note-updated",
-        //           response.data.maintenance_plans
-        //         );
-        //         this.closeModal();
-        //         // Display success notification for update
-        //         this.$notify({
-        //           title: "Note Updated Successfully",
-        //           type: "bg-success-subtle text-success",
-        //           duration: "5000",
-        //         });
-        //       }
-        //     })
-        //     .catch((error) => {
-        //       console.error("Error updating note:", error);
-        //       // Handle error
-        //       // Display error notification
-        //       this.$notify({
-        //         title: "Error updating note",
-        //         type: "bg-danger-subtle text-danger",
-        //         duration: "5000",
-        //       });
-        //     });
+            // Display success notification for creation
+            this.$notify({
+              title: "Maintenance Activity Created Successfully !!",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle error here
+            // Display error notification
+            this.$notify({
+              title: "Error creating maintenance activity !!",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          });
+      } else if (this.selectedEvent.color === "green") {
+        // If the event is green, it means it's an existing note
+        console.log("put api called to update the activity note");
+
+        axios
+          .put(
+            `/machine-maintenance/update-or-delete-maintenance-activity-new/${this.selectedEvent.extendedProps.id}/`,
+            {
+              note: this.note,
+              machine_id: this.selectedMachineId,
+              maintenance_activity_status: this.maintenanceActivityStatus,
+            }
+          )
+          .then((response) => {
+            // Handle successful update response
+            if (response.status === 200 || response.status === 204) {
+              // Update was successful
+              this.$emit(
+                "maintenance-activity-updated",
+                response.data.maintenance_plans
+              );
+              this.closeModal();
+              // Display success notification for update
+              this.$notify({
+                title: "Activity Updated Successfully",
+                type: "bg-success-subtle text-success",
+                duration: "5000",
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error updating Activity:", error);
+            // Handle error
+            // Display error notification
+            this.$notify({
+              title: "Activity updating note",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          });
       }
     },
   },

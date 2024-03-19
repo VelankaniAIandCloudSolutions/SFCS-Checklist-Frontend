@@ -97,12 +97,13 @@
       :selectedEvent="selectedEvent"
       :clickedEvent="clickedEvent"
       :selectedLineId="selectedLineId"
+      :selectedMachineId="selectedMachineId"
       @close-modal="closeModal"
       :modalTitle="modalTitle"
       :clickedFormattedDate="formattedDate"
       @event-color-updated="handleEventColorUpdated"
       @date-marked-maintenance-activity-created="populateCalendarNew"
-      @maintenance-activity-note-updated="populateCalendarNew"
+      @maintenance-activity-updated="populateCalendarNew"
       @maintenance-activity-deleted="populateCalendarNew"
     />
   </div>
@@ -131,6 +132,7 @@ export default {
       lines: [],
       selectedLine: "",
       selectedLineId: null,
+      selectedMachineId: null,
       selectedMachine: "",
       selectedDate: null,
       selectedEvent: {},
@@ -217,10 +219,86 @@ export default {
     //   // Update the calendar options with the events
     //   this.calendarOptions.events = events;
     // },
+    // populateCalendar() {
+    //   // Convert maintenance plans array into an array of event objects
+    //   console.log("Inside populate calendar");
+    //   const today = new Date();
+    //   const events = this.maintenance_plans.map((plan) => {
+    //     let title = ""; // Default event title
+    //     let color = ""; // Default event color
+    //     let note = ""; // Default note
+    //     let created_by_email = ""; // Default created_by email
+    //     let created_by_firstName = "";
+    //     let created_at_info = "";
+
+    //     if (plan.maintenance_activity_type) {
+    //       title = plan.maintenance_activity_type.code;
+    //     }
+
+    //     // Determine event color based on the presence of maintenance activities
+    //     if (
+    //       plan.maintenance_activities &&
+    //       plan.maintenance_activities.length > 0
+    //     ) {
+    //       color = "green"; // Set event color to green if maintenance activities present
+    //       note = plan.maintenance_activities
+    //         .map((activity) => activity.note)
+    //         .join("\n");
+
+    //       // Get created_by email from the first maintenance activity
+    //       if (
+    //         plan.maintenance_activities[0].created_by &&
+    //         plan.maintenance_activities[0].created_at
+    //       ) {
+    //         created_by_email = plan.maintenance_activities[0].created_by.email;
+    //         created_by_firstName =
+    //           plan.maintenance_activities[0].created_by.first_name;
+    //         created_at_info = plan.maintenance_activities[0].created_at;
+    //       }
+    //     } else {
+    //       const maintenanceDate = new Date(plan.maintenance_date);
+    //       maintenanceDate.setHours(0, 0, 0, 0);
+    //       today.setHours(0, 0, 0, 0);
+    //       console.log("inside else");
+    //       if (maintenanceDate < today) {
+    //         color = "red";
+    //       } else {
+    //         color = "orange";
+    //       }
+    //       // Set event color to orange if maintenance activities are empty
+    //       // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
+    //       if (plan.created_by) {
+    //         created_by_email = plan.created_by.email;
+    //         created_by_firstName = plan.created_by.first_name;
+    //         created_at_info = plan.created_at;
+    //       }
+    //     }
+
+    //     return {
+    //       title: title,
+    //       start: plan.maintenance_date,
+    //       color: color,
+
+    //       extendedProps: {
+    //         id: plan.id,
+    //         note: note,
+    //         color: color,
+    //         maintenance_plan_date: plan.maintenance_date,
+    //         created_by_userMail: created_by_email,
+    //         created_by_name: created_by_firstName,
+    //         created_at: created_at_info,
+    //       },
+    //     };
+    //   });
+
+    //   // Update the calendar options with the events
+    //   this.calendarOptions.events = events;
+    // },
     populateCalendar() {
-      // Convert maintenance plans array into an array of event objects
       console.log("Inside populate calendar");
       const today = new Date();
+      console.log(today);
+
       const events = this.maintenance_plans.map((plan) => {
         let title = ""; // Default event title
         let color = ""; // Default event color
@@ -228,17 +306,24 @@ export default {
         let created_by_email = ""; // Default created_by email
         let created_by_firstName = "";
         let created_at_info = "";
+        let is_completed = "";
+
+        const maintenanceDate = new Date(plan.maintenance_date);
+        maintenanceDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
 
         if (plan.maintenance_activity_type) {
           title = plan.maintenance_activity_type.code;
         }
 
-        // Determine event color based on the presence of maintenance activities
         if (
           plan.maintenance_activities &&
           plan.maintenance_activities.length > 0
         ) {
-          color = "green"; // Set event color to green if maintenance activities present
+          // Get the status of the first maintenance activity
+          is_completed = plan.maintenance_activities[0].is_completed;
+
+          // Capture note regardless of completion status
           note = plan.maintenance_activities
             .map((activity) => activity.note)
             .join("\n");
@@ -253,23 +338,31 @@ export default {
               plan.maintenance_activities[0].created_by.first_name;
             created_at_info = plan.maintenance_activities[0].created_at;
           }
+        }
+
+        // Set color based on maintenance date
+        if (maintenanceDate < today) {
+          color = is_completed ? "green" : "red";
+          if (plan.maintenance_activities.length > 0) {
+            created_by_email = plan.maintenance_activities[0].created_by.email;
+            created_by_firstName =
+              plan.maintenance_activities[0].created_by.first_name;
+            created_at_info = plan.maintenance_activities[0].created_at;
+          }
+        } else if (
+          maintenanceDate.getTime() === today.getTime() &&
+          plan.maintenance_activities.length > 0
+        ) {
+          color = is_completed ? "green" : "red";
+          created_by_email = plan.maintenance_activities[0].created_by.email;
+          created_by_firstName =
+            plan.maintenance_activities[0].created_by.first_name;
+          created_at_info = plan.maintenance_activities[0].created_at;
         } else {
-          const maintenanceDate = new Date(plan.maintenance_date);
-          maintenanceDate.setHours(0, 0, 0, 0);
-          today.setHours(0, 0, 0, 0);
-          console.log("inside else");
-          if (maintenanceDate < today) {
-            color = "red";
-          } else {
-            color = "orange";
-          }
-          // Set event color to orange if maintenance activities are empty
-          // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
-          if (plan.created_by) {
-            created_by_email = plan.created_by.email;
-            created_by_firstName = plan.created_by.first_name;
-            created_at_info = plan.created_at;
-          }
+          color = "orange";
+          created_by_email = plan.created_by.email;
+          created_by_firstName = plan.created_by.first_name;
+          created_at_info = plan.created_at;
         }
 
         return {
@@ -281,6 +374,7 @@ export default {
             id: plan.id,
             note: note,
             color: color,
+            maintenance_activity_completed: is_completed,
             maintenance_plan_date: plan.maintenance_date,
             created_by_userMail: created_by_email,
             created_by_name: created_by_firstName,
@@ -292,7 +386,6 @@ export default {
       // Update the calendar options with the events
       this.calendarOptions.events = events;
     },
-
     handleEventClick(info) {
       console.log("inside event click");
       console.log("info:", info);
@@ -369,7 +462,10 @@ export default {
       if (clickedEvent) {
         console.log("this is clicked event=", clickedEvent);
 
-        if (clickedEvent.extendedProps.color === "orange") {
+        if (
+          clickedEvent.extendedProps.color === "orange" ||
+          clickedEvent.extendedProps.color === "red"
+        ) {
           // Allow modification for the first time
           this.modifyEvent(clickedEvent);
         } else if (clickedEvent.extendedProps.color === "green") {
@@ -397,9 +493,8 @@ export default {
 
       //   if(clickedEvent.color==="green")
       if (
-        (clickedEvent.extendedProps.color === "orange" ||
-          clickedEvent.extendedProps.color === "red") &&
-        clickedEvent.extendedProps.note === ""
+        clickedEvent.extendedProps.color === "orange" ||
+        clickedEvent.extendedProps.color === "red"
       ) {
         // First time modification, no note exists
         this.selectedEvent = clickedEvent;
@@ -418,8 +513,8 @@ export default {
       const modalTitle =
         clickedEvent.extendedProps.color === "orange" &&
         !clickedEvent.extendedProps.note
-          ? "Add Note"
-          : "Edit Note";
+          ? "Mark Activity"
+          : "Edit Activity";
 
       this.showModal = !this.showModal;
       this.modalTitle = modalTitle;
@@ -427,7 +522,6 @@ export default {
     closeModal() {
       console.log("inside close modal parent");
       this.showModal = false;
-
       // Set showModal to false to hide the modal
     },
     populateCalendarNew(data) {
@@ -515,6 +609,8 @@ export default {
       console.log("inside select machine");
       console.log("Selected machine:", this.selectedMachine);
       if (this.selectedMachine) {
+        const selectedMachineId = this.selectedMachine.id;
+        this.selectedMachineId = selectedMachineId;
         this.fetchMaintenanceDates(this.selectedMachine.id);
       }
     },

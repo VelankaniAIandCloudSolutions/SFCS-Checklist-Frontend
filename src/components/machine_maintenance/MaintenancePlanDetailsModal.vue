@@ -45,13 +45,15 @@
             <div class="col-md-6 text-center">
               <p class="mb-2"><strong>Maintenance Activity Status:</strong></p>
               <span
-                v-if="selectedEvent.extendedProps.maintenance_activity_done"
+                v-if="
+                  selectedEvent.extendedProps.maintenance_activity_completed
+                "
                 class="status-icon text-success"
               >
-                <i class="fas fa-check-circle fa-3x"></i>
+                <i class="fas fa-check fa-2x"></i>
               </span>
               <span v-else class="status-icon text-danger">
-                <i class="fas fa-times-circle fa-3x"></i>
+                <i class="fas fa-times fa-2x"></i>
               </span>
             </div>
           </div>
@@ -177,7 +179,7 @@ export default {
     async deleteMaintenanceActivity() {
       axios
         .delete(
-          `/machine-maintenance/update-or-delete-maintenance-activity/${this.selectedEvent.extendedProps.id}`
+          `/machine-maintenance/update-or-delete-maintenance-activity-new/${this.selectedEvent.extendedProps.id}`
         )
         .then((response) => {
           // Handle successful deletion response

@@ -268,6 +268,18 @@
       @maintenance-activity-note-updated="populateCalendarNew"
       @maintenance-activity-deleted="populateCalendarNew"
     />
+
+    <DeleteMaintenancePlanModalLineWise
+      :show="showDeletePlanModal"
+      :selectedEvent="selectedEvent"
+      :clickedEvent="clickedEvent"
+      @close-modal="closeDeletePlanModal"
+      :selectedLineId="selectedLine"
+      :selectedTypeId="selectedType"
+      @event-color-updated="handleEventColorUpdated"
+      @maintenance-plans-deleted-line-wise="populateCalendarNew"
+    />
+
     <MarkStatusModal
       :show="showMarkStatusModal"
       :selectedEvent="selectedEvent"
@@ -296,6 +308,7 @@ import MaintenancePlanDetailsModal from "../../components/machine_maintenance/Ma
 import CreateMaintenancePlanModal from "../../components/machine_maintenance/CreateMaintenancePlanModal.vue";
 import EditableNoteModal from "../../components/machine_maintenance/EditableNoteModal.vue";
 import MarkStatusModal from "../../components/machine_maintenance/MarkStatusModal.vue";
+import DeleteMaintenancePlanModalLineWise from "../../components/machine_maintenance/DeleteMaintenancePlanModalLineWise.vue";
 // import { is } from "core-js/core/object";
 
 export default {
@@ -307,6 +320,7 @@ export default {
     CreateMaintenancePlanModal,
     EditableNoteModal,
     MarkStatusModal,
+    DeleteMaintenancePlanModalLineWise,
     // make the <FullCalendar> tag available
   },
   // computed:{
@@ -322,8 +336,8 @@ export default {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: "dayGridMonth",
         events: [],
-        // eventClick: this.handleEventClick,
-        // dateClick: this.handleDateClick,
+        eventClick: this.handleEventClick,
+        dateClick: this.handleDateClick,
         // dateClick: this.handleDateClick,
         // selectable: true,
 
@@ -346,6 +360,7 @@ export default {
       maintenancePlanInfo: {},
       showEditableModal: false,
       showMarkStatusModal: false,
+      showDeletePlanModal: false,
       filteredMachines: [],
     };
   },
@@ -735,11 +750,16 @@ export default {
         // Set color based on maintenance date
         if (maintenanceDate < today) {
           color = is_completed ? "green" : "red";
+
           if (plan.maintenance_activities.length > 0) {
             created_by_email = plan.maintenance_activities[0].created_by.email;
             created_by_firstName =
               plan.maintenance_activities[0].created_by.first_name;
             created_at_info = plan.maintenance_activities[0].created_at;
+          } else {
+            created_by_email = plan.created_by.email;
+            created_by_firstName = plan.created_by.first_name;
+            created_at_info = plan.created_at;
           }
         } else if (
           maintenanceDate.getTime() === today.getTime() &&
@@ -806,6 +826,77 @@ export default {
     //     this.toggleModal(clickedEvent);
     //   }
     // },
+    // handleEventClick(info) {
+    //   console.log("event clicked");
+    //   console.log("info:", info);
+    //   console.log("info.event:", info.event);
+
+    //   console.log(info.event.id);
+
+    //   const clickedEventStartDate = info.event.start;
+
+    //   console.log("clicked event start date", clickedEventStartDate);
+
+    //   // Convert clicked event start date to a date string without time component
+    //   // const formattedClickedEventStartDate = clickedEventStartDate
+    //   //   .toISOString()
+    //   //   .split("T")[0];
+    //   const formattedClickedEventStartDate =
+    //     clickedEventStartDate.toLocaleString("en-IN", {
+    //       timeZone: "Asia/Kolkata",
+    //     });
+    //   const dateOnly = formattedClickedEventStartDate.split(",")[0]; // Extracting the date part
+
+    //   const [day, month, year] = dateOnly
+    //     .split("/")
+    //     .map((part) => part.padStart(2, "0")); // Splitting the date parts and adding leading zeros if necessary
+    //   const formattedDate = `${year}-${month}-${day}`; // Rearranging and joining parts
+    //   console.log(formattedDate);
+
+    //   const eventsOnSameDate = this.calendarOptions.events.filter((event) => {
+    //     // Extract the date part without time component from the event's start date
+    //     const eventStartDate = event.start;
+
+    //     // Compare the dates without time component
+    //     return eventStartDate === formattedDate;
+    //   });
+
+    //   console.log("events on same date", eventsOnSameDate);
+
+    //   const existingEvent = eventsOnSameDate.find(
+    //     (event) => event.extendedProps.id === info.event.extendedProps.id
+    //   );
+
+    //   console.log("existingEvent", existingEvent);
+    //   if (existingEvent) {
+    //     console.log("existing event for this date", existingEvent);
+    //     // alert(`A maintenance plan already exists for ${info.dateStr}.`);
+
+    //     if (
+    //       existingEvent.extendedProps.color === "orange" ||
+    //       existingEvent.extendedProps.color === "red"
+    //     ) {
+    //       this.modifyEvent(existingEvent);
+    //     } else if (existingEvent.color === "green") {
+    //       this.selectedEvent = existingEvent;
+    //       console.log(
+    //         "this is selected event passed as prop ",
+    //         this.selectedEvent
+    //       );
+
+    //       this.togglePlanDetailsModal();
+    //     }
+    //   } else {
+    //     // If there is no event for the clicked date, open a modal to create a new maintenance plan
+    //     const maintenancePlanInfo = {
+    //       selectedMachine: this.selectedMachine,
+    //       selectedDate: info.dateStr,
+    //     };
+    //     this.maintenancePlanInfo = maintenancePlanInfo;
+
+    //     this.toggleCreateMaintenancePlanModal();
+    //   }
+    // },
     handleEventClick(info) {
       console.log("event clicked");
       console.log("info:", info);
@@ -846,25 +937,11 @@ export default {
       const existingEvent = eventsOnSameDate.find(
         (event) => event.extendedProps.id === info.event.extendedProps.id
       );
+
       console.log("existingEvent", existingEvent);
       if (existingEvent) {
-        console.log("existing event for this date", existingEvent);
-        // alert(`A maintenance plan already exists for ${info.dateStr}.`);
-
-        if (
-          existingEvent.extendedProps.color === "orange" ||
-          existingEvent.extendedProps.color === "red"
-        ) {
-          this.modifyEvent(existingEvent);
-        } else if (existingEvent.color === "green") {
-          this.selectedEvent = existingEvent;
-          console.log(
-            "this is selected event passed as prop ",
-            this.selectedEvent
-          );
-
-          this.togglePlanDetailsModal();
-        }
+        this.selectedEvent = existingEvent;
+        this.toggleDeletePlanModal();
       } else {
         // If there is no event for the clicked date, open a modal to create a new maintenance plan
         const maintenancePlanInfo = {
@@ -875,8 +952,6 @@ export default {
 
         this.toggleCreateMaintenancePlanModal();
       }
-
-      // Perform further actions with the clicked event as needed
     },
 
     // handleDateClick(info) {
@@ -988,8 +1063,11 @@ export default {
     },
 
     closePlanDetailsModal() {
-      console.log("inside close modal parent");
       this.showPlanDetailsModal = false;
+    },
+
+    closeDeletePlanModal() {
+      this.showDeletePlanModal = false;
 
       // Set showModal to false to hide the modal
     },
@@ -1008,9 +1086,12 @@ export default {
       this.showCreateMaintenancePlanModal =
         !this.showCreateMaintenancePlanModal;
     },
-
     togglePlanDetailsModal() {
       this.showPlanDetailsModal = !this.showPlanDetailsModal;
+    },
+
+    toggleDeletePlanModal() {
+      this.showDeletePlanModal = !this.showDeletePlanModal;
     },
 
     toggleMarkStatusModal() {

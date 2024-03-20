@@ -133,7 +133,7 @@
       @event-color-updated="handleEventColorUpdated"
       @maintenance-plan-deleted="populateCalendarNew"
       @date-marked-maintenance-activity-created="populateCalendarNew"
-      @maintenance-activity-note-updated="populateCalendarNew"
+      @maintenance-activity-updated="populateCalendarNew"
       @maintenance-activity-deleted="populateCalendarNew"
     />
   </div>
@@ -174,7 +174,7 @@ export default {
         initialView: "dayGridMonth",
         events: [],
         eventClick: this.handleEventClick,
-        dateClick: this.handleDateClick,
+        // dateClick: this.handleDateClick, // for activity creation
         // dateClick: this.handleDateClick,
         // selectable: true,
 
@@ -372,6 +372,10 @@ export default {
             created_by_firstName =
               plan.maintenance_activities[0].created_by.first_name;
             created_at_info = plan.maintenance_activities[0].created_at;
+          } else {
+            created_by_email = plan.created_by.email;
+            created_by_firstName = plan.created_by.first_name;
+            created_at_info = plan.created_at;
           }
         } else if (
           maintenanceDate.getTime() === today.getTime() &&
@@ -483,6 +487,10 @@ export default {
       const clickedDate = new Date(formattedDate);
 
       const currentDate = new Date();
+
+      console.log("clicked date", clickedDate);
+      console.log("current date is ", currentDate);
+
       if (clickedDate > currentDate) {
         // Show alert that you cannot edit activities in the future
         window.alert("You cannot edit activities in the future.");

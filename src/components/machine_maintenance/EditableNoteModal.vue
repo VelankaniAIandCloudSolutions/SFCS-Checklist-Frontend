@@ -59,13 +59,14 @@
               this.$store.state.user.is_machine_maintenance_supervisor_team
             "
             class="btn btn-warning"
+            :disabled="true"
             @click="confirmDeleteMaintenancePlanLineWise"
           >
             Delete Maintenance Plan
           </button>
           <button
             class="btn btn-danger"
-            :disabled="modalTitle === 'Add Note'"
+            :disabled="modalTitle === 'Mark Activity'"
             @click="confirmDeleteMaintenanceActivity"
           >
             Delete Maintenance Activity

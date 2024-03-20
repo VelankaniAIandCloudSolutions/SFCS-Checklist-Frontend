@@ -348,6 +348,10 @@ export default {
             created_by_firstName =
               plan.maintenance_activities[0].created_by.first_name;
             created_at_info = plan.maintenance_activities[0].created_at;
+          } else {
+            created_by_email = plan.created_by.email;
+            created_by_firstName = plan.created_by.first_name;
+            created_at_info = plan.created_at;
           }
         } else if (
           maintenanceDate.getTime() === today.getTime() &&

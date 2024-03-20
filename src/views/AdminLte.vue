@@ -266,7 +266,7 @@
                     class="nav-link"
                   >
                     <i class="fas fa-calendar-xmark nav-icon"></i>
-                    <p>Mark Worker Maintenance</p>
+                    <p>Mark Maintenance Execution</p>
                   </router-link>
                 </li>
                 <li

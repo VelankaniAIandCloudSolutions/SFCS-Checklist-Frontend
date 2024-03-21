@@ -91,7 +91,7 @@ export default {
         },
 
         {
-          headerName: "Maintenance Activity Performed:",
+          headerName: "Maintenance Activity Compelted:",
           field: "maintenance_date",
           cellRenderer: this.customActivityRenderer,
         },
@@ -126,7 +126,10 @@ export default {
     },
     customActivityRenderer(params) {
       const maintenancePlan = params.data;
-      if (maintenancePlan.maintenance_activities.length > 0) {
+      if (
+        maintenancePlan.maintenance_activities.length > 0 &&
+        maintenancePlan.maintenance_activities[0].is_completed === true
+      ) {
         return '<span style="color: green">&#10004;</span>'; // Green tick
       } else {
         return '<span style="color: red">&#10008;</span>'; // Red cross

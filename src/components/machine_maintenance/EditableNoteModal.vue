@@ -275,6 +275,11 @@ export default {
 
     async saveChanges() {
       console.log("this is the note =", this.note);
+      if (this.maintenanceActivityStatus === false && !this.note.trim()) {
+        // If "Maintenance Activity Not Completed" is selected and remarks are empty
+        alert("Remarks are required if Maintenance Activity is not completed.");
+        return; // Prevent saving changes
+      }
 
       // if (!this.note.trim()) {
       //   // Show an error message or throw an error

@@ -203,6 +203,7 @@ export default {
         });
     },
     fetchMaintenanceDates(machineId) {
+      this.$store.commit("setIsLoading", true);
       console.log("id of the machine selected", machineId);
       axios
         .post("machine-maintenance/get-maintenance-plan/", {
@@ -214,9 +215,11 @@ export default {
           this.maintenance_plans = response.data.maintenance_plans;
           console.log("this is maintenance_plans ", this.maintenance_plans);
           this.populateCalendar();
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
           console.error("Error fetching maintenance dates:", error);
+          this.$store.commit("setIsLoading", false);
         });
     },
 

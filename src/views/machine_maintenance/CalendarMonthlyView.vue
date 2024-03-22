@@ -58,7 +58,7 @@
           </option>
         </select>
         <router-link
-          to="/machine/create-maintenance-calendar"
+          to="/machine/plan-creation"
           class="btn btn-primary btn-sm ms-2"
         >
           Create Maintenance Plan

@@ -24,6 +24,12 @@
               id="maintenanceCompleted"
               :value="true"
               v-model="maintenanceActivityStatus"
+              style="
+                appearance: auto;
+                width: auto;
+                height: auto;
+                margin-right: 5px;
+              "
             />
             <label class="form-check-label" for="maintenanceCompleted">
               <b style="font-size: 1.1em">Maintenance Activity Completed</b>
@@ -36,6 +42,12 @@
               id="maintenanceNotCompleted"
               :value="false"
               v-model="maintenanceActivityStatus"
+              style="
+                appearance: auto;
+                width: auto;
+                height: auto;
+                margin-right: 5px;
+              "
             />
             <label class="form-check-label" for="maintenanceNotCompleted">
               <b style="font-size: 1.1em">Maintenance Activity Not Completed</b>
@@ -86,7 +98,6 @@
     style="display: block"
   ></div>
 </template>
-
 <script>
 import axios from "axios";
 export default {

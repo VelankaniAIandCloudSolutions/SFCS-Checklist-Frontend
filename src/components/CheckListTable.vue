@@ -26,7 +26,7 @@
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h1
@@ -43,17 +43,41 @@
             ></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3">
+            <div class="col-auto">
+              <input
+                type="checkbox"
+                id="issuedToProduction"
+                class="form-check-input"
+                v-model="activeRow.is_issued_to_production"
+                @change="onIssuedToProductionChange"
+              />
+              <label for="issuedToProduction" class="form-label ml-2"
+                >Part Already Issued to production</label
+              >
+            </div>
+            <div class="mt-3">
               <label for="editedQuantity" class="form-label"
                 >Present Quantity</label
               >
-              <textarea
+              <input
+                type="number"
                 id="editedQuantity"
                 class="form-control"
                 v-model="activeRow.present_quantity"
-              ></textarea>
+                :min="activeRow.required_quantity"
+              />
             </div>
-            <div class="mb-3">
+            <div
+              v-if="
+                activeRow.is_issued_to_production &&
+                activeRow.present_quantity < activeRow.required_quantity
+              "
+              class="text-danger mt-2"
+            >
+              Present quantity that is {{ activeRow.present_quantity }} cannot
+              be less than required quantity.
+            </div>
+            <div class="mt-3" v-if="!activeRow.is_issued_to_production">
               <label for="reasonForChange" class="form-label"
                 >Reason For Change</label
               >
@@ -77,7 +101,10 @@
               class="btn btn-primary"
               @click="updatePresentQuantity"
               data-bs-dismiss="modal"
-              :disabled="!activeRow.present_quantity_change_note"
+              :disabled="
+                !activeRow.present_quantity_change_note &&
+                activeRow.present_quantity < activeRow.required_quantity
+              "
             >
               Save changes
             </button>
@@ -119,12 +146,20 @@ export default {
       }
     },
   },
+  computed: {
+    presentQuantityModel() {
+      return this.partIssuedToProduction
+        ? this.activeRow.required_quantity
+        : this.activeRow.present_quantity;
+    },
+  },
   data() {
     // console.log("Reason for change initialized:", this.reasonForChange);
     return {
       reasonForChange: "",
       gridApi: null,
       isGridReady: false, // Flag to track grid readiness
+      partIssuedToProduction: false,
       colDefs: [
         {
           headerName: "VEPL Part No",
@@ -235,6 +270,12 @@ export default {
   },
   mounted() {},
   methods: {
+    onIssuedToProductionChange() {
+      if (this.activeRow.is_issued_to_production) {
+        // If the checkbox is checked, set present quantity to required quantity
+        this.activeRow.present_quantity = this.activeRow.required_quantity;
+      }
+    },
     // fetchData() {
     //   // Simulate API response
     //   const newStatus = Math.random() < 0.5; // Randomly set true or false
@@ -251,7 +292,7 @@ export default {
     setActiveRow(params) {
       console.log("isnide setActiveRow");
       console.log("thsi si aprams data", params.data);
-      this.activeRow = params.data; // Set the active row
+      this.activeRow = params.data;
     },
 
     statusCellRenderer(params) {
@@ -297,6 +338,7 @@ export default {
         .put(`store/update-checklist-item/${this.activeRow.id}/`, {
           present_quantity: this.activeRow.present_quantity,
           reason_for_change: this.activeRow.present_quantity_change_note,
+          is_issued_to_production: this.activeRow.is_issued_to_production,
         })
         .then((response) => {
           console.log("Present quantity updated successfully:", response.data);

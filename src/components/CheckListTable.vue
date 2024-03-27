@@ -5,6 +5,7 @@
       style="height: 550px"
       class="ag-theme-quartz"
       :rowData="checklistItems"
+      :checklistStatus="checklistStatus"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -64,7 +65,7 @@
                 id="editedQuantity"
                 class="form-control"
                 v-model="activeRow.present_quantity"
-                :min="activeRow.required_quantity"
+                min="1"
               />
             </div>
             <div
@@ -127,6 +128,10 @@ export default {
       type: Array,
       required: true,
     },
+    checklistStatus: {
+      type: String,
+      required: true,
+    },
   },
   components: {
     AgGridVue,
@@ -185,31 +190,35 @@ export default {
           headerName: "Present Quantity",
           field: "present_quantity",
           cellRenderer: (params) => {
-            const button = document.createElement("button");
-            button.classList.add(
-              "btn",
-              "btn-sm",
-              "btn-outline-primary",
-              "edit-button"
-            );
-            button.innerHTML = '<i class="far fa-edit"></i>';
-            button.dataset.bsToggle = "modal"; // Set data-bs-toggle attribute
-            button.dataset.bsTarget = "#exampleModal"; // Set data-bs-target attribute
-            button.addEventListener("click", () => {
-              this.setActiveRow(params);
-            });
+            if (this.checklistStatus === "In Progress") {
+              const button = document.createElement("button");
+              button.classList.add(
+                "btn",
+                "btn-sm",
+                "btn-outline-primary",
+                "edit-button"
+              );
+              button.innerHTML = '<i class="far fa-edit"></i>';
+              button.dataset.bsToggle = "modal"; // Set data-bs-toggle attribute
+              button.dataset.bsTarget = "#exampleModal"; // Set data-bs-target attribute
+              button.addEventListener("click", () => {
+                this.setActiveRow(params);
+              });
 
-            const container = document.createElement("div");
-            container.classList.add(
-              "present-quantity-cell",
-              "d-flex",
-              "align-items-center"
-            );
-            container.innerHTML = `
+              const container = document.createElement("div");
+              container.classList.add(
+                "present-quantity-cell",
+                "d-flex",
+                "align-items-center"
+              );
+              container.innerHTML = `
       <span class="me-5">${params.value}</span>`;
-            container.appendChild(button);
+              container.appendChild(button);
 
-            return container;
+              return container;
+            } else {
+              return `<span>${params.value}</span>`;
+            }
           },
         },
 
@@ -274,6 +283,7 @@ export default {
       if (this.activeRow.is_issued_to_production) {
         // If the checkbox is checked, set present quantity to required quantity
         this.activeRow.present_quantity = this.activeRow.required_quantity;
+        this.activeRow.present_quantity_change_note = "";
       }
     },
     // fetchData() {

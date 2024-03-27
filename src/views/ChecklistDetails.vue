@@ -178,6 +178,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Raw Material']"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -212,7 +213,10 @@
           aria-labelledby="panelsStayOpen-headingTwo"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['PCB']" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['PCB']"
+              :checklistStatus="this.checklistStatus"
+            />
           </div>
         </div>
       </div>
@@ -248,6 +252,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Paste']"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -284,6 +289,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Bar']"
+              :checklistStatus="this.checklistStatus"
             />>
           </div>
         </div>
@@ -322,6 +328,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Flux']"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -356,7 +363,10 @@
           aria-labelledby="panelsStayOpen-headingSix"
         >
           <div class="accordion-body">
-            <CheckListTable :checklistItems="filteredChecklistItems['IPA']" />
+            <CheckListTable
+              :checklistItems="filteredChecklistItems['IPA']"
+              :checklistStatus="this.checklistStatus"
+            />
           </div>
         </div>
       </div>
@@ -392,6 +402,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Wire']"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -428,6 +439,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['SMT Pallet']"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -464,6 +476,7 @@
           <div class="accordion-body">
             <CheckListTable
               :checklistItems="filteredChecklistItems['Wave Pallet']"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -502,6 +515,7 @@
               :checklistItems="
                 filteredChecklistItems['PCB Serial Number Label']
               "
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -521,6 +535,7 @@ export default {
   },
   data() {
     return {
+      checklistStatus: "",
       activeBom: "",
       checklist: "",
       checklistItems: [],
@@ -564,6 +579,7 @@ export default {
         .then((response) => {
           console.log("yehh", response.data);
           this.checklist = response.data.checklist;
+          this.checklistStatus = response.data.checklist.status;
           this.checklistItems = this.checklist.checklist_items;
           console.log("chehcklist hereeeeee", this.checklist);
           console.log("chehcklist items hereeeeee", this.checklistItems);

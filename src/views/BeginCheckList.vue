@@ -246,6 +246,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['Raw Material']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -282,6 +283,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['PCB']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -318,6 +320,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Paste']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -354,6 +357,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Bar']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />>
           </div>
         </div>
@@ -390,6 +394,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Flux']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -426,6 +431,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['IPA']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -462,6 +468,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['Solder Wire']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -498,6 +505,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['SMT Pallet']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -534,6 +542,7 @@
             <CheckListTable
               :checklistItems="filteredChecklistItems['Wave Pallet']"
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -572,6 +581,7 @@
                 filteredChecklistItems['PCB Serial Number Label']
               "
               @checklistItemUpdated="updateChecklistItem"
+              :checklistStatus="this.checklistStatus"
             />
           </div>
         </div>
@@ -594,6 +604,7 @@ export default {
       activeBom: "",
       checklist: "",
       checklistItems: [],
+      checklistStatus: "",
 
       isChecklistPassed: false,
       isChecklistEnded: false,
@@ -660,6 +671,8 @@ export default {
       console.log("Received active checklist:", data.active_checklist);
 
       this.checklist = data.active_checklist;
+      this.checklistStatus = data.active_checklist.status;
+
       this.checklistItems = this.checklist.checklist_items;
       console.log("chehcklist items hereeeeee", this.checklistItems);
       const rawMaterialItems = this.filterChecklistItemsByType("Raw Material");
@@ -768,6 +781,7 @@ export default {
         .then((response) => {
           console.log(response.data);
           this.checklist = response.data.checklist;
+          this.checklistStatus = response.data.checklist.status;
           this.checklistItems = this.checklist.checklist_items;
           console.log("checklists items hereeeeee", this.checklistItems);
           const rawMaterialItems =

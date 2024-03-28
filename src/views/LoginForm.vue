@@ -91,7 +91,21 @@ export default {
               localStorage.setItem("userDetails", JSON.stringify(userDetails));
               this.$store.commit("setUserDetails", userDetails);
 
-              window.location.href = "/dashboard";
+              // Check user roles for redirection
+              if (
+                this.$store.state.user.is_machine_maintenance_supervisor_team
+              ) {
+                // Redirect to machine/plan-creation page for supervisor team
+                window.location.href = "/machine/plan-creation";
+              } else if (
+                this.$store.state.user.is_machine_maintenance_staff_team
+              ) {
+                // Redirect to machine/plan-creation page for staff team
+                window.location.href = "/machine/plan-creation";
+              } else if (this.$store.state.user.is_superuser) {
+                // Redirect to dashboard for all non-superuser users
+                window.location.href = "/dashboard";
+              }
             }, 1000);
           })
           .catch((error) => {

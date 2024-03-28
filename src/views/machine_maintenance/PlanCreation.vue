@@ -571,7 +571,11 @@ export default {
             color = "orange";
           }
         } else {
-          color = "orange";
+          if (maintenanceDate < today) {
+            color = "red";
+          } else {
+            color = "orange";
+          }
         }
 
         return {

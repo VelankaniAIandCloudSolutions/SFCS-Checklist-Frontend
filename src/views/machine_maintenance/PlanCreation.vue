@@ -356,6 +356,7 @@ export default {
       showPlanDetailsModal: false,
       showCreateMaintenancePlanModal: false,
       maintenance_plans: {},
+      all_maintenance_plans: {},
       maintenance_activity_types: [],
       maintenancePlanInfo: {},
       showEditableModal: false,
@@ -477,6 +478,7 @@ export default {
           // console.log("this is response data", response.data);
 
           this.maintenance_plans = response.data.maintenance_plans;
+          this.all_maintenance_plans = response.data.all_maintenance_plans;
           console.log("this is maintenance_plans ", this.maintenance_plans);
           this.populateCalendar();
         })
@@ -485,226 +487,56 @@ export default {
         });
     },
 
-    // populateCalendar() {
-    //   // Convert maintenance plans array into an array of event objects
-    //   console.log(" inside populate calendar");
-    //   const events = this.maintenance_plans.map((plan) => {
-    //     let title = ""; // Default event title
-    //     let color = ""; // Default event color
-    //     let note = ""; // Default note
-    //     let created_by_email = ""; // Default created_by email
-    //     let created_by_firstName = "";
-    //     let created_at_info = "";
-
-    //     if (plan.maintenance_activity_type) {
-    //       title = plan.maintenance_activity_type.code;
-    //     }
-
-    //     // Determine event color based on the presence of maintenance activities
-    //     if (
-    //       plan.maintenance_activities &&
-    //       plan.maintenance_activities.length > 0
-    //     ) {
-    //       color = "green"; // Set event color to green if maintenance activities present
-    //       note = plan.maintenance_activities
-    //         .map((activity) => activity.note)
-    //         .join("\n");
-
-    //       // Get created_by email from the first maintenance activity
-    //       if (
-    //         plan.maintenance_activities[0].created_by &&
-    //         plan.maintenance_activities[0].created_at
-    //       ) {
-    //         created_by_email = plan.maintenance_activities[0].created_by.email;
-    //         created_by_firstName =
-    //           plan.maintenance_activities[0].created_by.first_name;
-    //         created_at_info = plan.maintenance_activities[0].created_at;
-    //       }
-    //     } else {
-    //       color = "orange"; // Set event color to orange if maintenance activities are empty
-    //       // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
-    //       if (plan.created_by) {
-    //         created_by_email = plan.created_by.email;
-    //         created_by_firstName = plan.created_by.first_name;
-    //       }
-    //     }
-
-    //     return {
-    //       id: plan.id,
-    //       title: title,
-    //       start: plan.maintenance_date,
-    //       color: color,
-
-    //       extendedProps: { note: note },
-    //       created_by_userMail: created_by_email,
-    //       created_by_name: created_by_firstName,
-    //       created_at: created_at_info,
-    //     };
-    //   });
-
-    //   // Update the calendar options with the events
-    //   this.calendarOptions.events = events;
-    // },
-    // populateCalendar() {
-    //   // Convert maintenance plans array into an array of event objects
-    //   console.log("Inside populate calendar");
-    //   const today = new Date();
-    //   console.log(today);
-
-    //   const events = this.maintenance_plans.map((plan) => {
-    //     let title = ""; // Default event title
-    //     let color = ""; // Default event color
-    //     let note = ""; // Default note
-    //     let created_by_email = ""; // Default created_by email
-    //     let created_by_firstName = "";
-    //     let created_at_info = "";
-    //     let is_completed = "";
-    //     const maintenanceDate = new Date(plan.maintenance_date);
-    //     maintenanceDate.setHours(0, 0, 0, 0);
-    //     today.setHours(0, 0, 0, 0);
-
-    //     if (plan.maintenance_activity_type) {
-    //       title = plan.maintenance_activity_type.code;
-    //     }
-
-    //     if (plan.maintenance_activities) {
-    //       is_completed = plan.maintenance_activities.is_completed;
-    //     }
-
-    //     // // Determine event color based on the presence of maintenance activities and
-    //     // if (
-    //     //   plan.maintenance_activities &&
-    //     //   plan.maintenance_activities.length > 0 &&
-    //     //   plan.maintenance_activities[0].is_completed === true
-    //     // ) {
-    //     //   color = "green"; // Set event color to green if maintenance activities present and is in maintenance activities...is_completed===True
-    //     //   note = plan.maintenance_activities
-    //     //     .map((activity) => activity.note)
-    //     //     .join("\n");
-
-    //     //   // Get created_by email from the first maintenance activity
-    //     //   if (
-    //     //     plan.maintenance_activities[0].created_by &&
-    //     //     plan.maintenance_activities[0].created_at
-    //     //   ) {
-    //     //     created_by_email = plan.maintenance_activities[0].created_by.email;
-    //     //     created_by_firstName =
-    //     //       plan.maintenance_activities[0].created_by.first_name;
-    //     //     created_at_info = plan.maintenance_activities[0].created_at;
-    //     //   }
-    //     // } else {
-    //     //   const maintenanceDate = new Date(plan.maintenance_date);
-    //     //   maintenanceDate.setHours(0, 0, 0, 0);
-    //     //   today.setHours(0, 0, 0, 0);
-    //     //   console.log("inside else");
-    //     //   // if (maintenanceDate < today) {
-    //     //   //   color = "red";
-    //     //   // }
-
-    //     //   if (
-    //     //     maintenanceDate < today ||
-    //     //     (maintenanceDate >= today &&
-    //     //       !plan.maintenance_activities[0]?.is_completed)
-    //     //   ) {
-    //     //     // Set event color to red if maintenance date is today or in the past, or if maintenance activity is not completed
-    //     //     color = "red";
-    //     //   } else {
-    //     //     color = "orange";
-    //     //   }
-
-    //     //   // Set event color to orange if maintenance activities are empty
-    //     //   // If there are no maintenance activities, set created_by email to the creator of the maintenance plan
-    //     //   if (plan.created_by) {
-    //     //     created_by_email = plan.created_by.email;
-    //     //     created_by_firstName = plan.created_by.first_name;
-    //     //     created_at_info = plan.created_at;
-    //     //   }
-    //     // }
-
-    //     if (maintenanceDate < today) {
-    //       // Check if maintenance activities are present and completed
-    //       if (
-    //         plan.maintenance_activities &&
-    //         plan.maintenance_activities.length > 0
-    //       ) {
-    //         if (plan.maintenance_activities[0].is_completed === true) {
-    //           color = "green"; // Set event color to green
-    //           note = plan.maintenance_activities
-    //             .map((activity) => activity.note)
-    //             .join("\n");
-
-    //           // Get created_by email from the first maintenance activity
-    //           if (
-    //             plan.maintenance_activities[0].created_by &&
-    //             plan.maintenance_activities[0].created_at
-    //           ) {
-    //             created_by_email =
-    //               plan.maintenance_activities[0].created_by.email;
-    //             created_by_firstName =
-    //               plan.maintenance_activities[0].created_by.first_name;
-    //             created_at_info = plan.maintenance_activities[0].created_at;
-    //           }
-    //         }
-    //       } else {
-    //         color = "red";
-    //       }
-    //     } else if (maintenanceDate === today) {
-    //       if (
-    //         plan.maintenance_activities &&
-    //         plan.maintenance_activities.length > 0
-    //       ) {
-    //         if (plan.maintenance_activities[0].is_completed === true) {
-    //           color = "green"; // Set event color to green
-    //           note = plan.maintenance_activities
-    //             .map((activity) => activity.note)
-    //             .join("\n");
-
-    //           // Get created_by email from the first maintenance activity
-    //           if (
-    //             plan.maintenance_activities[0].created_by &&
-    //             plan.maintenance_activities[0].created_at
-    //           ) {
-    //             created_by_email =
-    //               plan.maintenance_activities[0].created_by.email;
-    //             created_by_firstName =
-    //               plan.maintenance_activities[0].created_by.first_name;
-    //             created_at_info = plan.maintenance_activities[0].created_at;
-    //           }
-    //         } else {
-    //           color = "red";
-    //         }
-    //       } else {
-    //         color = "orange";
-    //       }
-    //     } else {
-    //       color = "orange";
-    //     }
-
-    //     return {
-    //       title: title,
-    //       start: plan.maintenance_date,
-    //       color: color,
-
-    //       extendedProps: {
-    //         id: plan.id,
-    //         note: note,
-    //         color: color,
-    //         maintenance_activity_completed: is_completed,
-    //         maintenance_plan_date: plan.maintenance_date,
-    //         created_by_userMail: created_by_email,
-    //         created_by_name: created_by_firstName,
-    //         created_at: created_at_info,
-    //       },
-    //     };
-    //   });
-
-    //   // Update the calendar options with the events
-    //   this.calendarOptions.events = events;
-    // },
+    // Populate the calendar with events based on maintenance plans
     populateCalendar() {
       console.log("Inside populate calendar");
       const today = new Date();
       console.log(today);
+
+      // Helper function to check if there are any plans with maintenance activities for a given maintenance date
+      function hasMaintenanceActivities(plans, maintenanceDate) {
+        // Filter plans for the given maintenance date
+        const plansForDate = plans.filter((plan) => {
+          const planMaintenanceDate = new Date(plan.maintenance_date);
+          return (
+            planMaintenanceDate.setHours(0, 0, 0, 0) ===
+            maintenanceDate.setHours(0, 0, 0, 0)
+          );
+        });
+
+        // Check if all plans for the date have maintenance activities
+        return plansForDate.every(
+          (plan) =>
+            plan.maintenance_activities &&
+            plan.maintenance_activities.length > 0
+        );
+      }
+
+      // Helper function to check if all maintenance activities associated with plans for a given maintenance date are completed
+      function areAllMaintenanceActivitiesCompleted(plans, maintenanceDate) {
+        // Filter plans for the given maintenance date
+        const plansForDate = plans.filter((plan) => {
+          const planMaintenanceDate = new Date(plan.maintenance_date);
+          return (
+            planMaintenanceDate.setHours(0, 0, 0, 0) ===
+            maintenanceDate.setHours(0, 0, 0, 0)
+          );
+        });
+
+        // Check if there are any plans for the date with maintenance activities
+        if (plansForDate.length > 0) {
+          // Check if all activities for all plans are completed
+          return plansForDate.every(
+            (plan) =>
+              plan.maintenance_activities &&
+              plan.maintenance_activities.length > 0 &&
+              plan.maintenance_activities.every(
+                (activity) => activity.is_completed
+              )
+          );
+        }
+        return false; // Return false if there are no plans for the date with maintenance activities
+      }
 
       const events = this.maintenance_plans.map((plan) => {
         let title = ""; // Default event title
@@ -724,57 +556,22 @@ export default {
         }
 
         if (
-          plan.maintenance_activities &&
-          plan.maintenance_activities.length > 0
+          hasMaintenanceActivities(this.all_maintenance_plans, maintenanceDate)
         ) {
-          // Get the status of the first maintenance activity
-          is_completed = plan.maintenance_activities[0].is_completed;
+          is_completed = areAllMaintenanceActivitiesCompleted(
+            this.all_maintenance_plans,
+            maintenanceDate
+          );
 
-          // Capture note regardless of completion status
-          note = plan.maintenance_activities
-            .map((activity) => activity.note)
-            .join("\n");
-
-          // Get created_by email from the first maintenance activity
-          if (
-            plan.maintenance_activities[0].created_by &&
-            plan.maintenance_activities[0].created_at
-          ) {
-            created_by_email = plan.maintenance_activities[0].created_by.email;
-            created_by_firstName =
-              plan.maintenance_activities[0].created_by.first_name;
-            created_at_info = plan.maintenance_activities[0].created_at;
-          }
-        }
-
-        // Set color based on maintenance date
-        if (maintenanceDate < today) {
-          color = is_completed ? "green" : "red";
-
-          if (plan.maintenance_activities.length > 0) {
-            created_by_email = plan.maintenance_activities[0].created_by.email;
-            created_by_firstName =
-              plan.maintenance_activities[0].created_by.first_name;
-            created_at_info = plan.maintenance_activities[0].created_at;
+          if (maintenanceDate < today) {
+            color = is_completed ? "green" : "red";
+          } else if (maintenanceDate.getTime() === today.getTime()) {
+            color = is_completed ? "green" : "red";
           } else {
-            created_by_email = plan.created_by.email;
-            created_by_firstName = plan.created_by.first_name;
-            created_at_info = plan.created_at;
+            color = "orange";
           }
-        } else if (
-          maintenanceDate.getTime() === today.getTime() &&
-          plan.maintenance_activities.length > 0
-        ) {
-          color = is_completed ? "green" : "red";
-          created_by_email = plan.maintenance_activities[0].created_by.email;
-          created_by_firstName =
-            plan.maintenance_activities[0].created_by.first_name;
-          created_at_info = plan.maintenance_activities[0].created_at;
         } else {
           color = "orange";
-          created_by_email = plan.created_by.email;
-          created_by_firstName = plan.created_by.first_name;
-          created_at_info = plan.created_at;
         }
 
         return {

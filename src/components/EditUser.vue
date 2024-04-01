@@ -62,6 +62,18 @@
         <h4 class="card-title">
           <i class="fas fa-user me-1"></i> User Information
         </h4>
+        <div class="card-tools">
+          <!-- Buttons, labels, and many other things can be placed here! -->
+          <!-- Here is a label for example -->
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#changePasswordModal"
+          >
+            <i class="fas fa-key me-1"></i> Edit Password
+          </button>
+        </div>
       </div>
       <div class="card-body">
         <!-- Email -->
@@ -229,6 +241,119 @@
         </div>
       </div>
     </div>
+    <!--  Password Change Modal -->
+    <div
+      class="modal fade"
+      id="changePasswordModal"
+      tabindex="-1"
+      aria-labelledby="changePasswordModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="changePasswordModal">
+              Change Password
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <section class="modal-body">
+              <form id="changePasswordForm">
+                <!-- Old Password -->
+                <div class="mb-3">
+                  <label for="oldPassword" class="form-label"
+                    >Old Password</label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                    <input
+                      v-model="oldPassword"
+                      :type="showOldPassword ? 'text' : 'password'"
+                      class="form-control"
+                      id="oldPassword"
+                      name="oldPassword"
+                      required
+                    />
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      @click="toggleOldPassword"
+                    >
+                      <i
+                        :class="
+                          showOldPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                        "
+                      ></i>
+                    </button>
+                  </div>
+                  <small v-if="passwordError" class="text-danger">{{
+                    passwordError
+                  }}</small>
+                </div>
+
+                <!-- New Password -->
+                <div class="mb-3">
+                  <label for="newPassword" class="form-label"
+                    >New Password</label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="fas fa-lock"></i>
+                    </span>
+                    <input
+                      v-model="newPassword"
+                      :type="showNewPassword ? 'text' : 'password'"
+                      class="form-control"
+                      id="newPassword"
+                      name="newPassword"
+                      required
+                    />
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      @click="toggleNewPassword"
+                    >
+                      <i
+                        :class="
+                          showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                        "
+                      ></i>
+                    </button>
+                  </div>
+                  <small v-if="newPasswordError" class="text-danger">{{
+                    newPasswordError
+                  }}</small>
+                </div>
+              </form>
+            </section>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="changePassword"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -251,8 +376,13 @@ export default {
         is_design_team: false,
         is_machine_maintenance_supervisor_team: false,
         is_machine_maintenance_staff_team: false,
-        // Add more fields as needed
+        oldPassword: "",
+        newPassword: "",
+        passwordError: "",
+        newPasswordError: "",
       },
+      showOldPassword: false,
+      showNewPassword: false,
     };
   },
   mounted() {
@@ -260,6 +390,16 @@ export default {
     this.fetchUserData();
   },
   methods: {
+    toggleNewPassword() {
+      console.log("hiii");
+      this.showNewPassword = !this.showNewPassword;
+      console.log("value after", this.showNewPassword);
+    },
+    toggleOldPassword() {
+      console.log("olds");
+      this.showOldPassword = !this.showOldPassword;
+      console.log("value after toggling", this.showOldPassword);
+    },
     fetchUserData() {
       // Fetch user data based on the user ID from the backend
       this.$store.commit("setIsLoading", true);
@@ -325,6 +465,68 @@ export default {
             console.error("Error deleting user:", error);
           });
       }
+    },
+    changePassword() {
+      // Check if old password and new password are provided
+      if (!this.oldPassword || !this.newPassword) {
+        this.passwordError = "Please enter old and new passwords.";
+        return;
+      }
+
+      // Proceed with password change only if old password matches
+      this.$store.commit("setIsLoading", true);
+      axios
+        .post(`/accounts/users/verify-password/${this.userId}/`, {
+          old_password: this.oldPassword,
+        })
+        .then((response) => {
+          if (response.data.success) {
+            // Old password matches, proceed with updating the password
+            axios
+              .post(`/accounts/users/change-password/${this.userId}/`, {
+                new_password: this.newPassword,
+              })
+              .then((response) => {
+                console.log("Password changed successfully:", response.data);
+                this.$store.commit("setIsLoading", false);
+                this.$notify({
+                  title: "Password Updated Successfully",
+
+                  type: "bg-success-subtle text-success",
+                  duration: 5000,
+                });
+                // Reset fields
+                this.oldPassword = "";
+                this.newPassword = "";
+                this.passwordError = "";
+                this.newPasswordError = "";
+              })
+              .catch((error) => {
+                console.error("Error changing password:", error);
+                this.$store.commit("setIsLoading", false);
+                this.passwordError =
+                  "Error changing password. Please try again.";
+              });
+          } else {
+            // Old password does not match, display error notification
+            this.$store.commit("setIsLoading", false);
+            this.$notify({
+              title: "Incorrect Old Password",
+              type: "bg-danger-subtle text-danger",
+              duration: 5000,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error verifying password:", error);
+          this.$store.commit("setIsLoading", false);
+          this.passwordError = "Error verifying password. Please try again.";
+          this.$notify({
+            title: "Incorrect Old Password",
+            type: "bg-danger-subtle text-danger",
+            duration: 5000,
+          });
+        });
     },
   },
 };

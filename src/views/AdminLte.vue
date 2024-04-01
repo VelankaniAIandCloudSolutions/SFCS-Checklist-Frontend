@@ -281,6 +281,13 @@
                     <p>Report Generation</p>
                   </router-link>
                 </li>
+
+                <li class="nav-item">
+                  <router-link to="/machine/machine-list" class="nav-link">
+                    <i class="fa-solid fa-list nav-icon"></i>
+                    <p>Machine List</p>
+                  </router-link>
+                </li>
               </ul>
             </li>
           </ul>

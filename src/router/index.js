@@ -31,6 +31,7 @@ import MarkMaintenancePlan from "../views/machine_maintenance/MarkMaintenancePla
 import CalendarYearlyView from "../views/machine_maintenance/CalendarYearlyView.vue";
 import ReportGeneration from "../views/machine_maintenance/ReportGeneration.vue";
 import PlanCreation from "@/views/machine_maintenance/PlanCreation.vue";
+import MachineList from "@/views/machine_maintenance/MachineList.vue";
 
 const routes = [
   {
@@ -219,6 +220,11 @@ const routes = [
     path: "/machine/plan-creation",
     name: "PlanCreation",
     component: PlanCreation,
+  },
+  {
+    path: "/machine/machine-list",
+    name: "MachineList",
+    component: MachineList,
   },
 ];
 

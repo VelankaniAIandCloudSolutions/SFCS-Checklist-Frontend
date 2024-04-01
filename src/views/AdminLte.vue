@@ -290,6 +290,29 @@
                 </li>
               </ul>
             </li>
+            <li
+              class="nav-item text-left"
+              v-if="
+                $store.state.user.is_superuser ||
+                $store.state.user.is_design_team
+              "
+            >
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-robot"></i>
+                <p>
+                  Defect Recognition
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/defect-recognition" class="nav-link">
+                    <i class="fas fa-x-ray nav-icon"></i>
+                    <p>AOI</p>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->

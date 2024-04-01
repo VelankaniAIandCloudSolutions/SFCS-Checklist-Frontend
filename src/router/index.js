@@ -32,6 +32,7 @@ import CalendarYearlyView from "../views/machine_maintenance/CalendarYearlyView.
 import ReportGeneration from "../views/machine_maintenance/ReportGeneration.vue";
 import PlanCreation from "@/views/machine_maintenance/PlanCreation.vue";
 import MachineList from "@/views/machine_maintenance/MachineList.vue";
+import DefectRecognition from "@/views/Inspection/DefectRecognition.vue";
 
 const routes = [
   {
@@ -225,6 +226,11 @@ const routes = [
     path: "/machine/machine-list",
     name: "MachineList",
     component: MachineList,
+  },
+  {
+    path: "/defect-recognition",
+    name: "DefectRecognition",
+    component: DefectRecognition,
   },
 ];
 

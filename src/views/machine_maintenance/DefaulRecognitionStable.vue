@@ -222,9 +222,9 @@ export default {
           console.error("Error fetching inspection board data:", error);
         });
     },
-    async assignDefect() {
+    assignData() {
       // Retrieve the active defect ID using the activeDefectIndex
-      this.$store.commit("setIsLoading", true);
+      this.$store.setLoading(true);
       const activeDefect =
         this.inspectionBoardData.defects[this.activeDefectIndex];
       if (activeDefect) {
@@ -232,37 +232,22 @@ export default {
         console.log("Active defect ID:", activeDefectId);
         console.log("Selected defect type ID:", this.selectedDefectTypeId);
         console.log("Inspection Board ID:", this.inspectionBoardData.id);
-        let payload = {
-          defect_id: activeDefectId,
-          defect_type_id: this.selectedDefectTypeId,
-          board_id: this.inspectionBoardData.id,
-        };
+
         // Make API call to post data
-        await axios
-          .post("store/assign_defect_type/", payload)
+        axios
+          .post("/api/defects", {
+            defectId: activeDefectId,
+            defectTypeId: this.selectedDefectTypeId,
+            boardId: this.inspectionBoardData.id,
+          })
           .then((response) => {
             // Handle success response
-            this.$store.commit("setIsLoading", false);
             console.log("Data posted successfully:", response.data);
-            this.inspectionBoardData = response.data.inspectionBoardData;
-            this.defectTypes = response.data.defectTypes;
-
-            this.$notify({
-              title: "Defect Assigned Successfully",
-              type: "bg-success-subtle text-success",
-              duration: "5000",
-            });
             // You can perform further actions here if needed
           })
           .catch((error) => {
             // Handle error
             console.error("Error posting data:", error);
-            this.$store.commit("setIsLoading", false);
-            this.$notify({
-              title: "Error Assigning Defect ",
-              type: "bg-danger-subtle text-danger",
-              duration: "5000",
-            });
             // You can display an error message or handle the error as per your requirements
           });
       } else {

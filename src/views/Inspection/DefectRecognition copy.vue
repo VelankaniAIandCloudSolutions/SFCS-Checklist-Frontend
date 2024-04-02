@@ -71,12 +71,12 @@
               v-for="(defect, index) in inspectionBoardData.defects"
               :key="index"
               class="carousel-item"
-              :class="{ active: index === activeDefectIndex }"
+              :class="{ active: index === 0 }"
             >
               <img
                 v-if="defect.defect_image_url"
                 :src="defect.defect_image_url"
-                class="img-fluid"
+                class="d-block w-100"
                 :alt="'Defect Image ' + (index + 1)"
               />
               <div
@@ -102,7 +102,6 @@
             type="button"
             data-bs-target="#carouselExampleCaptions"
             data-bs-slide="prev"
-            @click="prevDefect"
           >
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
@@ -113,7 +112,6 @@
             data-bs-target="#carouselExampleCaptions"
             data-bs-slide="next"
             style="color: white; font-size: 1.5rem"
-            @click="nextDefect"
           >
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
@@ -122,11 +120,7 @@
 
         <div class="mt-4">
           <label for="defectType">Select Defect Type:</label>
-          <select
-            id="defectType"
-            v-model="selectedDefectTypeId"
-            class="form-select"
-          >
+          <select id="defectType" v-model="selectedDefect" class="form-select">
             <option
               v-for="defect in defectTypes"
               :key="defect"
@@ -185,9 +179,8 @@ export default {
   data() {
     return {
       inspectionBoardData: null,
-      selectedDefectTypeId: null, // Assuming you have selectedDefect data
-      defectTypes: [],
-      activeDefectIndex: 0, // Assuming you have defectTypes data
+      selectedDefect: null, // Assuming you have selectedDefect data
+      defectTypes: [], // Assuming you have defectTypes data
     };
   },
   mounted() {
@@ -207,33 +200,7 @@ export default {
         });
     },
     saveData() {
-      // Retrieve the active defect ID using the activeDefectIndex
-      const activeDefect =
-        this.inspectionBoardData.defects[this.activeDefectIndex];
-      if (activeDefect) {
-        const activeDefectId = activeDefect.id;
-        console.log("Active defect ID:", activeDefectId);
-        console.log("Selected defect type ID:", this.selectedDefectTypeId);
-      } else {
-        console.error("No active defect found.");
-      }
-    },
-    updateActiveDefectIndex(index) {
-      // Update the activeDefectIndex when carousel slide changes
-      this.activeDefectIndex = index;
-    },
-    prevDefect() {
-      // Go to previous defect in carousel
-      this.updateActiveDefectIndex(
-        (this.activeDefectIndex - 1 + this.inspectionBoardData.defects.length) %
-          this.inspectionBoardData.defects.length
-      );
-    },
-    nextDefect() {
-      // Go to next defect in carousel
-      this.updateActiveDefectIndex(
-        (this.activeDefectIndex + 1) % this.inspectionBoardData.defects.length
-      );
+      // Method to save data, you can implement as needed
     },
   },
 };
@@ -241,16 +208,4 @@ export default {
 
 <style lang="scss" scoped>
 /* Your existing CSS styles */
-.board-image {
-  width: 600px;
-  height: 400px;
-  object-fit: cover; /* Ensures the image covers the entire container */
-}
-
-/* CSS for the carousel images */
-.carousel-item img {
-  width: 600px;
-  height: 400px;
-  object-fit: cover; /* Ensures the image covers the entire container */
-}
 </style>

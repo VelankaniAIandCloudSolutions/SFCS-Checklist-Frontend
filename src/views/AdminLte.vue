@@ -311,6 +311,12 @@
                     <p>AOI</p>
                   </router-link>
                 </li>
+                <li class="nav-item">
+                  <router-link to="/inspection-boards" class="nav-link">
+                    <i class="fas fa-microchip nav-icon"></i>
+                    <p>Inspection Board</p>
+                  </router-link>
+                </li>
               </ul>
             </li>
           </ul>

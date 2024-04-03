@@ -136,12 +136,12 @@
           <label for="defectType">Select Defect Type:</label>
           <select
             id="defectType"
-            v-model="selectedDefectTypeId"
+            v-model="selectedDefectType"
             class="form-select"
           >
             <option
               v-for="defect in defectTypes"
-              :key="defect"
+              :key="defect.id"
               :value="defect.id"
             >
               {{ defect.name }}
@@ -169,7 +169,14 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="addDefectLabel">Add Defect</h1>
+            <h1
+              class="modal-title fs-5"
+              id="addDefectLabel"
+              style="font-weight: bold"
+            >
+              Add Defect
+            </h1>
+
             <button
               type="button"
               class="btn-close"
@@ -177,7 +184,13 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-body">...</div>
+          <div class="modal-body">
+            <textarea
+              v-model="defectName"
+              placeholder="Enter Defect"
+            ></textarea>
+          </div>
+
           <div class="modal-footer">
             <button
               type="button"
@@ -186,7 +199,14 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="createDefect"
+            >
+              Create Defect
+            </button>
           </div>
         </div>
       </div>
@@ -201,9 +221,12 @@ export default {
   data() {
     return {
       inspectionBoardData: null,
+      selectedDefectType: null,
       selectedDefectTypeId: null, // Assuming you have selectedDefect data
       defectTypes: [],
-      activeDefectIndex: 0, // Assuming you have defectTypes data
+      activeDefectIndex: 0,
+      defectName: "",
+      // Assuming you have defectTypes data
     };
   },
   mounted() {
@@ -217,9 +240,52 @@ export default {
           console.log("response data =", response.data);
           this.inspectionBoardData = response.data.inspectionBoardData;
           this.defectTypes = response.data.defectTypes;
+          if (
+            this.inspectionBoardData &&
+            this.inspectionBoardData.defects &&
+            this.inspectionBoardData.defects.length > 0
+          ) {
+            this.selectedDefectType =
+              this.inspectionBoardData.defects[
+                this.activeDefectIndex
+              ].defect_type.id;
+          }
         })
         .catch((error) => {
           console.error("Error fetching inspection board data:", error);
+        });
+    },
+
+    async createDefect() {
+      // Send POST request to /create-defect API endpoint
+      this.$store.commit("setIsLoading", true);
+
+      await axios
+        .post("store/create-defect-type/", { defectName: this.defectName })
+        .then((response) => {
+          // Handle successful response, e.g., show success message
+
+          this.$store.commit("setIsLoading", false);
+          this.defectTypes = response.data.defectTypes;
+          this.$notify({
+            title: "Defect Type Created Successfully",
+            type: "bg-success-subtle text-success",
+            duration: "5000",
+          });
+
+          console.log("Defect created successfully:", response.data);
+          // You may also want to close the modal or do other actions here
+        })
+        .catch((error) => {
+          // Handle error, e.g., show error message
+          this.$store.commit("setIsLoading", false);
+          console.error("Error creating defect:", error);
+          this.$notify({
+            title: "Error Creating Defect Type",
+            type: "bg-danger-subtle text-danger",
+            duration: "5000",
+          });
+          // You may also want to display an error message to the user
         });
     },
     async assignDefect() {
@@ -232,14 +298,14 @@ export default {
         console.log("Active defect ID:", activeDefectId);
         console.log("Selected defect type ID:", this.selectedDefectTypeId);
         console.log("Inspection Board ID:", this.inspectionBoardData.id);
-        let payload = {
-          defect_id: activeDefectId,
-          defect_type_id: this.selectedDefectTypeId,
-          board_id: this.inspectionBoardData.id,
-        };
+
         // Make API call to post data
         await axios
-          .post("store/assign_defect_type/", payload)
+          .post("store/assign_defect_type/", {
+            defect_id: activeDefectId,
+            defect_type_id: this.selectedDefectType,
+            board_id: this.inspectionBoardData.id,
+          })
           .then((response) => {
             // Handle success response
             this.$store.commit("setIsLoading", false);
@@ -272,19 +338,40 @@ export default {
     updateActiveDefectIndex(index) {
       // Update the activeDefectIndex when carousel slide changes
       this.activeDefectIndex = index;
+      if (
+        this.inspectionBoardData &&
+        this.inspectionBoardData.defects &&
+        this.inspectionBoardData.defects[index] &&
+        this.inspectionBoardData.defects[index].defect_type
+      ) {
+        this.selectedDefectType =
+          this.inspectionBoardData.defects[index].defect_type.id;
+      } else {
+        // If defect type ID is not found or the defect itself is not available, set selectedDefectType to null
+        this.selectedDefectType = null;
+      }
     },
+
     prevDefect() {
-      // Go to previous defect in carousel
-      this.updateActiveDefectIndex(
-        (this.activeDefectIndex - 1 + this.inspectionBoardData.defects.length) %
-          this.inspectionBoardData.defects.length
+      console.log(
+        "Previous defect index before calculation:",
+        this.activeDefectIndex
       );
+      const newIndex =
+        (this.activeDefectIndex - 1 + this.inspectionBoardData.defects.length) %
+        this.inspectionBoardData.defects.length;
+      console.log("New index after calculation:", newIndex);
+      this.updateActiveDefectIndex(newIndex);
     },
     nextDefect() {
-      // Go to next defect in carousel
-      this.updateActiveDefectIndex(
-        (this.activeDefectIndex + 1) % this.inspectionBoardData.defects.length
+      console.log(
+        "Next defect index before calculation:",
+        this.activeDefectIndex
       );
+      const newIndex =
+        (this.activeDefectIndex + 1) % this.inspectionBoardData.defects.length;
+      console.log("New index after calculation:", newIndex);
+      this.updateActiveDefectIndex(newIndex);
     },
   },
 };

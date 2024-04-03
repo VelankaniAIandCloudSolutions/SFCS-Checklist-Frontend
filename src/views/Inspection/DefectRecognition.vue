@@ -46,11 +46,28 @@
         <h2 class="mb-3">
           Board: <strong>{{ inspectionBoardData.name }}</strong>
         </h2>
-        <img
+        <!-- <img
           :src="inspectionBoardData.inspection_board_image_url"
           class="img-fluid board-image"
           alt="Inspection Board Image"
           style="width: 600px; height: 400px"
+        /> -->
+        <!-- <VueImageZoomer
+          :regular="inspectionBoardData.inspection_board_image_url"
+          img-class="img-fluid"
+          zoom-amount="3"
+          alt="Sky"
+          close-pos="top-right"
+          message-pos="top"
+        /> -->
+        <VueImageZoomer
+          :regular="inspectionBoardData.inspection_board_image_url"
+          :zoom="inspectionBoardData.inspection_board_image_url"
+          :zoom-amount="3"
+          img-class="img-fluid"
+          alt="Sky"
+          close-pos="top-right"
+          message-pos="top"
         />
       </div>
 
@@ -216,8 +233,10 @@
 
 <script>
 import axios from "axios";
-
+import { VueImageZoomer } from "vue-image-zoomer";
+import "vue-image-zoomer/dist/style.css";
 export default {
+  components: { VueImageZoomer },
   data() {
     return {
       inspectionBoardData: null,
@@ -234,6 +253,7 @@ export default {
   },
   methods: {
     getInspectionBoardData() {
+      this.$store.commit("setIsLoading", true);
       axios
         .get("store/get-inspection-board-data")
         .then((response) => {
@@ -250,9 +270,11 @@ export default {
                 this.activeDefectIndex
               ].defect_type.id;
           }
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
           console.error("Error fetching inspection board data:", error);
+          this.$store.commit("setIsLoading", false);
         });
     },
 
@@ -388,7 +410,7 @@ export default {
 /* CSS for the carousel images */
 .carousel-item img {
   width: 600px;
-  height: 400px;
+  height: 370px;
   object-fit: cover; /* Ensures the image covers the entire container */
 }
 </style>

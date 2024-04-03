@@ -33,6 +33,7 @@ import ReportGeneration from "../views/machine_maintenance/ReportGeneration.vue"
 import PlanCreation from "@/views/machine_maintenance/PlanCreation.vue";
 import MachineList from "@/views/machine_maintenance/MachineList.vue";
 import DefectRecognition from "@/views/Inspection/DefectRecognition.vue";
+import TestPage from "@/views/Inspection/TestPage.vue";
 
 const routes = [
   {
@@ -231,6 +232,11 @@ const routes = [
     path: "/defect-recognition",
     name: "DefectRecognition",
     component: DefectRecognition,
+  },
+  {
+    path: "/test",
+    name: "TestPage",
+    component: TestPage,
   },
 ];
 

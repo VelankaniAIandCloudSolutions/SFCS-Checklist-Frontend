@@ -27,6 +27,7 @@
           </nav>
         </div>
       </div>
+
       <!-- Buttons Column -->
       <!-- <div class="col-md-6 mt-4 text-end">
         <button
@@ -38,6 +39,44 @@
           Add New Defect
         </button>
       </div> -->
+      <div class="card card-outline card-primary mt-5">
+        <div class="card-header">
+          <h3 class="card-title" style="font-size: 20px">Active Board:</h3>
+          <div class="card-tools">
+            <router-link
+              :to="
+                '/defect-recognition/' +
+                (this.activeInspectionBoard
+                  ? this.activeInspectionBoard.id
+                  : '')
+              "
+            >
+              <button class="btn-sm btn-primary">View Board Details</button>
+            </router-link>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <strong>Board Name:</strong>
+              {{
+                this.activeInspectionBoard
+                  ? this.activeInspectionBoard.name
+                  : "N/A"
+              }}
+            </div>
+            <div class="col-md-6">
+              <strong>Detected Board Id:</strong>
+              {{
+                this.activeInspectionBoard
+                  ? this.activeInspectionBoard.detected_board_id
+                  : "N/A"
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <InspectionBoardGrid class="mt-5" :inspectionBoards="inspectionBoards" />
     </div>
   </div>
@@ -53,11 +92,51 @@ export default {
   },
   mounted() {
     this.getInspectionBoards();
+    //this.ws = new WebSocket(`wss://sfcsdev.xtractautomation.com/ws/checklist/`);
+    this.ws = new WebSocket(`ws://localhost:8000/ws/inspection-board/`);
+    // Event listener for WebSocket connection opened
+    this.ws.addEventListener("open", () => {
+      console.log("WebSocket connection opened");
+    });
+
+    this.ws.addEventListener("message", (event) => {
+      console.log("WebSocket message received:", event.data); // Log the raw message data
+
+      // Parse the JSON data from the event
+      const eventData = JSON.parse(event.data);
+
+      console.log("event data", eventData);
+
+      this.activeInspectionBoard = eventData.active_inspection_board;
+      this.inspectionBoards = eventData.all_inspection_boards;
+
+      // // Check the type of event
+      // if (eventData.type === "active_inspection_board") {
+      //   console.log("Active inspection board event received:", eventData); // Log the parsed event data
+      //   this.activeInspectionBoard = eventData.active_inspection_board;
+
+      //   // Do something with the active inspection board data
+      // } else if (eventData.type === "all_inspection_boards") {
+      //   console.log("All inspection boards event received:", eventData); // Log the parsed event data
+      //   // Handle all inspection boards event
+      //   this.inspectionBoards = eventData.all_inspection_boards;
+      //   // Do something with the list of all inspection boards data
+      // } else {
+      //   console.log("Unknown event type received:", eventData); // Log the parsed event data
+      //   // Handle other types of events if needed
+      // }
+    });
   },
+
   data() {
     return {
       inspectionBoards: null,
+      activeInspectionBoard: null,
     };
+  },
+  beforeUnmount() {
+    // Close WebSocket connection when the component is unmounted
+    this.ws.close();
   },
   methods: {
     getInspectionBoards() {
@@ -65,8 +144,9 @@ export default {
       axios
         .get("/store/get-inspection-boards") // Replace 'your-endpoint' with your actual API endpoint
         .then((response) => {
-          console.log(response.data);
+          console.log("this is response data", response.data);
           this.inspectionBoards = response.data.inspectionBoards;
+          this.activeInspectionBoard = response.data.activeInspectionBoard;
           this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {

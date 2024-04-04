@@ -75,18 +75,19 @@ export default {
   data() {
     return {
       colDefs: [
-        { headerName: "Board Name", field: "name", width: 360 },
+        { headerName: "Board Name", field: "name", width: 300 },
+        { headerName: "Created At", field: "created_at", width: 300 },
         // { headerName: "Created By", field: "created_by" },
 
         {
           headerName: "View Board Photo",
           cellRenderer: this.viewBoardPhotoButtonRenderer,
-          width: 360,
+          width: 300,
         },
         {
           headerName: "View Defect Details",
           cellRenderer: this.viewButtonRenderer,
-          width: 360,
+          width: 300,
         },
       ],
       defaultColDef: {
@@ -137,7 +138,7 @@ export default {
       this.$router.push(`/defect-recognition/${data.id}`);
     },
     viewBoardPhotoButtonRenderer(params) {
-      console.log(params.data);
+      // console.log(params.data);
       const button = document.createElement("button");
       button.innerHTML = `<i class="fas fa-microchip"></i>`; // FontAwesome icon for board photo
       button.classList.add("btn", "btn-outline-secondary");

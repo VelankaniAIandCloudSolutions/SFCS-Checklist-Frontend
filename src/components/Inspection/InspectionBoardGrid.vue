@@ -11,6 +11,49 @@
       @selectionChanged="onSelectionChanged"
     >
     </ag-grid-vue>
+
+    <!-- Board Photo Modal -->
+
+    <div
+      class="modal fade"
+      id="BoardPhotoModal"
+      tabindex="-1"
+      aria-labelledby="boardPhotoLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="boardPhotoModalLabel">
+              Inspection Board Photo
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <img
+              :src="this.selectedBoardPhotoUrl"
+              alt="Inspection Board Photo"
+              class="img-fluid"
+            />.
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -32,23 +75,18 @@ export default {
   data() {
     return {
       colDefs: [
+        { headerName: "Board Name", field: "name", width: 360 },
+        // { headerName: "Created By", field: "created_by" },
+
         {
-          headerName: "Checklist ID",
-          field: "id",
-          checkboxSelection: true,
+          headerName: "View Board Photo",
+          cellRenderer: this.viewBoardPhotoButtonRenderer,
+          width: 360,
         },
-
-        { headerName: "Project Name", field: "bom.product.project.name" },
-        { headerName: "Product Name", field: "bom.product.name" },
-        { headerName: "Product Code", field: "bom.product.product_code" },
-        { headerName: "Updated At", field: "updated_at" },
-
-        { headerName: "Created At", field: "created_at" },
-
-        { headerName: "Status", field: "status" },
         {
-          headerName: "View",
+          headerName: "View Defect Details",
           cellRenderer: this.viewButtonRenderer,
+          width: 360,
         },
       ],
       defaultColDef: {
@@ -58,6 +96,7 @@ export default {
         autoSize: true,
       },
       gridApi: null,
+      selectedBoardPhotoUrl: "",
       // total_completed: 0,
       // total_in_progress: 0,
       // total_failed: 0,
@@ -94,11 +133,23 @@ export default {
       return button;
     },
     onViewClick(data) {
-      if (data.status === "In Progress") {
-        this.$router.push(`/begin-checklist/${data.bom.id}`);
-      } else {
-        this.$router.push(`/checklist-details/${data.id}`);
-      }
+      console.log(data);
+      this.$router.push(`/defect-recognition/${data.id}`);
+    },
+    viewBoardPhotoButtonRenderer(params) {
+      console.log(params.data);
+      const button = document.createElement("button");
+      button.innerHTML = `<i class="fas fa-microchip"></i>`; // FontAwesome icon for board photo
+      button.classList.add("btn", "btn-outline-secondary");
+      button.setAttribute("data-bs-toggle", "modal");
+      button.setAttribute("data-bs-target", "#BoardPhotoModal");
+      button.addEventListener("click", () => {
+        this.selectedBoardPhotoUrl = params.data.inspection_board_image_url;
+      });
+      // button.addEventListener("click", () =>
+      //   this.onViewBoardPhotoClick(params.data)
+      // );
+      return button;
     },
   },
 };

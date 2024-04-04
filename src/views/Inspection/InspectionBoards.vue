@@ -28,7 +28,7 @@
         </div>
       </div>
       <!-- Buttons Column -->
-      <div class="col-md-6 mt-4 text-end">
+      <!-- <div class="col-md-6 mt-4 text-end">
         <button
           type="submit"
           class="btn btn-primary btn-sm"
@@ -37,13 +37,14 @@
         >
           Add New Defect
         </button>
-      </div>
+      </div> -->
       <InspectionBoardGrid class="mt-5" :inspectionBoards="inspectionBoards" />
     </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import InspectionBoardGrid from "../../components/Inspection/InspectionBoardGrid.vue";
 
 export default {
@@ -51,7 +52,7 @@ export default {
     InspectionBoardGrid,
   },
   mounted() {
-    this.getInspectionBoards;
+    this.getInspectionBoards();
   },
   data() {
     return {
@@ -60,13 +61,17 @@ export default {
   },
   methods: {
     getInspectionBoards() {
+      this.$store.commit("setIsLoading", true);
       axios
         .get("/store/get-inspection-boards") // Replace 'your-endpoint' with your actual API endpoint
         .then((response) => {
+          console.log(response.data);
           this.inspectionBoards = response.data.inspectionBoards;
+          this.$store.commit("setIsLoading", false);
         })
         .catch((error) => {
           console.error("Error fetching inspection boards:", error);
+          this.$store.commit("setIsLoading", false);
         });
     },
   },

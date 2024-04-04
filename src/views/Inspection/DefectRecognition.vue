@@ -35,51 +35,48 @@
           data-bs-toggle="modal"
           data-bs-target="#addDefectModal"
         >
-          Add New Defect
+          Add New Defect Type
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary btn-sm ml-2"
+          data-bs-toggle="modal"
+          data-bs-target="#ListOfDefectsModal"
+        >
+          View List Of Defect Types
         </button>
       </div>
     </div>
 
-    <div class="row align-items-start mt-5">
-      <!-- Left Column - Golden Board -->
-      <div class="col-md-6 mt-4" v-if="inspectionBoardData">
+    <!-- Board Image Centered -->
+    <div class="row align-items-center mt-5">
+      <div class="col-md-12 text-center" v-if="inspectionBoardData">
         <h2 class="mb-3">
           Board: <strong>{{ inspectionBoardData.name }}</strong>
         </h2>
-        <!-- <img
-          :src="inspectionBoardData.inspection_board_image_url"
-          class="img-fluid board-image"
-          alt="Inspection Board Image"
-          style="width: 600px; height: 400px"
-        /> -->
-        <!-- <VueImageZoomer
-          :regular="inspectionBoardData.inspection_board_image_url"
-          img-class="img-fluid"
-          zoom-amount="3"
-          alt="Sky"
-          close-pos="top-right"
-          message-pos="top"
-        /> -->
         <VueImageZoomer
           :regular="inspectionBoardData.inspection_board_image_url"
           :zoom="inspectionBoardData.inspection_board_image_url"
           :zoom-amount="3"
           img-class="img-fluid"
-          alt="Sky"
+          alt="Board Image"
           close-pos="top-right"
           message-pos="top"
         />
       </div>
+    </div>
 
-      <!-- Right Column - Defect Details -->
-      <div class="col-md-6 mt-4">
-        <h2 class="mb-3">Defect Details:</h2>
-
+    <!-- Defect Details -->
+    <div class="row align-items-start mt-5">
+      <!-- Left Column - Carousel -->
+      <div class="col-md-6 mt-4" v-if="inspectionBoardData">
+        <h2 class="mb-3">Defect Details</h2>
         <div
           id="carouselExampleCaptions"
           class="carousel slide"
           v-if="inspectionBoardData && inspectionBoardData.defects"
         >
+          <!-- Carousel Content -->
           <div
             class="carousel-indicators"
             v-if="inspectionBoardData && inspectionBoardData.defects"
@@ -95,6 +92,7 @@
               aria-label="Slide {{ index + 1 }}"
             ></button>
           </div>
+
           <div class="carousel-inner">
             <div
               v-for="(defect, index) in inspectionBoardData.defects"
@@ -148,34 +146,40 @@
             <span class="visually-hidden">Next</span>
           </button>
         </div>
+      </div>
 
-        <div class="mt-4">
-          <label for="defectType">Select Defect Type:</label>
-          <select
-            id="defectType"
-            v-model="selectedDefectType"
-            class="form-select"
-          >
-            <option
-              v-for="defect in defectTypes"
-              :key="defect.id"
-              :value="defect.id"
+      <!-- Right Column - Defect Dropdown and Button -->
+      <div class="col-md-6 mt-4">
+        <div class="row">
+          <!-- Select Defect Type Dropdown -->
+          <div class="col-md-12">
+            <!-- <label for="defectType">Select Defect Type:</label> -->
+            <h2>Select Defect Type:</h2>
+            <select
+              id="defectType"
+              v-model="selectedDefectType"
+              class="form-select mt-5"
             >
-              {{ defect.name }}
-            </option>
-          </select>
-          <button
-            type="button"
-            class="btn btn-primary mt-3"
-            @click="assignDefect"
-          >
-            Assign
-          </button>
+              <option
+                v-for="defect in defectTypes"
+                :key="defect.id"
+                :value="defect.id"
+              >
+                {{ defect.name }}
+              </option>
+            </select>
+          </div>
+          <!-- Assign Button -->
+          <div class="col-md-12 mt-3">
+            <button type="button" class="btn btn-primary" @click="assignDefect">
+              Assign
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Add Defect Modal -->
     <div
       class="modal fade"
       id="addDefectModal"
@@ -183,6 +187,7 @@
       aria-labelledby="addDefectLabel"
       aria-hidden="true"
     >
+      <!-- Modal Content -->
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -206,6 +211,62 @@
               v-model="defectName"
               placeholder="Enter Defect"
             ></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <!-- <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="createDefect"
+            >
+              Create Defect
+            </button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- List of Defects Modal -->
+    <div
+      class="modal fade"
+      id="ListOfDefectsModal"
+      tabindex="-1"
+      aria-labelledby="ListOfDefectsLabel"
+      aria-hidden="true"
+    >
+      <!-- Modal Content -->
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1
+              class="modal-title fs-5"
+              id="ListOfDefectsLabel"
+              style="font-weight: bold"
+            >
+              List Of Defects
+            </h1>
+
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <ul>
+              <li v-for="defect in defectTypes" :key="defect.id">
+                {{ defect.name }}
+              </li>
+            </ul>
           </div>
 
           <div class="modal-footer">
@@ -254,8 +315,10 @@ export default {
   methods: {
     getInspectionBoardData() {
       this.$store.commit("setIsLoading", true);
+
       axios
-        .get("store/get-inspection-board-data")
+        .get(`store/get-inspection-board-data/${this.$route.params.id}`)
+
         .then((response) => {
           console.log("response data =", response.data);
           this.inspectionBoardData = response.data.inspectionBoardData;

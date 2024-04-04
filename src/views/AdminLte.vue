@@ -305,12 +305,12 @@
                 </p>
               </a>
               <ul class="nav nav-treeview">
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                   <router-link to="/defect-recognition" class="nav-link">
                     <i class="fas fa-x-ray nav-icon"></i>
                     <p>AOI</p>
                   </router-link>
-                </li>
+                </li> -->
                 <li class="nav-item">
                   <router-link to="/inspection-boards" class="nav-link">
                     <i class="fas fa-microchip nav-icon"></i>

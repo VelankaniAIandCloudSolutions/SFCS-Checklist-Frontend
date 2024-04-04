@@ -230,7 +230,7 @@ const routes = [
     component: MachineList,
   },
   {
-    path: "/defect-recognition",
+    path: "/defect-recognition/:id",
     name: "DefectRecognition",
     component: DefectRecognition,
   },

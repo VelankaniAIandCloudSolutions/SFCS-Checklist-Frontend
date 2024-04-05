@@ -48,35 +48,46 @@
       </div>
     </div>
 
-    <!-- Board Image Centered -->
-    <div class="row align-items-center mt-5">
-      <div class="col-md-12 text-center" v-if="inspectionBoardData">
+    <div class="row align-items-start mt-5">
+      <!-- Left Column - Golden Board -->
+      <div class="col-md-6 mt-4" v-if="inspectionBoardData">
         <h2 class="mb-3">
           Board: <strong>{{ inspectionBoardData.name }}</strong>
         </h2>
+        <!-- <img
+          :src="inspectionBoardData.inspection_board_image_url"
+          class="img-fluid board-image"
+          alt="Inspection Board Image"
+          style="width: 600px; height: 400px"
+        /> -->
+        <!-- <VueImageZoomer
+          :regular="inspectionBoardData.inspection_board_image_url"
+          img-class="img-fluid"
+          zoom-amount="3"
+          alt="Sky"
+          close-pos="top-right"
+          message-pos="top"
+        /> -->
         <VueImageZoomer
           :regular="inspectionBoardData.inspection_board_image_url"
           :zoom="inspectionBoardData.inspection_board_image_url"
           :zoom-amount="3"
           img-class="img-fluid"
-          alt="Board Image"
+          alt="Sky"
           close-pos="top-right"
           message-pos="top"
         />
       </div>
-    </div>
 
-    <!-- Defect Details -->
-    <div class="row align-items-start mt-5">
-      <!-- Left Column - Carousel -->
-      <div class="col-md-6 mt-4" v-if="inspectionBoardData">
+      <!-- Right Column - Defect Details -->
+      <div class="col-md-6 mt-4">
         <h2 class="mb-3">Defect Details</h2>
+
         <div
           id="carouselExampleCaptions"
           class="carousel slide"
           v-if="inspectionBoardData && inspectionBoardData.defects"
         >
-          <!-- Carousel Content -->
           <div
             class="carousel-indicators"
             v-if="inspectionBoardData && inspectionBoardData.defects"
@@ -146,40 +157,34 @@
             <span class="visually-hidden">Next</span>
           </button>
         </div>
-      </div>
 
-      <!-- Right Column - Defect Dropdown and Button -->
-      <div class="col-md-6 mt-4">
-        <div class="row">
-          <!-- Select Defect Type Dropdown -->
-          <div class="col-md-12">
-            <!-- <label for="defectType">Select Defect Type:</label> -->
-            <h2>Select Defect Type:</h2>
-            <select
-              id="defectType"
-              v-model="selectedDefectType"
-              class="form-select mt-5"
+        <div class="mt-4">
+          <label for="defectType">Select Defect Type:</label>
+          <select
+            id="defectType"
+            v-model="selectedDefectType"
+            class="form-select"
+          >
+            <option
+              v-for="defect in defectTypes"
+              :key="defect.id"
+              :value="defect.id"
             >
-              <option
-                v-for="defect in defectTypes"
-                :key="defect.id"
-                :value="defect.id"
-              >
-                {{ defect.name }}
-              </option>
-            </select>
-          </div>
-          <!-- Assign Button -->
-          <div class="col-md-12 mt-3">
-            <button type="button" class="btn btn-primary" @click="assignDefect">
-              Assign
-            </button>
-          </div>
+              {{ defect.name }}
+            </option>
+          </select>
+          <button
+            type="button"
+            class="btn btn-primary mt-3"
+            @click="assignDefect"
+          >
+            Assign
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Add Defect Modal -->
+    <!-- Add Defect  Modal -->
     <div
       class="modal fade"
       id="addDefectModal"
@@ -187,7 +192,6 @@
       aria-labelledby="addDefectLabel"
       aria-hidden="true"
     >
-      <!-- Modal Content -->
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -242,7 +246,6 @@
       aria-labelledby="ListOfDefectsLabel"
       aria-hidden="true"
     >
-      <!-- Modal Content -->
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -291,7 +294,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 import { VueImageZoomer } from "vue-image-zoomer";
@@ -464,9 +466,17 @@ export default {
 
 <style lang="scss" scoped>
 /* Your existing CSS styles */
-.board-image {
+.board-image-container {
   width: 600px;
   height: 400px;
+  margin: 0 auto; /* Center the container horizontally */
+  display: flex;
+  justify-content: center; /* Center the image horizontally within the container */
+  align-items: center; /* Center the image vertically within the container */
+}
+.board-image-container img {
+  max-width: 100%; /* Ensure the image does not exceed the container width */
+  max-height: 100%; /* Ensure the image does not exceed the container height */
   object-fit: cover; /* Ensures the image covers the entire container */
 }
 

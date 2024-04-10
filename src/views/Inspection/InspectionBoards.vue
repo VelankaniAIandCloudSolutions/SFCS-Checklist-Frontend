@@ -92,8 +92,8 @@ export default {
   },
   mounted() {
     this.getInspectionBoards();
-    //this.ws = new WebSocket(`wss://sfcsdev.xtractautomation.com/ws/checklist/`);
-    this.ws = new WebSocket(`ws://localhost:8000/ws/inspection-board/`);
+    this.ws = new WebSocket(`wss://sfcsdev.xtractautomation.com/ws/checklist/`);
+    // this.ws = new WebSocket(`ws://localhost:8000/ws/inspection-board/`);
     // Event listener for WebSocket connection opened
     this.ws.addEventListener("open", () => {
       console.log("WebSocket connection opened");

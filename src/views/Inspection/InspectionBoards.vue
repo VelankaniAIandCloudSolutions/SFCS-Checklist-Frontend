@@ -95,36 +95,20 @@ export default {
     //this.ws = new WebSocket(`wss://sfcsdev.xtractautomation.com/ws/checklist/`);
     this.ws = new WebSocket(`ws://localhost:8000/ws/inspection-board/`);
     // Event listener for WebSocket connection opened
-    this.ws.addEventListener("open", () => {
-      console.log("WebSocket connection opened");
-    });
-
     this.ws.addEventListener("message", (event) => {
-      console.log("WebSocket message received:", event.data); // Log the raw message data
+      try {
+        console.log("WebSocket message received:", event.data); // Log the raw message data
 
-      // Parse the JSON data from the event
-      const eventData = JSON.parse(event.data);
+        // Parse the JSON data from the event
+        const eventData = JSON.parse(event.data);
 
-      console.log("event data", eventData);
+        console.log("event data", eventData);
 
-      this.activeInspectionBoard = eventData.active_inspection_board;
-      this.inspectionBoards = eventData.all_inspection_boards;
-
-      // // Check the type of event
-      // if (eventData.type === "active_inspection_board") {
-      //   console.log("Active inspection board event received:", eventData); // Log the parsed event data
-      //   this.activeInspectionBoard = eventData.active_inspection_board;
-
-      //   // Do something with the active inspection board data
-      // } else if (eventData.type === "all_inspection_boards") {
-      //   console.log("All inspection boards event received:", eventData); // Log the parsed event data
-      //   // Handle all inspection boards event
-      //   this.inspectionBoards = eventData.all_inspection_boards;
-      //   // Do something with the list of all inspection boards data
-      // } else {
-      //   console.log("Unknown event type received:", eventData); // Log the parsed event data
-      //   // Handle other types of events if needed
-      // }
+        this.activeInspectionBoard = eventData.active_inspection_board;
+        this.inspectionBoards = eventData.all_inspection_boards;
+      } catch (error) {
+        console.error("Error processing WebSocket message:", error);
+      }
     });
   },
 

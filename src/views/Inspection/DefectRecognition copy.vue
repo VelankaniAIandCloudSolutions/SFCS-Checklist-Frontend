@@ -55,19 +55,19 @@
           Board: <strong>{{ inspectionBoardData.name }}</strong>
         </h2>
         <!-- <img
-          :src="inspectionBoardData.inspection_board_image_url"
-          class="img-fluid board-image"
-          alt="Inspection Board Image"
-          style="width: 600px; height: 400px"
-        /> -->
+            :src="inspectionBoardData.inspection_board_image_url"
+            class="img-fluid board-image"
+            alt="Inspection Board Image"
+            style="width: 600px; height: 400px"
+          /> -->
         <!-- <VueImageZoomer
-          :regular="inspectionBoardData.inspection_board_image_url"
-          img-class="img-fluid"
-          zoom-amount="3"
-          alt="Sky"
-          close-pos="top-right"
-          message-pos="top"
-        /> -->
+            :regular="inspectionBoardData.inspection_board_image_url"
+            img-class="img-fluid"
+            zoom-amount="3"
+            alt="Sky"
+            close-pos="top-right"
+            message-pos="top"
+          /> -->
         <VueImageZoomer
           :regular="inspectionBoardData.inspection_board_image_url"
           :zoom="inspectionBoardData.inspection_board_image_url"
@@ -225,14 +225,14 @@
             >
               Close
             </button>
-            <!-- <button
+            <button
               type="button"
               class="btn btn-primary"
               data-bs-dismiss="modal"
               @click="createDefect"
             >
               Create Defect
-            </button> -->
+            </button>
           </div>
         </div>
       </div>
@@ -280,21 +280,12 @@
             >
               Close
             </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              @click="createDefect"
-            >
-              Create Defect
-            </button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 import { VueImageZoomer } from "vue-image-zoomer";
@@ -467,16 +458,23 @@ export default {
 
 <style lang="scss" scoped>
 /* Your existing CSS styles */
-.board-image {
+.board-image-container {
   width: 600px;
   height: 400px;
-  object-fit: cover; /* Ensures the image covers the entire container */
+  margin: 0 auto; /* Center the container horizontally */
+  display: flex;
+  justify-content: center; /* Center the image horizontally within the container */
+  align-items: center; /* Center the image vertically within the container */
+}
+.board-image-container img {
+  max-width: 100%; /* Ensure the image does not exceed the container width */
+  max-height: 100%; /* Ensure the image does not exceed the container height */
+  /* Ensures the image covers the entire container */
 }
 
 /* CSS for the carousel images */
 .carousel-item img {
   width: 600px;
   height: 370px;
-  object-fit: cover; /* Ensures the image covers the entire container */
 }
 </style>

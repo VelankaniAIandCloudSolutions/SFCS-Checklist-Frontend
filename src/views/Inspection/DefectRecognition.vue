@@ -50,24 +50,24 @@
 
     <div class="row align-items-start mt-5">
       <!-- Left Column - Golden Board -->
-      <div class="col-md-6 mt-4" v-if="inspectionBoardData">
+      <div v-if="inspectionBoardData">
         <h2 class="mb-3">
           Board: <strong>{{ inspectionBoardData.name }}</strong>
         </h2>
         <!-- <img
-          :src="inspectionBoardData.inspection_board_image_url"
-          class="img-fluid board-image"
-          alt="Inspection Board Image"
-          style="width: 600px; height: 400px"
-        /> -->
+            :src="inspectionBoardData.inspection_board_image_url"
+            class="img-fluid board-image"
+            alt="Inspection Board Image"
+            style="width: 600px; height: 400px"
+          /> -->
         <!-- <VueImageZoomer
-          :regular="inspectionBoardData.inspection_board_image_url"
-          img-class="img-fluid"
-          zoom-amount="3"
-          alt="Sky"
-          close-pos="top-right"
-          message-pos="top"
-        /> -->
+            :regular="inspectionBoardData.inspection_board_image_url"
+            img-class="img-fluid"
+            zoom-amount="3"
+            alt="Sky"
+            close-pos="top-right"
+            message-pos="top"
+          /> -->
         <VueImageZoomer
           :regular="inspectionBoardData.inspection_board_image_url"
           :zoom="inspectionBoardData.inspection_board_image_url"
@@ -78,109 +78,109 @@
           message-pos="top"
         />
       </div>
+    </div>
 
+    <div class="row">
       <!-- Right Column - Defect Details -->
-      <div class="col-md-6 mt-4">
-        <h2 class="mb-3">Defect Details</h2>
+      <h2 class="mb-3">Defect Details</h2>
 
+      <div
+        class="carousel slide col align-self-center"
+        id="carouselExampleCaptions"
+        v-if="inspectionBoardData && inspectionBoardData.defects"
+      >
         <div
-          id="carouselExampleCaptions"
-          class="carousel slide"
+          class="carousel-indicators"
           v-if="inspectionBoardData && inspectionBoardData.defects"
         >
-          <div
-            class="carousel-indicators"
-            v-if="inspectionBoardData && inspectionBoardData.defects"
-          >
-            <button
-              v-for="(defect, index) in inspectionBoardData.defects"
-              :key="index"
-              type="button"
-              :data-bs-target="'#carouselExampleCaptions' + index"
-              :data-bs-slide-to="index"
-              :class="{ active: index === 0, 'bg-dark': index === 0 }"
-              aria-current="true"
-              aria-label="Slide {{ index + 1 }}"
-            ></button>
-          </div>
+          <button
+            v-for="(defect, index) in inspectionBoardData.defects"
+            :key="index"
+            type="button"
+            :data-bs-target="'#carouselExampleCaptions' + index"
+            :data-bs-slide-to="index"
+            :class="{ active: index === 0, 'bg-dark': index === 0 }"
+            aria-current="true"
+            aria-label="Slide {{ index + 1 }}"
+          ></button>
+        </div>
 
-          <div class="carousel-inner">
+        <div class="carousel-inner">
+          <div
+            v-for="(defect, index) in inspectionBoardData.defects"
+            :key="index"
+            class="carousel-item"
+            :class="{ active: index === activeDefectIndex }"
+          >
+            <img
+              v-if="defect.defect_image_url"
+              :src="defect.defect_image_url"
+              class="img-fluid"
+              :alt="'Defect Image ' + (index + 1)"
+            />
             <div
-              v-for="(defect, index) in inspectionBoardData.defects"
-              :key="index"
-              class="carousel-item"
-              :class="{ active: index === activeDefectIndex }"
+              class="carousel-caption d-none d-md-block"
+              style="
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                background-color: rgba(0, 0, 0, 0.5);
+                color: white;
+                padding: 8px;
+              "
             >
-              <img
-                v-if="defect.defect_image_url"
-                :src="defect.defect_image_url"
-                class="img-fluid"
-                :alt="'Defect Image ' + (index + 1)"
-              />
-              <div
-                class="carousel-caption d-none d-md-block"
-                style="
-                  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-                  background-color: rgba(0, 0, 0, 0.5);
-                  color: white;
-                  padding: 8px;
-                "
+              <h5
+                class="fw-bold"
+                v-if="defect.defect_type && defect.defect_type.name"
               >
-                <h5
-                  class="fw-bold"
-                  v-if="defect.defect_type && defect.defect_type.name"
-                >
-                  {{ defect.defect_type.name }}
-                </h5>
-              </div>
+                {{ defect.defect_type.name }}
+              </h5>
             </div>
           </div>
-          <button
-            class="carousel-control-prev"
-            type="button"
-            data-bs-target="#carouselExampleCaptions"
-            data-bs-slide="prev"
-            @click="prevDefect"
-          >
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button
-            class="carousel-control-next"
-            type="button"
-            data-bs-target="#carouselExampleCaptions"
-            data-bs-slide="next"
-            style="color: white; font-size: 1.5rem"
-            @click="nextDefect"
-          >
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
         </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          data-bs-target="#carouselExampleCaptions"
+          data-bs-slide="prev"
+          @click="prevDefect"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          data-bs-target="#carouselExampleCaptions"
+          data-bs-slide="next"
+          style="color: white; font-size: 1.5rem"
+          @click="nextDefect"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
 
-        <div class="mt-4">
-          <label for="defectType">Select Defect Type:</label>
-          <select
-            id="defectType"
-            v-model="selectedDefectType"
-            class="form-select"
+      <div class="mt-4">
+        <label for="defectType">Select Defect Type:</label>
+        <select
+          id="defectType"
+          v-model="selectedDefectType"
+          class="form-select"
+        >
+          <option
+            v-for="defect in defectTypes"
+            :key="defect.id"
+            :value="defect.id"
           >
-            <option
-              v-for="defect in defectTypes"
-              :key="defect.id"
-              :value="defect.id"
-            >
-              {{ defect.name }}
-            </option>
-          </select>
-          <button
-            type="button"
-            class="btn btn-primary mt-3"
-            @click="assignDefect"
-          >
-            Assign
-          </button>
-        </div>
+            {{ defect.name }}
+          </option>
+        </select>
+        <button
+          type="button"
+          class="btn btn-primary mt-3"
+          @click="assignDefect"
+        >
+          Assign
+        </button>
       </div>
     </div>
 
@@ -225,14 +225,14 @@
             >
               Close
             </button>
-            <!-- <button
+            <button
               type="button"
               class="btn btn-primary"
               data-bs-dismiss="modal"
               @click="createDefect"
             >
               Create Defect
-            </button> -->
+            </button>
           </div>
         </div>
       </div>
@@ -279,14 +279,6 @@
               data-bs-dismiss="modal"
             >
               Close
-            </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-dismiss="modal"
-              @click="createDefect"
-            >
-              Create Defect
             </button>
           </div>
         </div>
@@ -477,13 +469,12 @@ export default {
 .board-image-container img {
   max-width: 100%; /* Ensure the image does not exceed the container width */
   max-height: 100%; /* Ensure the image does not exceed the container height */
-  object-fit: cover; /* Ensures the image covers the entire container */
+  /* Ensures the image covers the entire container */
 }
 
 /* CSS for the carousel images */
 .carousel-item img {
-  width: 600px;
+  width: 1000px;
   height: 370px;
-  object-fit: cover; /* Ensures the image covers the entire container */
 }
 </style>

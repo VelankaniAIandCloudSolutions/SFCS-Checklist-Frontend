@@ -84,21 +84,21 @@ export default {
           this.boardLogs = response.data.boardLogs;
 
           this.$store.commit("setIsLoading", false);
-          this.$notify({
-            title: "Report Fetched Successfully!!",
-            type: "bg-success-subtle text-success",
-            duration: "5000",
-          });
+          //   this.$notify({
+          //     title: "Report Fetched Successfully!!",
+          //     type: "bg-success-subtle text-success",
+          //     duration: "5000",
+          //   });
         })
         .catch((error) => {
           // Handle error if needed
           console.error(error);
           this.$store.commit("setIsLoading", false);
-          this.$notify({
-            title: "Error Fetching Report",
-            type: "bg-danger-subtle text-danger",
-            duration: "5000",
-          });
+          //   this.$notify({
+          //     title: "Error Fetching Report",
+          //     type: "bg-danger-subtle text-danger",
+          //     duration: "5000",
+          //   });
         });
     },
   },

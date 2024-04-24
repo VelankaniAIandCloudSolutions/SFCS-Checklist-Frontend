@@ -112,15 +112,7 @@ export default {
         });
         return;
       }
-      if (!this.fromDate && !this.toDate) {
-        this.$notify({
-          title: "Please at least, select one date!",
-          type: "bg-danger-subtle text-danger",
-          duration: "5000",
-        });
 
-        return;
-      }
       // Construct the URL with query parameters
       let url = `machine-logs/get-machine-reports-by-date-range?machineId=${this.selectedMachineId}`;
 

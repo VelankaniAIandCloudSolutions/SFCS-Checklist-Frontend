@@ -3,7 +3,7 @@
     <ag-grid-vue
       style="height: 500px"
       class="ag-theme-quartz"
-      :rowData="boardLogs"
+      :rowData="machineReports"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -26,7 +26,7 @@ export default {
     AgGridVue,
   },
   props: {
-    boardLogs: {
+    machineReports: {
       type: Array,
       required: true,
     },
@@ -34,24 +34,28 @@ export default {
   data() {
     return {
       colDefs: [
-        {
-          headerName: "Machine",
-          checkboxSelection: true,
-          valueGetter: function (params) {
-            // Access the machines array for the current row
-            const machines = params.data.machines;
-            // Check if machines array is not empty
-            if (machines && machines.length > 0) {
-              // Return the name of the first machine
-              return machines[0].name;
-            }
-            // If no machines or empty array, return null or empty string
-            return null; // or return '';
-          },
-        },
+        // {
+        //   headerName: "Machine",
+        //   checkboxSelection: true,
+        //   valueGetter: function (params) {
+        //     // Access the machines array for the current row
+        //     const machines = params.data.machines;
+        //     // Check if machines array is not empty
+        //     if (machines && machines.length > 0) {
+        //       // Return the name of the first machine
+        //       return machines[0].name;
+        //     }
+        //     // If no machines or empty array, return null or empty string
+        //     return null; // or return '';
+        //   },
+        // },
         {
           field: "date",
           headerName: "Date",
+        },
+        {
+          field: "board_serial_number",
+          headerName: "Board Serial No",
         },
         {
           field: "log_file_url",
@@ -109,11 +113,11 @@ export default {
           headerName: "Result",
         },
 
-        {
-          headerName: "Download",
-          cellRenderer: this.editButtonRenderer,
-          flex: 1,
-        },
+        // {
+        //   headerName: "Download",
+        //   cellRenderer: this.editButtonRenderer,
+        //   flex: 1,
+        // },
       ],
 
       defaultColDef: {

@@ -16,12 +16,12 @@
       <!-- Heading and Breadcrumb Column -->
 
       <div class="d-flex align-items-center mt-4">
-        <h2 class="mb-0">Machine Report</h2>
+        <h2 class="mb-0">Board Report</h2>
         <span class="ms-3 fs-4 text-muted">|</span>
         <nav aria-label="breadcrumb" class="d-inline-block ms-3">
           <ol class="breadcrumb bg-transparent m-0 p-0">
             <li class="breadcrumb-item active" aria-current="page">
-              <i class="fas fa-microchip me-2"></i> Machine Reports
+              <i class="fas fa-microchip me-2"></i> Board Reports
             </li>
           </ol>
         </nav>
@@ -84,6 +84,13 @@ export default {
           this.boardLogs = response.data.boardLogs;
 
           this.$store.commit("setIsLoading", false);
+          if (this.boardLogs.length === 0) {
+            this.$notify({
+              title: "No Board Logs found for this serial number !",
+              type: "bg-danger-subtle text-danger",
+              duration: "5000",
+            });
+          }
           //   this.$notify({
           //     title: "Report Fetched Successfully!!",
           //     type: "bg-success-subtle text-success",

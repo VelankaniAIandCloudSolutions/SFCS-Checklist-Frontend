@@ -36,7 +36,7 @@ export default {
       colDefs: [
         {
           headerName: "Machine",
-          checkboxSelection: true,
+
           valueGetter: function (params) {
             // Access the machines array for the current row
             const machines = params.data.machines;
@@ -52,6 +52,20 @@ export default {
         {
           field: "date",
           headerName: "Date",
+          cellRenderer: function (params) {
+            // Get the date from the row data
+            const date = params.data.date;
+            // Check if the date is available
+            if (date) {
+              // Split the date string into year, month, and day
+              const [year, month, day] = date.split("-");
+              // Format the date as dd-mm-yyyy
+              return `${day}-${month}-${year}`;
+            } else {
+              // If date is not available, render an empty cell
+              return "";
+            }
+          },
         },
         {
           field: "log_file_url",
@@ -82,6 +96,9 @@ export default {
           valueGetter: function (params) {
             // Get the begin_date_time from the row data
             const beginDateTime = params.data.begin_date_time;
+            if (!beginDateTime) {
+              return "-";
+            }
             // Convert to IST
             const beginTime = new Date(beginDateTime).toLocaleTimeString(
               "en-US",
@@ -101,6 +118,9 @@ export default {
           valueGetter: function (params) {
             // Get the end_date_time from the row data
             const endDateTime = params.data.end_date_time;
+            if (!endDateTime) {
+              return "-";
+            }
             // Convert to IST
             const endTime = new Date(endDateTime).toLocaleTimeString("en-US", {
               hour: "numeric",

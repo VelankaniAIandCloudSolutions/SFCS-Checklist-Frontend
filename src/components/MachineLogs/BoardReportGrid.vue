@@ -57,12 +57,20 @@ export default {
           field: "log_file_url",
           headerName: "Log File",
           cellRenderer: function (params) {
-            // Check if the URL is available
             if (params.value) {
-              // Render the URL as a clickable link
-              return `<a href="${params.value}" target="_blank">${params.value}</a>`;
+              // Create a button element with Bootstrap classes and eye icon
+              var button = document.createElement("button");
+              button.className = "btn btn-sm btn-outline-primary";
+              button.innerHTML = '<i class="fas fa-eye"></i>';
+
+              // Add event listener to open the link in a new tab when clicked
+              button.addEventListener("click", function () {
+                window.open(params.value, "_blank");
+              });
+
+              // Return the button element
+              return button;
             } else {
-              // If URL is not available, render an empty cell
               return "";
             }
           },
@@ -109,11 +117,11 @@ export default {
           headerName: "Result",
         },
 
-        {
-          headerName: "Download",
-          cellRenderer: this.editButtonRenderer,
-          flex: 1,
-        },
+        // {
+        //   headerName: "Download",
+        //   cellRenderer: this.editButtonRenderer,
+        //   flex: 1,
+        // },
       ],
 
       defaultColDef: {

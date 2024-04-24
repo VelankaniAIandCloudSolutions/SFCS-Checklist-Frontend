@@ -26,14 +26,14 @@
           </div>
           <button
             v-if="!showMachineReportGrid"
-            class="btn btn-outline-secondary"
+            class="btn btn-outline-primary"
             type="button"
             @click="searchByDateRange"
           >
             <i class="fas fa-search"></i>
           </button>
           <button
-            class="btn btn-outline-secondary"
+            class="btn btn-outline-primary"
             v-if="showMachineReportGrid"
             @click="toggleGridView"
           >

@@ -33,7 +33,7 @@
             placeholder="Enter board number"
           />
           <button
-            class="btn btn-outline-secondary"
+            class="btn btn-outline-primary"
             type="button"
             @click="searchBoard"
           >
@@ -61,7 +61,7 @@ export default {
   data() {
     return {
       boardNumber: "",
-      boardLogs: "",
+      boardLogs: [],
     };
   },
   methods: {

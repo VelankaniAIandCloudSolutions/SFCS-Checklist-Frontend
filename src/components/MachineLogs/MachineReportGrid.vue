@@ -71,23 +71,58 @@ export default {
           field: "board_serial_number",
           headerName: "Board Serial No",
         },
+        // {
+        //   field: "log_file_url",
+        //   headerName: "Log File",
+        //   cellRenderer: function (params) {
+        //     if (params.value) {
+        //       // Create a button element with Bootstrap classes and eye icon
+        //       var button = document.createElement("button");
+        //       button.className = "btn btn-sm btn-outline-primary";
+        //       button.innerHTML = '<i class="fas fa-eye"></i>';
+
+        //       // Add event listener to open the link in a new tab when clicked
+        //       button.addEventListener("click", function () {
+        //         window.open(params.value, "_blank");
+        //       });
+
+        //       // Return the button element
+        //       return button;
+        //     } else {
+        //       return "";
+        //     }
+        //   },
+        // },
         {
           field: "log_file_url",
           headerName: "Log File",
+          filter: true,
           cellRenderer: function (params) {
             if (params.value) {
-              // Create a button element with Bootstrap classes and eye icon
-              var button = document.createElement("button");
-              button.className = "btn btn-sm btn-outline-primary";
-              button.innerHTML = '<i class="fas fa-eye"></i>';
+              // Find the index of the fifth occurrence of '/'
+              var fifthSlashIndex = -1;
+              for (var i = 0, count = 0; i < params.value.length; i++) {
+                if (params.value[i] === "/") {
+                  count++;
+                  if (count === 5) {
+                    fifthSlashIndex = i;
+                    break;
+                  }
+                }
+              }
 
-              // Add event listener to open the link in a new tab when clicked
-              button.addEventListener("click", function () {
-                window.open(params.value, "_blank");
-              });
+              // Extract the file name substring after the fifth slash
+              var fileName = params.value.substring(fifthSlashIndex + 1);
 
-              // Return the button element
-              return button;
+              // Create an anchor element with Bootstrap classes and the file name as href
+              var anchor = document.createElement("a");
+
+              anchor.href = params.value;
+              anchor.target = "_blank";
+              anchor.textContent = fileName;
+
+              // Return the anchor element
+              return anchor;
             } else {
               return "";
             }

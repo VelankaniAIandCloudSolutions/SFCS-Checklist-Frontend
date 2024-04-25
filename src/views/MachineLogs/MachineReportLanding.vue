@@ -70,7 +70,7 @@
             }}
           </div>
           <div class="col-md-6">
-            <strong>Machine's Belongs To:</strong>
+            <strong>Machine Belongs To:</strong>
             {{
               this.selectedMachineObject && this.selectedMachineObject.line
                 ? this.selectedMachineObject.line.name

@@ -35,6 +35,10 @@ export default {
     return {
       colDefs: [
         {
+          headerName: "Board Serial No",
+          field: "board_serial_number",
+        },
+        {
           headerName: "Machine",
 
           valueGetter: function (params) {

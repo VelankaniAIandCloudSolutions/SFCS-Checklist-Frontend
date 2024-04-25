@@ -10,23 +10,25 @@
         <span class="ms-3 fs-4 text-muted">|</span>
         <nav aria-label="breadcrumb" class="d-inline-block ms-3">
           <ol class="breadcrumb bg-transparent m-0 p-0">
+            <li class="breadcrumb-item">
+              <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page">
-              <i class="fas fa-microchip me-2"></i> Board Reports
+              <i class="fas fa-microchip me-2"></i>Board Reports
             </li>
           </ol>
         </nav>
         <div class="d-flex align-items-center ms-auto">
-          <div class="input-group me-3" style="width: 200px">
+          <div class="input-group me-3" style="width: 250px">
             <span class="input-group-text">From Date</span>
             <input type="date" class="form-control" v-model="fromDate" />
           </div>
-          <div class="input-group me-3" style="width: 200px">
+          <div class="input-group me-3" style="width: 220px">
             <span class="input-group-text">To Date</span>
             <input type="date" class="form-control" v-model="toDate" />
           </div>
           <button
-            v-if="!showMachineReportGrid"
-            class="btn btn-outline-primary"
+            class="btn btn-outline-primary me-2"
             type="button"
             @click="searchByDateRange"
           >
@@ -42,6 +44,43 @@
         </div>
       </div>
     </div>
+
+    <div class="card card-outline card-primary mt-5">
+      <div class="card-header">
+        <h3 class="card-title" style="font-size: 20px">Selected Machine:</h3>
+        <!-- <div class="card-tools">
+          <router-link
+            :to="
+              '/defect-recognition/' +
+              (this.activeInspectionBoard ? this.activeInspectionBoard.id : '')
+            "
+          >
+            <button class="btn-sm btn-primary">View Board Details</button>
+          </router-link>
+        </div> -->
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Selected Machine:</strong>
+            {{
+              this.selectedMachineObject
+                ? this.selectedMachineObject.name
+                : "N/A"
+            }}
+          </div>
+          <div class="col-md-6">
+            <strong>Machine's Belongs To:</strong>
+            {{
+              this.selectedMachineObject && this.selectedMachineObject.line
+                ? this.selectedMachineObject.line.name
+                : "N/A"
+            }}
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div v-if="showMachineReportGrid">
       <MachineReportGrid
         style="margin-top: 40px"
@@ -79,6 +118,7 @@ export default {
       toDate: "",
       machinesList: "",
       selectedMachineId: null,
+      selectedMachineObject: "",
       machineReports: "",
       showMachineReportGrid: false,
     };
@@ -95,13 +135,23 @@ export default {
           console.error(error);
         });
     },
-    handleMachineClicked(machineId) {
-      // Handle the emitted event to get the machine ID
-      console.log("machine id being clicked =", machineId);
-      this.selectedMachineId = machineId;
+    handleMachineClicked(machineData) {
+      // Handle the emitted event to get both the machine ID and the row object
+
+      if (machineData) {
+        // Store the machine ID and the entire row object
+        console.log("Machine ID being clicked:", machineData.id);
+        console.log("Selected Row Object:", machineData);
+        this.selectedMachineId = machineData.id;
+        this.selectedMachineObject = machineData;
+      } else {
+        this.selectedMachineId = null;
+        this.selectedMachineObject = null;
+      }
     },
     toggleGridView() {
       this.showMachineReportGrid = !this.showMachineReportGrid;
+      this.selectedMachineObject = null;
     },
     searchByDateRange() {
       if (!this.selectedMachineId) {

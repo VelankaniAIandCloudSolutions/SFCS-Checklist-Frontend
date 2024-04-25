@@ -150,6 +150,21 @@ export default {
             );
             return beginTime;
           },
+          sortable: true, // Enable sorting for this column
+          comparator: function (date1, date2) {
+            // Convert string dates to actual Date objects for comparison
+            const dateObj1 = new Date(date1);
+            const dateObj2 = new Date(date2);
+
+            // Compare the date objects
+            if (dateObj1 < dateObj2) {
+              return -1;
+            } else if (dateObj1 > dateObj2) {
+              return 1;
+            } else {
+              return 0;
+            }
+          },
         },
         {
           field: "end_date_time",
@@ -168,6 +183,21 @@ export default {
               timeZone: "Asia/Kolkata",
             });
             return endTime;
+          },
+          sortable: true, // Enable sorting for this column
+          comparator: function (date1, date2) {
+            // Convert string dates to actual Date objects for comparison
+            const dateObj1 = new Date(date1);
+            const dateObj2 = new Date(date2);
+
+            // Compare the date objects
+            if (dateObj1 < dateObj2) {
+              return -1;
+            } else if (dateObj1 > dateObj2) {
+              return 1;
+            } else {
+              return 0;
+            }
           },
         },
 

@@ -316,6 +316,35 @@
                 </li>
               </ul>
             </li>
+            <li
+              class="nav-item text-left"
+              v-if="$store.state.user.is_superuser"
+            >
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-tools"></i>
+                <p>
+                  Machine Logs
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/machine-logs/board-report" class="nav-link">
+                    <i class="fas fa-file-alt nav-icon"></i>
+                    <p>Board Reports</p>
+                  </router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link
+                    to="/machine-logs/machine-report"
+                    class="nav-link"
+                  >
+                    <i class="fas fa-file nav-icon"></i>
+                    <p>Machine Reports</p>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->

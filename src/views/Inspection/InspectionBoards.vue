@@ -15,7 +15,7 @@
     <div class="row align-items-center">
       <!-- Heading and Breadcrumb Column -->
 
-      <div class="d-flex align-items-center">
+      <div class="d-flex align-items-center mt-4">
         <h2 class="mb-0">Inspection Boards</h2>
         <span class="ms-3 fs-4 text-muted">|</span>
         <nav aria-label="breadcrumb" class="d-inline-block ms-3">

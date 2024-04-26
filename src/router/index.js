@@ -37,7 +37,7 @@ import TestPage from "@/views/Inspection/TestPage.vue";
 import InspectionBoards from "@/views/Inspection/InspectionBoards.vue";
 import BoardReportLanding from "@/views/MachineLogs/BoardReportLanding.vue";
 import MachineReportLanding from "@/views/MachineLogs/MachineReportLanding.vue";
-
+import MachineLogsDashboard from "@/views/MachineLogs/MachineLogsDashboard.vue";
 const routes = [
   {
     path: "/",
@@ -255,6 +255,11 @@ const routes = [
     path: "/machine-logs/machine-report",
     name: "MachineReportLanding",
     component: MachineReportLanding,
+  },
+  {
+    path: "/machine-logs/dashboard",
+    name: "MachineLogsDashboard",
+    component: MachineLogsDashboard,
   },
 ];
 

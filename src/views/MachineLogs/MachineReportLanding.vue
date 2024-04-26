@@ -11,7 +11,9 @@
         <nav aria-label="breadcrumb" class="d-inline-block ms-3">
           <ol class="breadcrumb bg-transparent m-0 p-0">
             <li class="breadcrumb-item">
-              <a href="/"><i class="fas fa-home me-1"></i>Home</a>
+              <a href="/machine-logs/dashboard"
+                ><i class="fas fa-home me-1"></i>Home</a
+              >
             </li>
             <li class="breadcrumb-item active" aria-current="page">
               <i class="fas fa-microchip me-2"></i>Board Reports
@@ -125,14 +127,17 @@ export default {
   },
   methods: {
     getMachineData() {
+      this.$store.commit("setIsLoading", true);
       axios
         .get(`machine-logs/get-machine-list/`)
         .then((response) => {
           console.log(response.data);
-          this.machinesList = response.data.machines; // Assuming the response is the machine list
+          this.machinesList = response.data.machines;
+          this.$store.commit("setIsLoading", false); // Assuming the response is the machine list
         })
         .catch((error) => {
           console.error(error);
+          this.$store.commit("setIsLoading", false);
         });
     },
     handleMachineClicked(machineData) {

@@ -127,14 +127,17 @@ export default {
   },
   methods: {
     getMachineData() {
+      this.$store.commit("setIsLoading", true);
       axios
         .get(`machine-logs/get-machine-list/`)
         .then((response) => {
           console.log(response.data);
-          this.machinesList = response.data.machines; // Assuming the response is the machine list
+          this.machinesList = response.data.machines;
+          this.$store.commit("setIsLoading", false); // Assuming the response is the machine list
         })
         .catch((error) => {
           console.error(error);
+          this.$store.commit("setIsLoading", false);
         });
     },
     handleMachineClicked(machineData) {

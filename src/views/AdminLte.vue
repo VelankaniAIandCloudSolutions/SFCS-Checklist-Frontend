@@ -329,6 +329,12 @@
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
+                  <router-link to="/machine-logs/dashboard" class="nav-link">
+                    <i class="fas fa-chart-line nav-icon"></i>
+                    <p>Board Logs Dashboard</p>
+                  </router-link>
+                </li>
+                <li class="nav-item">
                   <router-link to="/machine-logs/board-report" class="nav-link">
                     <i class="fas fa-file-alt nav-icon"></i>
                     <p>Board Reports</p>

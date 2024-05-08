@@ -135,6 +135,21 @@
             required
           />
         </div> -->
+        <div class="col-md-6">
+          <label for="bomFormat" class="form-label"
+            >Bom Format <span class="text-danger">*</span></label
+          >
+          <select class="form-select" v-model="selectedBomFormat">
+            <option
+              v-for="bomFormat in bomFormats"
+              :key="bomFormat.id"
+              :value="bomFormat.id"
+              :selected="bomFormat.id === 1"
+            >
+              {{ bomFormat.name }}
+            </option>
+          </select>
+        </div>
 
         <div class="col-md-6">
           <label for="issueDate" class="form-label"
@@ -274,6 +289,8 @@ export default {
       products: [],
       bom_rev_change_note: "",
       isCustomModalVisible: false,
+      bomFormats: [],
+      selectedBomFormat: "",
     };
   },
   computed: {
@@ -344,6 +361,11 @@ export default {
         // Assuming the response is an array of projects
         this.projects = response.data.projects;
         this.products = response.data.products;
+        this.bomFormats = response.data.bom_formats;
+        if (this.bomFormats.length > 0) {
+          // Assign the ID of the first item to selectedBomFormat
+          this.selectedBomFormat = this.bomFormats[0].id;
+        }
         console.log(this.projects);
       } catch (error) {
         console.error("Error fetching projects:", error);
@@ -501,6 +523,7 @@ export default {
       formData.append("bom_file", this.uploadedFileBOM);
       formData.append("bom_rev_change_note", this.bom_rev_change_note);
       formData.append("pcb_file", this.uploadedFilePCB);
+      formData.append("bom_format_id", this.selectedBomFormat);
       console.log("FormData:", formData);
 
       try {

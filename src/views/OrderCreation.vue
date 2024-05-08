@@ -151,28 +151,46 @@
           />
         </div>
         <div v-if="selectedRadio === 'uploadNewBom'" class="col-md-6">
-          <label for="issueDate" class="form-label"
-            >Issue Date <span class="text-danger">*</span></label
-          >
-          <input
-            type="date"
-            class="form-control"
-            id="issueDate"
-            v-model="issueDate"
-            required
-          />
+          <div>
+            <label for="issueDate" class="form-label"
+              >Issue Date <span class="text-danger">*</span></label
+            >
+            <input
+              type="date"
+              class="form-control"
+              id="issueDate"
+              v-model="issueDate"
+              required
+            />
+          </div>
         </div>
+        <div v-if="selectedRadio === 'uploadNewBom'" class="col-md-6 mt-3">
+          <label for="bomFormat" class="form-label"
+            >Bom Format <span class="text-danger">*</span></label
+          >
+          <select class="form-select" v-model="selectedBomFormat">
+            <option
+              v-for="bomFormat in bomFormats"
+              :key="bomFormat.id"
+              :value="bomFormat.id"
+              :selected="bomFormat.id === 1"
+            >
+              {{ bomFormat.name }}
+            </option>
+          </select>
+        </div>
+
         <!-- Product Rev No -->
         <!-- <div class="col-md-6">
-              <label for="productRevNo" class="form-label">Product Rev No</label>
-              <input
-                type="text"
-                class="form-control"
-                id="productRevNo"
-                v-model="productRevNo"
-                required
-              />
-            </div> -->
+          <label for="productRevNo" class="form-label">Product Rev No</label>
+          <input
+            type="text"
+            class="form-control"
+            id="productRevNo"
+            v-model="productRevNo"
+            required
+          />
+        </div> -->
       </div>
       <div v-if="selectedRadio === 'uploadNewBom'" class="card p-3 mb-4">
         <label for="fileInput" class="form-label">
@@ -354,6 +372,8 @@ export default {
       isLoading: false,
       bom_rev_change_note: "",
       isCustomModalVisible: false,
+      bomFormats: [],
+      selectedBomFormat: "",
     };
   },
   computed: {
@@ -506,6 +526,11 @@ export default {
         this.projects = response.data.projects;
         this.products = response.data.products;
         this.orders = response.data.orders;
+        this.bomFormats = response.data.bom_formats;
+        if (this.bomFormats.length > 0) {
+          // Assign the ID of the first item to selectedBomFormat
+          this.selectedBomFormat = this.bomFormats[0].id;
+        }
       } catch (error) {
         console.error("Error fetching projects:", error);
         this.setIsLoading(false);
@@ -601,6 +626,7 @@ export default {
       formData.append("batch_quantity", this.order.batchQuantity);
       formData.append("bom_file", this.uploadedFileBOM);
       formData.append("pcb_file", this.uploadedFilePCB);
+      formData.append("bom_format_id", this.selectedBomFormat);
 
       try {
         const responseCases = await axios.post(

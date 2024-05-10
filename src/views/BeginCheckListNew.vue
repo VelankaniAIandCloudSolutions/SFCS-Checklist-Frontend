@@ -630,7 +630,7 @@ export default {
     // Event listener for WebSocket messages received
     this.ws.addEventListener("message", (event) => {
       // Parse the received message
-      console.log("thi ssi event.data raw ", event.data);
+      console.log("thi ssi event.data raw dedede ", event.data);
       const data = JSON.parse(event.data);
       console.log("event.data after parsing", data);
       console.log("Received active checklist:", data.active_checklist);

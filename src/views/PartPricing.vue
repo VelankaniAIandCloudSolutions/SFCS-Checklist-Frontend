@@ -89,7 +89,7 @@
             required
           >
             <option v-for="bom in filteredBoms" :key="bom.id" :value="bom">
-              {{ bom.bom_file_name }}
+              {{ bom.bom_file_name }} ({{ bom.bom_format_name }})
             </option>
           </select>
         </div>
@@ -116,7 +116,7 @@
     </section>
   </div>
   <div class="container" v-if="showPricingTable">
-    <PartPricingTable :prices="partPrices" />
+    <PartPricingTable :partPrices="partPrices" />
   </div>
 
   <!-- <div
@@ -249,19 +249,26 @@ export default {
         this.$store.commit("setIsLoading", true);
         console.log("Fetching product prices with BOM ID:", selectedBom.id);
         await axios
-          .get(`/pricing/get-product-pricing/${selectedProduct.id}/`, {
-            params: { bom_id: selectedBom.id },
-          })
+          .get(`/pricing/get-bom-pricing/${selectedBom.id}/`)
           .then((response) => {
             console.log("Response data:", response.data);
-            this.partPrices = response.data.part_prices;
+            this.partPrices = response.data.final_json;
+
+            console.log(" the part prices", this.partPrices);
             this.selectedBomId = selectedBom.id;
             this.showPricingTable = true;
+
+            this.$notify({
+              title: "Part Prices Fetched Successfully",
+              type: "bg-success-subtle text-success",
+              duration: "5000",
+            });
           })
           .catch((error) => {
             console.error("Error:", error);
             this.$notify({
-              title: "An error occurred, please try again",
+              title:
+                "Please select the correct BOM. The selected BOM is for hardware design.",
               type: "bg-danger-subtle text-danger",
               duration: "5000",
             });

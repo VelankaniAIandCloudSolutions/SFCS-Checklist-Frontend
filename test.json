@@ -1,0 +1,124 @@
+{
+    "line_items": [
+        {
+            "id": 1,
+            "part_number": "ABC123",
+            "manufacturer": {
+                "id": 10,
+                "name": "Manufacturer A"
+            },
+            "distributors": [
+                {
+                    "Mouser": {
+                        "part_prices": {
+                            "id": 101,
+                            "part_number": "ABC123",
+                            "description": "Part ABC123 description from Mouser",
+                            "rate": "10.00",
+                            "quantity": 100,
+                            "total": "1000.00",
+                            "created_at": "2024-05-23T12:00:00Z",
+                            "updated_at": "2024-05-23T12:00:00Z",
+                            "is_active": true
+                        }
+                    },
+                    {
+                        "DigiKey": {
+                            "part_prices": {
+                                "id": 201,
+                                "part_number": "ABC123",
+                                "description": "Part ABC123 description from DigiKey",
+                                "rate": "9.50",
+                                "quantity": 200,
+                                "total": "1900.00",
+                                "created_at": "2024-05-23T12:00:00Z",
+                                "updated_at": "2024-05-23T12:00:00Z",
+                                "is_active": true
+                            }
+                        }
+                    },
+                    {
+                        "Element14": {
+                            "part_prices": {
+                                "id": 301,
+                                "part_number": "ABC123",
+                                "description": "Part ABC123 description from Element14",
+                                "rate": "9.50",
+                                "quantity": 200,
+                                "total": "1900.00",
+                                "created_at": "2024-05-23T12:00:00Z",
+                                "updated_at": "2024-05-23T12:00:00Z",
+                                "is_active": true
+                            }
+                        }
+                    },
+                    {
+                        "OtherDistributor": {
+                            "error": "No API defined for OtherDistributor"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "part_number": "XYZ789",
+            "manufacturer": {
+                "id": 11,
+                "name": "Manufacturer B"
+            },
+            "distributors": [
+                {
+                    "Mouser": {
+                        "part_prices": {
+                            "id": 102,
+                            "part_number": "XYZ789",
+                            "description": "Part XYZ789 description from Mouser",
+                            "rate": "15.00",
+                            "quantity": 50,
+                            "total": "750.00",
+                            "created_at": "2024-05-23T12:00:00Z",
+                            "updated_at": "2024-05-23T12:00:00Z",
+                            "is_active": true
+                        }
+                    },
+                    {
+                        "DigiKey": {
+                            "part_prices": {
+                                "id": 202,
+                                "part_number": "XYZ789",
+                                "description": "Part XYZ789 description from DigiKey",
+                                "rate": "14.50",
+                                "quantity": 80,
+                                "total": "1160.00",
+                                "created_at": "2024-05-23T12:00:00Z",
+                                "updated_at": "2024-05-23T12:00:00Z",
+                                "is_active": true
+                            }
+                        }
+                    },
+                    {
+                        "Element14": {
+                            "part_prices": {
+                                "id": 302,
+                                "part_number": "XYZ789",
+                                "description": "Part XYZ789 description from Element14",
+                                "rate": "14.50",
+                                "quantity": 80,
+                                "total": "1160.00",
+                                "created_at": "2024-05-23T12:00:00Z",
+                                "updated_at": "2024-05-23T12:00:00Z",
+                                "is_active": true
+                            }
+                        }
+                    },
+                    {
+                        "OtherDistributor": {
+                            "error": "No API defined for OtherDistributor"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

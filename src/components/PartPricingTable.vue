@@ -1,21 +1,12 @@
 <template>
   <div v-if="$store.state.isLoading" class="container text-center">
-    <!-- <div
-      class="spinner-border mt-5"
-      style="width: 4rem; height: 4rem"
-      role="status"
-    >
-      <span class="visually-hidden">Loading...</span>
-    </div>
-    <div>
-      <b> Loading... </b>
-    </div> -->
+    <!-- Add loading spinner or message here -->
   </div>
   <div v-else>
     <ag-grid-vue
       style="height: 500px"
       class="ag-theme-quartz"
-      :rowData="prices"
+      :rowData="partPrices"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -34,88 +25,177 @@ export default {
     AgGridVue,
   },
   props: {
-    prices: {
+    partPrices: {
       type: Array,
       required: true,
     },
   },
   data() {
     return {
+      currencySymbols: {
+        USD: "$",
+        EUR: "€",
+        GBP: "£",
+        JPY: "¥",
+        INR: "₹", // Added Indian Rupee symbol
+        // Add more currency codes and their symbols as needed
+      },
       colDefs: [
         {
           field: "part_number",
-          headerName: "VEPL Part Number",
+          headerName: "VEPL Number",
+          hide: !this.partPrices.some((item) => item.part_number),
         },
         {
-          field: "distibutor",
-          headerName: "Distributor",
-        },
-        {
-          field: "manufacturer",
-          headerName: "Manufacturer",
-        },
-        {
-          field: "manufacturer_part_number",
+          field: "Manufacturer Part Number",
           headerName: "Manufacturer Part No.",
         },
         {
-          field: "discription",
+          field: "Online Distributor Name",
+          headerName: "Distributor",
+          cellRenderer: (params) => {
+            return params.value
+              ? `<span> ${params.value} </span>`
+              : `<span> - </span>`;
+          },
+        },
+        {
+          field: "Manufacturer Name",
+          headerName: "Manufacturer",
+          cellRenderer: (params) => {
+            return params.value
+              ? `<span> ${params.value} </span>`
+              : `<span> - </span>`;
+          },
+        },
+        {
+          field: "Description",
           headerName: "Description",
+          cellRenderer: (params) => {
+            return params.value
+              ? `<span>${params.value}</span>`
+              : `<span> - </span>`;
+          },
         },
         {
-          field: "stock",
+          field: "Stock",
           headerName: "Stock",
+          cellRenderer: (params) => {
+            return params.value
+              ? `<span>${params.value}</span>`
+              : `<span> - </span>`;
+          },
         },
         {
-          field: "currency",
+          field: "Currency",
           headerName: "Currency",
+          cellRenderer: (params) => {
+            return params.value
+              ? `<span>${params.value}</span>`
+              : `<span> - </span>`;
+          },
         },
         {
-          field: "prices",
-          headerName: "Prices(1)",
-        },
-        {
-          field: "prices",
-          headerName: "Prices(10)",
-        },
-        {
-          field: "prices",
-          headerName: "Prices(100)",
-        },
-        // {
-        //   field: "rate",
-        //   headerName: "Rate",
-        //   cellRenderer: (params) => {
-        //     if (params.data.po_json) {
-        //       const currencyCode = params.data.po_json.currency_symbol;
-        //       const rawRate = params.data.rate;
-        //       const formattedRate = this.$parsePriceToString(rawRate);
+          field: "price(1)",
+          headerName: "Price (1)",
+          cellRenderer: (params) => {
+            const symbol = this.currencySymbols[params.data.Currency] || "";
+            const value = params.value ? String(params.value) : "";
 
-        //       return `${currencyCode} ${formattedRate}`;
-        //     } else {
-        //       return params.data.rate;
-        //     }
-        //   },
-        // },
-        // {
-        //   field: "quantity",
-        //   headerName: "Quantity",
-        // },
-        // {
-        //   field: "total",
-        //   headerName: "Total",
-        //   cellRenderer: (params) => {
-        //     if (params.data.po_json) {
-        //       const currencyCode = params.data.po_json.currency_symbol;
-        //       const rawTotal = params.data.total;
-        //       const formattedTotal = this.$parsePriceToString(rawTotal);
-        //       return `${currencyCode} ${formattedTotal}`;
-        //     } else {
-        //       return params.data.total;
-        //     }
-        //   },
-        // },
+            if (value && !value.includes(symbol)) {
+              return `<span>${symbol}${value}</span>`;
+            } else if (params.value) {
+              return `<span>${params.value}</span>`;
+            } else {
+              return `<span> - </span>`;
+            }
+          },
+        },
+
+        {
+          field: "price(10)",
+          headerName: "Price (10)",
+          cellRenderer: (params) => {
+            const symbol = this.currencySymbols[params.data.Currency] || "";
+            const value = params.value ? String(params.value) : "";
+
+            if (value && !value.includes(symbol)) {
+              return `<span>${symbol}${value}</span>`;
+            } else if (params.value) {
+              return `<span>${params.value}</span>`;
+            } else {
+              return `<span> - </span>`;
+            }
+          },
+        },
+        {
+          field: "price(100)",
+          headerName: "Price (100)",
+          cellRenderer: (params) => {
+            const symbol = this.currencySymbols[params.data.Currency] || "";
+            const value = params.value ? String(params.value) : "";
+
+            if (value && !value.includes(symbol)) {
+              return `<span>${symbol}${value}</span>`;
+            } else if (params.value) {
+              return `<span>${params.value}</span>`;
+            } else {
+              return `<span> - </span>`;
+            }
+          },
+        },
+        {
+          field: "price(500)",
+          headerName: "Price (500)",
+          cellRenderer: (params) => {
+            const symbol = this.currencySymbols[params.data.Currency] || "";
+            const value = params.value ? String(params.value) : "";
+
+            if (value && !value.includes(symbol)) {
+              return `<span>${symbol}${value}</span>`;
+            } else if (params.value) {
+              return `<span>${params.value}</span>`;
+            } else {
+              return `<span> - </span>`;
+            }
+          },
+        },
+        {
+          field: "Datasheet Url",
+          headerName: "View DataSheet",
+          cellRenderer: (params) => {
+            const openUrl = () => {
+              window.open(params.value, "_blank");
+            };
+
+            const eyeIcon = document.createElement("i");
+            eyeIcon.className = "fas fa-eye";
+            eyeIcon.style.color = "blue";
+            eyeIcon.style.cursor = "pointer";
+            eyeIcon.addEventListener("click", openUrl);
+
+            return eyeIcon;
+          },
+        },
+        {
+          field: "Product Url",
+          headerName: "View Product",
+          cellRenderer: (params) => {
+            const openUrl = () => {
+              window.open(params.value, "_blank");
+            };
+
+            const externalLinkIcon = document.createElement("i");
+            externalLinkIcon.className = "fas fa-external-link-alt"; // Use external link icon
+            externalLinkIcon.style.color = "green"; // Set icon color
+            externalLinkIcon.style.cursor = "pointer"; // Set cursor to pointer
+            externalLinkIcon.addEventListener("click", openUrl);
+
+            return externalLinkIcon;
+          },
+        },
       ],
+
       defaultColDef: {
         filter: true,
         sortable: true,
@@ -125,8 +205,10 @@ export default {
       },
     };
   },
-
-  methods: {},
+  created() {
+    // Log prices prop to console
+    console.log("Prices prop:", this.partPrices);
+  },
 };
 </script>
 

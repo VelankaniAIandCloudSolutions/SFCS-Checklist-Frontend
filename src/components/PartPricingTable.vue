@@ -40,7 +40,23 @@ export default {
         INR: "₹", // Added Indian Rupee symbol
         // Add more currency codes and their symbols as needed
       },
-      colDefs: [
+      colDefs: [],
+      defaultColDef: {
+        filter: true,
+        sortable: true,
+        resizable: true,
+        autoSize: true,
+        autoSizeColumns: true,
+      },
+    };
+  },
+  created() {
+    this.initializeColumnDefinitions();
+    console.log("Prices prop:", this.partPrices);
+  },
+  methods: {
+    initializeColumnDefinitions() {
+      const staticColumns = [
         {
           field: "part_number",
           headerName: "VEPL Number",
@@ -95,71 +111,12 @@ export default {
               : `<span> - </span>`;
           },
         },
-        {
-          field: "price(1)",
-          headerName: "Price (1)",
-          cellRenderer: (params) => {
-            const symbol = this.currencySymbols[params.data.Currency] || "";
-            const value = params.value ? String(params.value) : "";
+      ];
 
-            if (value && !value.includes(symbol)) {
-              return `<span>${symbol}${value}</span>`;
-            } else if (params.value) {
-              return `<span>${params.value}</span>`;
-            } else {
-              return `<span> - </span>`;
-            }
-          },
-        },
+      // Dynamically add price columns based on partPrices
+      const priceColumns = this.extractPriceColumns(this.partPrices);
 
-        {
-          field: "price(10)",
-          headerName: "Price (10)",
-          cellRenderer: (params) => {
-            const symbol = this.currencySymbols[params.data.Currency] || "";
-            const value = params.value ? String(params.value) : "";
-
-            if (value && !value.includes(symbol)) {
-              return `<span>${symbol}${value}</span>`;
-            } else if (params.value) {
-              return `<span>${params.value}</span>`;
-            } else {
-              return `<span> - </span>`;
-            }
-          },
-        },
-        {
-          field: "price(100)",
-          headerName: "Price (100)",
-          cellRenderer: (params) => {
-            const symbol = this.currencySymbols[params.data.Currency] || "";
-            const value = params.value ? String(params.value) : "";
-
-            if (value && !value.includes(symbol)) {
-              return `<span>${symbol}${value}</span>`;
-            } else if (params.value) {
-              return `<span>${params.value}</span>`;
-            } else {
-              return `<span> - </span>`;
-            }
-          },
-        },
-        {
-          field: "price(500)",
-          headerName: "Price (500)",
-          cellRenderer: (params) => {
-            const symbol = this.currencySymbols[params.data.Currency] || "";
-            const value = params.value ? String(params.value) : "";
-
-            if (value && !value.includes(symbol)) {
-              return `<span>${symbol}${value}</span>`;
-            } else if (params.value) {
-              return `<span>${params.value}</span>`;
-            } else {
-              return `<span> - </span>`;
-            }
-          },
-        },
+      const urlColumns = [
         {
           field: "Datasheet Url",
           headerName: "View DataSheet",
@@ -194,20 +151,40 @@ export default {
             return externalLinkIcon;
           },
         },
-      ],
+      ];
 
-      defaultColDef: {
-        filter: true,
-        sortable: true,
-        resizable: true,
-        autoSize: true,
-        autoSizeColumns: true,
-      },
-    };
-  },
-  created() {
-    // Log prices prop to console
-    console.log("Prices prop:", this.partPrices);
+      this.colDefs = [...staticColumns, ...priceColumns, ...urlColumns];
+    },
+    extractPriceColumns(data) {
+      const priceFields = new Set();
+
+      // Extract unique price fields from data
+      data.forEach((item) => {
+        Object.keys(item).forEach((key) => {
+          if (key.startsWith("price(")) {
+            priceFields.add(key);
+          }
+        });
+      });
+
+      // Create column definitions for price fields
+      return Array.from(priceFields).map((field) => ({
+        field: field,
+        headerName: field.replace(/price\((\d+)\)/, "Price ($1)"),
+        cellRenderer: (params) => {
+          const symbol = this.currencySymbols[params.data.Currency] || "";
+          const value = params.value ? String(params.value) : "";
+
+          if (value && !value.includes(symbol)) {
+            return `<span>${symbol}${value}</span>`;
+          } else if (params.value) {
+            return `<span>${params.value}</span>`;
+          } else {
+            return `<span> - </span>`;
+          }
+        },
+      }));
+    },
   },
 };
 </script>

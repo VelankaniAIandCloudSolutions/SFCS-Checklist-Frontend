@@ -3,10 +3,16 @@
     <!-- Add loading spinner or message here -->
   </div>
   <div v-else>
+    <div class="d-flex justify-content-end mb-3">
+      <button @click="onBtExport" class="btn btn-primary">
+        <i class="fas fa-download me-2"></i>Download CSV
+      </button>
+    </div>
     <ag-grid-vue
+      ref="agGrid"
       style="height: 500px"
       class="ag-theme-quartz"
-      :rowData="partPrices"
+      :rowData="manufacturerpartPrices"
       :defaultColDef="defaultColDef"
       :columnDefs="colDefs"
       :pagination="true"
@@ -25,21 +31,13 @@ export default {
     AgGridVue,
   },
   props: {
-    partPrices: {
+    manufacturerpartPrices: {
       type: Array,
       required: true,
     },
   },
   data() {
     return {
-      currencySymbols: {
-        USD: "$",
-        EUR: "€",
-        GBP: "£",
-        JPY: "¥",
-        INR: "₹", // Added Indian Rupee symbol
-        // Add more currency codes and their symbols as needed
-      },
       colDefs: [],
       defaultColDef: {
         filter: true,
@@ -50,17 +48,24 @@ export default {
       },
     };
   },
+  watch: {
+    manufacturerpartPrices(newVal) {
+      console.log("manufacturerpartPrices updated:", newVal);
+      this.initializeColumnDefinitions();
+    },
+  },
   created() {
+    console.log("Prices prop received:", this.manufacturerpartPrices);
     this.initializeColumnDefinitions();
-    console.log("Prices prop:", this.partPrices);
   },
   methods: {
     initializeColumnDefinitions() {
+      console.log("Initializing column definitions...");
+
       const staticColumns = [
         {
-          field: "part_number",
+          field: "VEPL Number",
           headerName: "VEPL Number",
-          hide: !this.partPrices.some((item) => item.part_number),
         },
         {
           field: "Manufacturer Part Number",
@@ -76,7 +81,7 @@ export default {
           },
         },
         {
-          field: "Manufacturer Name",
+          field: "Manufacturer",
           headerName: "Manufacturer",
           cellRenderer: (params) => {
             return params.value
@@ -113,8 +118,10 @@ export default {
         },
       ];
 
-      // Dynamically add price columns based on partPrices
-      const priceColumns = this.extractPriceColumns(this.partPrices);
+      // Dynamically add price columns based on manufacturerpartPrices
+      const priceColumns = this.extractPriceColumns(
+        this.manufacturerpartPrices
+      );
 
       const urlColumns = [
         {
@@ -154,25 +161,34 @@ export default {
       ];
 
       this.colDefs = [...staticColumns, ...priceColumns, ...urlColumns];
+      console.log("Column definitions initialized:", this.colDefs);
     },
     extractPriceColumns(data) {
+      console.log("Extracting price columns from data:", data);
+
       const priceFields = new Set();
 
       // Extract unique price fields from data
       data.forEach((item) => {
         Object.keys(item).forEach((key) => {
-          if (key.startsWith("price(")) {
+          if (key.startsWith("Price (")) {
             priceFields.add(key);
           }
         });
       });
 
-      // Create column definitions for price fields
-      return Array.from(priceFields).map((field) => ({
+      // Sort price fields
+      const sortedPriceFields = Array.from(priceFields).sort((a, b) => {
+        const getNumericValue = (field) => parseFloat(field.match(/\d+/)[0]);
+        return getNumericValue(a) - getNumericValue(b);
+      });
+
+      // Create column definitions for sorted price fields
+      const priceColumnDefs = sortedPriceFields.map((field) => ({
         field: field,
-        headerName: field.replace(/price\((\d+)\)/, "Price ($1)"),
+        headerName: field.replace(/Price \((\d+)\)/, "Price ($1)"),
         cellRenderer: (params) => {
-          const symbol = this.currencySymbols[params.data.Currency] || "";
+          const symbol = this.manufacturerpartPrices[0].Symbol || "";
           const value = params.value ? String(params.value) : "";
 
           if (value && !value.includes(symbol)) {
@@ -184,6 +200,13 @@ export default {
           }
         },
       }));
+
+      console.log("Price columns extracted:", priceColumnDefs);
+
+      return priceColumnDefs;
+    },
+    onBtExport() {
+      this.$refs.agGrid.api.exportDataAsCsv();
     },
   },
 };

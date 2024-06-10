@@ -33,10 +33,19 @@
         </div>
       </div>
       <div class="col-md-6 mt-4 text-end">
-        <button
+        <!-- <button
           class="btn btn-primary"
           style="margin-left;: 70%"
           @click="fetchProductPrices"
+        >
+          <i class="fas fa-search me-2"></i>
+          Fetch Prices
+        </button> -->
+
+        <button
+          class="btn btn-primary"
+          style="margin-left;: 70%"
+          @click="fetchManufacturePrices"
         >
           <i class="fas fa-search me-2"></i>
           Fetch Prices
@@ -116,7 +125,7 @@
     </section>
   </div>
   <div class="container" v-if="showPricingTable">
-    <PartPricingTable :partPrices="partPrices" />
+    <PartPricingTable :manufacturerpartPrices="manufacturerpartPrices" />
   </div>
 
   <!-- <div
@@ -157,10 +166,11 @@
 </template>
 
 <script>
+import axios from "axios";
+
 // import PartNumberPricingTable from "@/components/PartNumberPricingTable.vue";
 import PartPricingTable from "@/components/PartPricingTable.vue";
 
-import axios from "axios";
 export default {
   components: { PartPricingTable },
   data() {
@@ -174,6 +184,7 @@ export default {
         selectedBom: "",
       },
       partPrices: [],
+      manufacturerpartPrices: [],
       lastUpdatedAt: "",
       isRefreshing: this.$route.query.is_refreshing === "1",
       showPricingTable: false,
@@ -252,7 +263,7 @@ export default {
           .get(`/pricing/get-bom-pricing/${selectedBom.id}/`)
           .then((response) => {
             console.log("Response data:", response.data);
-            this.partPrices = response.data.final_json;
+            // this.partPrices = response.data.final_json;
 
             console.log(" the part prices", this.partPrices);
             this.selectedBomId = selectedBom.id;
@@ -343,6 +354,35 @@ export default {
     //     });
     //   }
     // },
+
+    async fetchManufacturePrices() {
+      this.$store.commit("setIsLoading", true);
+
+      const { selectedProduct, selectedBom } = this.form;
+      if (selectedProduct && selectedBom) {
+        console.log("Fetching product prices with BOM ID:", selectedBom.id);
+
+        try {
+          const response = await axios.get(
+            `/pricing/get-manufacturer-pricing/${selectedBom.id}/`
+          );
+          console.log("Fetched manufacturer part pricing:", response.data);
+          this.manufacturerpartPrices = response.data;
+          this.showPricingTable = true;
+          console.log(
+            "Assigned to manufacturerpartPrices:",
+            this.manufacturerpartPrices
+          );
+        } catch (error) {
+          console.error("Error fetching manufacturer prices:", error);
+        } finally {
+          this.$store.commit("setIsLoading", false);
+        }
+      } else {
+        this.$store.commit("setIsLoading", false);
+        console.error("Selected product or BOM is missing.");
+      }
+    },
     async refreshProductPrices() {
       await axios
         .get("/pricing/refresh-product-pricing")

@@ -223,6 +223,14 @@
                   </router-link>
                 </li>
               </ul>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/part-pricing-search" class="nav-link">
+                    <i class="fas fa-search me-2"></i>
+                    <p>Part Pricing Search</p>
+                  </router-link>
+                </li>
+              </ul>
             </li>
 
             <li

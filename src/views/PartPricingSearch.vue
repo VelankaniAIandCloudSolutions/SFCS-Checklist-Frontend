@@ -35,9 +35,9 @@
     </div>
 
     <!-- <div class="card p-3 mb-4 mt-4"> -->
-    <nav>
+    <nav style="margin-top: 2%">
       <div
-        class="nav nav-tabs p-3 mb-4 mt-4 d-flex align-items-center center-tabs"
+        class="nav nav-tabs d-flex align-items-center center-tabs"
         id="nav-tab"
         role="tablist"
       >
@@ -79,7 +79,7 @@
         aria-labelledby="nav-home-tab"
         tabindex="0"
       >
-        <section class="card p-3">
+        <section class="card p-3" style="margin-top: 2%">
           <div class="row mb-3 align-items-end">
             <div class="col-md-8">
               <label for="partNumberInput" class="form-label"

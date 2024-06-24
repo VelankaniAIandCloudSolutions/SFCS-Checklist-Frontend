@@ -1,4 +1,5 @@
 <template>
+  <!-- <div v-if="$store.state.isLoading" class="container text-center"> -->
   <div v-if="$store.state.isLoading" class="container text-center">
     <div
       class="spinner-border mt-5"
@@ -13,7 +14,10 @@
   </div>
   <div v-else>
     <div v-if="lowestPriceDistributor" class="lowest-price-container">
-      <div class="alert alert-primary d-flex align-items-center">
+      <div
+        class="alert alert-primary d-flex align-items-center"
+        style="opacity: 0.7; color: black"
+      >
         <i class="fas fa-award fa-2x me-3"></i>
         <div>
           <h4 class="alert-heading">Best Price Offered By</h4>
@@ -67,6 +71,59 @@
       :pagination="true"
     >
     </ag-grid-vue>
+
+    <div
+      class="modal fade"
+      id="openRecommendationModal"
+      tabindex="-1"
+      aria-labelledby="openRecommendationModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="openRecommendationModalLabel">
+              Recommendation Details
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div v-if="isLoading">
+              <div
+                class="spinner-border mt-5"
+                style="width: 4rem; height: 4rem"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <div>
+                <b> Loading... </b>
+              </div>
+            </div>
+            <div v-else>
+              <recommendation-details-table
+                :recommendation_details="recommendation_details"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -74,10 +131,15 @@
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { AgGridVue } from "ag-grid-vue3";
+import RecommendationDetailsTable from "@/components/RecommendationDetailsTable.vue";
+import axios from "axios";
 
 export default {
+  name: "PricingSearchTable",
+  emits: ["recommendationDetails"],
   components: {
     AgGridVue,
+    RecommendationDetailsTable,
   },
   props: {
     veplNumber_prices: {
@@ -93,6 +155,7 @@ export default {
     return {
       rowData: [],
       colDefs: [],
+      recommendation_details: [],
       defaultColDef: {
         filter: true,
         sortable: true,
@@ -100,7 +163,10 @@ export default {
         autoSize: true,
         autoSizeColumns: true,
       },
-      lowestPriceDistributor: null, // To store the lowest price distributor
+      lowestPriceDistributor: null,
+      test: false,
+      isLoading: false,
+      // To store the lowest price distributor
     };
   },
   watch: {
@@ -118,6 +184,12 @@ export default {
         this.calculateLowestPriceDistributor(newVal); // Calculate the lowest price distributor
       }
     },
+  },
+  mounted() {
+    console.log(
+      " mounted recommendation details ",
+      this.recommendation_details
+    );
   },
   created() {
     if (this.veplNumber_prices && this.veplNumber_prices.length) {
@@ -230,6 +302,29 @@ export default {
             return externalLinkIcon;
           },
         },
+        {
+          field: "",
+          headerName: "View Recommendation",
+          cellRenderer: (params) => {
+            const viewRecommendation = () => {
+              // Call the API with the row's description
+              this.fetchRecommendation(params.data.Description);
+            };
+
+            const recommendationIcon = document.createElement("i");
+            recommendationIcon.className = "fas fa-share"; // Use share icon
+            recommendationIcon.style.color = "blue"; // Set icon color
+            recommendationIcon.style.cursor = "pointer"; // Set cursor to pointer
+            recommendationIcon.setAttribute("data-bs-toggle", "modal"); // Bootstrap modal toggle attribute
+            recommendationIcon.setAttribute(
+              "data-bs-target",
+              "#openRecommendationModal"
+            ); // Bootstrap modal target attribute
+            recommendationIcon.addEventListener("click", viewRecommendation);
+
+            return recommendationIcon;
+          },
+        },
       ];
 
       this.colDefs = [...staticColumns, ...dynamicColumns, ...urlColumns];
@@ -305,50 +400,46 @@ export default {
 
       this.lowestPriceDistributor = lowestPriceDistributor;
     },
-    // calculateLowestPriceDistributor(data) {
-    //   const distributorPrices = {};
 
-    //   // Calculate total prices and count entries for each distributor
-    //   data.forEach((item) => {
-    //     const distributor = item["distributor"];
-    //     if (!distributorPrices[distributor]) {
-    //       distributorPrices[distributor] = { total: 0, count: 0 };
-    //     }
-
-    //     Object.keys(item).forEach((key) => {
-    //       if (key.startsWith("price(")) {
-    //         let price = item[key];
-    //         if (typeof price === "string") {
-    //           price = parseFloat(price.replace(/[^0-9.-]+/g, ""));
-    //         }
-    //         if (!isNaN(price)) {
-    //           distributorPrices[distributor].total += price;
-    //           distributorPrices[distributor].count += 1;
-    //         }
-    //       }
-    //     });
-    //   });
-
-    //   // Calculate average prices and find the lowest
-    //   let lowestAveragePrice = Infinity;
-    //   let lowestPriceDistributor = null;
-
-    //   for (const distributor in distributorPrices) {
-    //     const { total, count } = distributorPrices[distributor];
-    //     const averagePrice = total / count;
-    //     if (averagePrice < lowestAveragePrice) {
-    //       lowestAveragePrice = averagePrice;
-    //       lowestPriceDistributor = { name: distributor, averagePrice };
-    //     }
-    //   }
-
-    //   this.lowestPriceDistributor = lowestPriceDistributor;
-    // },
     formatCurrency(value) {
       return value ? `$${value.toFixed(2)}` : "-";
     },
     onBtExport() {
       this.$refs.agGrid.api.exportDataAsCsv();
+    },
+
+    async fetchRecommendation(description) {
+      // this.$store.commit("setIsLoading", true);
+      this.isLoading = true;
+      await axios
+        .get("/pricing/get-recommendation-details", {
+          params: { description },
+        })
+        .then((response) => {
+          console.log(" the fetched Recommendation :", response.data);
+          this.test = true;
+          console.log(this.test);
+          this.isLoading = false;
+
+          this.recommendation_details = response.data.final_json;
+
+          console.log("the recomendationsssssss", this.recommendation_details);
+
+          // Convert to plain array before emitting
+
+          console.log(
+            "Emitting recommendationDetails event with data:",
+            this.recommendation_details
+          );
+          this.$emit("recommendation_details", response.data.final_json);
+        })
+        .catch((error) => {
+          this.isLoading = false;
+
+          console.log(error);
+        });
+
+      // this.$store.commit("setIsLoading", false);
     },
   },
 };

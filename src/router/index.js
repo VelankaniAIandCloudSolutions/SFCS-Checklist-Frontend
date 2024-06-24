@@ -38,6 +38,8 @@ import InspectionBoards from "@/views/Inspection/InspectionBoards.vue";
 import BoardReportLanding from "@/views/MachineLogs/BoardReportLanding.vue";
 import MachineReportLanding from "@/views/MachineLogs/MachineReportLanding.vue";
 import MachineLogsDashboard from "@/views/MachineLogs/MachineLogsDashboard.vue";
+import ParttPricing from "../views/PartPricing.vue";
+import PartPricingSearch from "../views/PartPricingSearch.vue";
 const routes = [
   {
     path: "/",
@@ -188,6 +190,16 @@ const routes = [
     path: "/project-pricing",
     name: "ProjectPricing",
     component: ProjectPricing,
+  },
+  {
+    path: "/part-pricing",
+    name: "ParttPricing",
+    component: ParttPricing,
+  },
+  {
+    path: "/part-pricing-search",
+    name: "PartPricingSearch",
+    component: PartPricingSearch,
   },
 
   {

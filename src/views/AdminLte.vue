@@ -206,11 +206,28 @@
                   <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
+
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <router-link to="/project-pricing" class="nav-link">
                     <i class="fas fa-money-bill nav-icon"></i>
                     <p>Project Pricing Details</p>
+                  </router-link>
+                </li>
+              </ul>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/part-pricing" class="nav-link">
+                    <i class="fas fa-money-check nav-icon"></i>
+                    <p>Part Pricing Details</p>
+                  </router-link>
+                </li>
+              </ul>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <router-link to="/part-pricing-search" class="nav-link">
+                    <i class="fas fa-search me-2"></i>
+                    <p>Part Pricing Search</p>
                   </router-link>
                 </li>
               </ul>

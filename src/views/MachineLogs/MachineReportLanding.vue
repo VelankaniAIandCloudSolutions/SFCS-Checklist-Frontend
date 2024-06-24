@@ -1,6 +1,15 @@
 <template>
   <div v-if="$store.state.isLoading" class="container text-center">
-    <!-- Loading Spinner (unchanged) -->
+    <div
+      class="spinner-border mt-5"
+      style="width: 4rem; height: 4rem"
+      role="status"
+    >
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <div>
+      <b> Loading... </b>
+    </div>
   </div>
   <div v-else class="container">
     <div class="row align-items-center">
@@ -16,7 +25,7 @@
               >
             </li>
             <li class="breadcrumb-item active" aria-current="page">
-              <i class="fas fa-microchip me-2"></i>Board Reports
+              <i class="fas fa-microchip me-2"></i>Machine Reports
             </li>
           </ol>
         </nav>
@@ -140,6 +149,7 @@ export default {
           this.$store.commit("setIsLoading", false);
         });
     },
+
     handleMachineClicked(machineData) {
       // Handle the emitted event to get both the machine ID and the row object
 
@@ -178,8 +188,8 @@ export default {
       if (this.toDate) {
         url += `&toDate=${this.toDate}`;
       }
-
       this.$store.commit("setIsLoading", true);
+
       axios
         .get(url)
         .then((response) => {

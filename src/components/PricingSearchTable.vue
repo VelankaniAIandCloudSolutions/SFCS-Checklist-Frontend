@@ -15,8 +15,8 @@
   <div v-else>
     <div v-if="lowestPriceDistributor" class="lowest-price-container">
       <div
-        class="alert alert-primary d-flex align-items-center"
-        style="opacity: 0.7; color: black"
+        class="alert d-flex align-items-center"
+        style="color: black; background-color: white"
       >
         <i class="fas fa-award fa-2x me-3"></i>
         <div>

@@ -101,7 +101,10 @@
           </div>
         </section>
         <div class="container" v-if="showPricingTable">
-          <PricingSearchTable :pricingdetails="pricingdetails" />
+          <PricingSearchTable
+            :pricingdetails="pricingdetails"
+            @recommendation_details="handleRecommendationDetails"
+          />
         </div>
       </div>
       <div
@@ -111,7 +114,7 @@
         aria-labelledby="nav-profile-tab"
         tabindex="0"
       >
-        <section class="card p-3">
+        <section class="card p-3" style="margin-top: 2%">
           <div class="row mb-3 align-items-end">
             <div class="col-md-8">
               <label for="partNumberInput" class="form-label"
@@ -133,7 +136,10 @@
           </div>
         </section>
         <div class="container" v-if="showVEPLPricingTable">
-          <PricingSearchTable :veplNumber_prices="veplNumber_prices" />
+          <PricingSearchTable
+            :veplNumber_prices="veplNumber_prices"
+            @recommendation_details="handleRecommendationDetails"
+          />
         </div>
       </div>
     </div>
@@ -157,7 +163,14 @@ export default {
 
       pricingdetails: [],
       veplNumber_prices: [],
+      recommendation_details: [],
+      showPricingTable: false,
+      showVEPLPricingTable: false,
     };
+  },
+
+  mounted() {
+    console.log(" Emitted data ", this.recommendation_details);
   },
 
   methods: {
@@ -216,6 +229,19 @@ export default {
         });
 
       this.$store.commit("setIsLoading", false);
+    },
+    handleRecommendationDetails(details) {
+      console.log("emit handle ");
+      console.log(" the Details", details);
+      this.recommendation_details = details;
+    },
+  },
+
+  watch: {
+    // Watch recommendation_details for changes
+    recommendation_details(newVal) {
+      console.log("Recommendation details updated:", newVal);
+      // You can perform additional actions here when recommendation_details changes
     },
   },
 };

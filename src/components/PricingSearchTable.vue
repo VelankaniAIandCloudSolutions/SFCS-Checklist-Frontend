@@ -212,7 +212,7 @@ export default {
           headerName: "Manufacturer Part No.",
         },
         {
-          field: "Online Distributor Name",
+          field: "distributor",
           headerName: "Distributor",
           cellRenderer: (params) => {
             return params.value

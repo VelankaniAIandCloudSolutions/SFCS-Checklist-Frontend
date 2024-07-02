@@ -308,7 +308,7 @@ export default {
           cellRenderer: (params) => {
             const viewRecommendation = () => {
               // Call the API with the row's description
-              this.fetchRecommendation(params.data.Description);
+              this.fetchRecommendation(params.data);
             };
 
             const recommendationIcon = document.createElement("i");
@@ -408,12 +408,12 @@ export default {
       this.$refs.agGrid.api.exportDataAsCsv();
     },
 
-    async fetchRecommendation(description) {
+    async fetchRecommendation(rowData) {
       // this.$store.commit("setIsLoading", true);
       this.isLoading = true;
       await axios
         .get("/pricing/get-recommendation-details", {
-          params: { description },
+          params: rowData,
         })
         .then((response) => {
           console.log(" the fetched Recommendation :", response.data);
